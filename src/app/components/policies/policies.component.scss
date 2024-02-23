@@ -1,0 +1,15 @@
+.card {
+    background-color: gray;
+    font-weight: 700;
+    font-size: larger;
+    &:hover {
+        background-color: black;
+        color: white;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
+
+h2, h3 {
+    margin: 0;
+}

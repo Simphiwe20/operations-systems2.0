@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Rubik+Bubbles&display=swap');
+
+$primary-color: white;
+$bg-color: #252525;
+
+form {
+    background-color: $bg-color;
+}
+
+.left {
+    img {
+        height: 150px;
+        width: 150px;
+    }
+}
+
+.left {
+    background-image: url('../../../assets/background\ image.jpg');
+    background-size:cover;
+    background-position: left;
+    border-radius: 10px;
+}
+
+h1 {
+    font-size:xx-large;
+}
+
+.log-in {
+    img {
+        width: 40px;
+        height: 40px;
+    }
+    p {
+        padding: 0;
+        margin: 0;
+        font-family: 'Rubik Bubbles', system-ui;
+        color: $primary-color;
+        font-size: larger;
+    }
+
+}

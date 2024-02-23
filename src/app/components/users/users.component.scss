@@ -1,0 +1,48 @@
+$btn-bg-color: grey;
+$bg-color: #252525;
+$bg-grey: grey;
+
+.table {
+    height: 465px;
+    overflow-x: auto;
+    button {
+        color: white;
+    }
+}
+
+// .height-350px {
+//     height: 380px;
+// }
+
+input[type='file'] {
+    display: none;
+}
+
+label {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 10px;
+    background-color: $btn-bg-color;
+    color: black;
+    font-size:larger;
+    font-weight: 700;
+    border-radius: 5px;
+    &:hover {
+        cursor: pointer;
+        box-shadow: 5px 5px 5px lightgray;
+        background-color: black;
+        color: white;
+    }
+}
+
+.block { 
+    display: block;
+ }
+
+.disabled {
+    background-color: $bg-color;
+}
+
+.enabled {
+    background-color: $bg-grey;
+}

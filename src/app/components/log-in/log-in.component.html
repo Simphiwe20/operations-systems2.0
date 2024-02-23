@@ -1,0 +1,35 @@
+<form #logInForm="ngForm" class="full-height flex center-center">
+    <div class="height-90 width-90 flex gap-2em">
+        <div class="flex half-width center-center column left gap-1em">
+            <img class="" src="../../../assets/Neutrinos_Logo.jpg" alt="">
+            <h1>Operations System</h1>
+        </div>
+        <div class="flex column half-width center-center gap-2em">
+            <div class="flex center-center log-in">
+                <img class="" src="../../../assets/Neutrinos_Logo.jpg" alt="">
+                <p>Log In</p>
+            </div>
+            <mat-form-field class="width-90">
+                <mat-label>Email</mat-label>
+                <input [(ngModel)]="userCredentials.email" #email="ngModel" type="email" 
+                matInput name="email" placeholder="Ex. pat@example.com" [pattern]="emailPattern" required>
+                <mat-error *ngIf="!email.valid && email.errors && email.errors['pattern']">
+                    Please enter a valid email address
+                </mat-error>
+                <mat-error *ngIf="!email.valid && email.errors && email.errors['required']">
+                    Email is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="width-90">
+                <mat-label>Password</mat-label>
+                <input type="password" [(ngModel)]="userCredentials.password" name="password" 
+                #password="ngModel" matInput placeholder="*****" required>
+                <mat-error *ngIf="!password.valid && password.errors && password.errors['required']">
+                    Password is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+            <button mat-raised-button class="half-width btn" (click)="submit(logInForm)" >Log In</button>
+        </div>
+    </div>
+
+</form>

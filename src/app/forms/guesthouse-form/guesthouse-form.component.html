@@ -1,0 +1,42 @@
+<form #_guestHouseForm="ngForm" class=" padding-20px flex column">
+    <mat-form-field appearance="fill">
+        <mat-label>GuestHouse Name</mat-label>
+        <mat-select #guestHouseName="ngModel" [(ngModel)]="guestHouseForm.guestHouseName" name="guestHouseName" required>
+            <mat-option *ngFor="let type of guestHouseNames" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="!guestHouseName.valid && guestHouseName.errors && guestHouseName.errors['required']">
+            GuestHouse Name is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Check In Date</mat-label>
+        <input matInput [matDatepicker]="picker" readonly [(ngModel)]="guestHouseForm.checkInDate" #checkInDate="ngModel" name="checkInDate" required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="!checkInDate.valid && checkInDate.errors && checkInDate.errors['required']">
+            Check In Date is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Check Out Date</mat-label>
+        <input matInput [matDatepicker]="picker1" readonly [(ngModel)]="guestHouseForm.checkOutDate" #checkOutDate="ngModel" name="checkOutDate" required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+        <mat-error *ngIf="!checkOutDate.valid && checkOutDate.errors && checkOutDate.errors['required']">
+            Check Out Date is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+        <mat-label>Any Special needs</mat-label>
+        <input matInput [(ngModel)]="guestHouseForm.specialNeeds" #specialNeeds="ngModel" name="specialNeeds"
+            placeholder="Ex. Privacy Policy">
+    </mat-form-field>
+    <div class="flex center-center gap-2em">
+        <button mat-raised-button class="" (click)="close()" color="accent">Cancel</button>
+        <button mat-raised-button class="" color="primary" (click)="submit(_guestHouseForm)">Request GuestHouse</button>
+    </div>
+
+</form>
+

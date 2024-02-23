@@ -1,0 +1,39 @@
+img {
+    width: 80px;
+    height: 80px;
+    margin-top: 10px;
+}
+
+form {
+    position: relative;
+}
+
+.btn {
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: white;
+    margin: 2px;
+    font-weight: 400;
+}
+
+.close {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    margin: 0;
+    margin-right: 10px;
+    font-weight: 400;
+    color: white;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+input[type="text"]:disabled,  input[type="email"]:disabled{
+    color: black;
+    font-size: larger;
+    // font-weight: 600;
+}

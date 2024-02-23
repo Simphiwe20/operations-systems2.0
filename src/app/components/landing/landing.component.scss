@@ -1,0 +1,48 @@
+$primary-color: white;
+$bg-color: #252525;
+
+nav {
+    background-color: $bg-color;
+    color: $primary-color;
+    font-size: medium;
+    font-weight: 400;
+}
+
+.profile p {
+    margin: 0;
+    padding: 0;
+}
+
+.initials {
+    width: 40px;
+    height: 40px;
+    background-color: black;
+    border-radius: 50%;
+}
+
+.extend {
+    width: 50px;
+    height: 90px;
+    background-color: black;
+    opacity: 0.5;
+    position: absolute;
+    bottom: 60px;
+    left: 130px;
+}
+
+.visible {
+    visibility: visible;
+}
+
+.hide {
+    visibility: hidden;
+
+}
+
+.gap-05em {
+    gap: 0.5em
+}
+
+.transform {
+    transform: scaleY(-1);
+}

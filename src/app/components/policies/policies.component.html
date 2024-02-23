@@ -1,0 +1,155 @@
+<div class="flex center-center full-height">
+    <div class="height-90 full-width">
+        <mat-tab-group *ngIf="user.role === 'admin'">
+            <mat-tab label="Add a policy" class="full-height full-width"> 
+                <div class="" *ngIf="user.role === 'admin'" class="flex gap-2em center-center margin-top">
+                    <div class="add-policy card flex center-center" (click)="RequestGH()">
+                        <p>Fill Form</p>
+                    </div>
+                    <div class="upload-policy card flex center-center">
+                        <p>Upload Policy</p>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Policies">
+                <div class="full-width">
+                    <h2 class="flex center-center" >View, Edit and Delete Policies</h2>
+                    <h3 *ngIf="!dataSource">Currently the are no policies, Click the button below to
+                        add policies for employees to view and download </h3>
+                    <div class="table">
+                        <mat-form-field>
+                            <mat-label>Filter</mat-label>
+                            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                        </mat-form-field>
+        
+                        <div class="mat-elevation-z8 full-width">
+                            <table mat-table [dataSource]="dataSource" matSort>
+        
+                                <!-- Persal No Column -->
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Policy Name </th>
+                                    <td mat-cell *matCellDef="let row"> {{row.policyName}} </td>
+                                </ng-container>
+        
+                                <!-- Surname Column -->
+                                <ng-container matColumnDef="category">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Category </th>
+                                    <td mat-cell *matCellDef="let row"> {{row.category}} </td>
+                                </ng-container>
+        
+                                <!-- Department Column -->
+                                <ng-container matColumnDef="action">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                                        class="flex center-center inherit-height"> Action </th>
+                                    <td mat-cell *matCellDef="let row, let i = index"
+                                        class="download pointer flex gap-1em center-center">
+                                        <button (click)="editPolicy(row)" mat-mini-fab color="primary"
+                                            aria-label="Example icon button with a plus one icon">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button (click)="editPolicy(row)" mat-mini-fab color="primary"
+                                            aria-label="Example icon button with a plus one icon">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </td>
+                                </ng-container>
+        
+                                <!-- Department Column -->
+                                <ng-container matColumnDef="download">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
+                                    <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
+                                        <button (click)="generatePdf(row)" mat-mini-fab color="accent"
+                                            aria-label="Example icon button with a plus one icon">
+                                            <mat-icon>download</mat-icon>
+                                        </button>
+                                    </td>
+                                </ng-container>
+        
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        
+                                <!-- Row shown when there is no matching data. -->
+                                <tr class="mat-row" *matNoDataRow>
+                                    <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                                </tr>
+                            </table>
+        
+                            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                                aria-label="Select page of users"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+        
+            </mat-tab>
+        </mat-tab-group>
+        <div *ngIf="user.role !== 'admin'" class="padding-20px">
+            <div class="full-width">
+                <h2 class="flex center-center" >View and download Policies</h2>
+                <h3 *ngIf="!dataSource">Currently the are no policies, Click the button below to
+                    add policies for employees to view and download </h3>
+                <div class="table">
+                    <mat-form-field>
+                        <mat-label>Filter</mat-label>
+                        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                    </mat-form-field>
+    
+                    <div class="mat-elevation-z8 full-width">
+                        <table mat-table [dataSource]="dataSource" matSort>
+    
+                            <!-- Persal No Column -->
+                            <ng-container matColumnDef="name">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Policy Name </th>
+                                <td mat-cell *matCellDef="let row"> {{row.policyName}} </td>
+                            </ng-container>
+    
+                            <!-- Surname Column -->
+                            <ng-container matColumnDef="category">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Category </th>
+                                <td mat-cell *matCellDef="let row"> {{row.category}} </td>
+                            </ng-container>
+    
+                            <!-- Department Column -->
+                            <ng-container matColumnDef="action">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header
+                                    class="flex center-center inherit-height"> Action </th>
+                                <td mat-cell *matCellDef="let row, let i = index"
+                                    class="download pointer flex gap-1em center-center">
+                                    <button (click)="editPolicy(row)" mat-mini-fab color="primary"
+                                        aria-label="Example icon button with a plus one icon">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                    <button (click)="deletePolicy(i)" mat-mini-fab color="primary"
+                                        aria-label="Example icon button with a plus one icon">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+    
+                            <!-- Department Column -->
+                            <ng-container matColumnDef="download">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
+                                <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
+                                    <button (click)="generatePdf(row)" mat-mini-fab color="accent"
+                                        aria-label="Example icon button with a plus one icon">
+                                        <mat-icon>download</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+    
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+                            <!-- Row shown when there is no matching data. -->
+                            <tr class="mat-row" *matNoDataRow>
+                                <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                            </tr>
+                        </table>
+    
+                        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                            aria-label="Select page of users"></mat-paginator>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

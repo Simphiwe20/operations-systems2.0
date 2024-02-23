@@ -1,0 +1,51 @@
+<form #_travelForm="ngForm" class=" padding-20px flex column">
+    <mat-form-field appearance="fill">
+        <mat-label>Departure Date</mat-label>
+        <input matInput [(ngModel)]="travelForm.departureDate" name="departureDate" #departureDate="ngModel"
+            [matDatepicker]="picker" readonly required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error  *ngIf="!departureDate.valid && departureDate.errors && departureDate.errors['required']">
+            Departure Date is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Return Date</mat-label>
+        <input matInput [(ngModel)]="travelForm.returnDate" name="returnDate" #returnDate="ngModel"
+         readonly [matDatepicker]="picker1" required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+        <mat-error  *ngIf="!returnDate.valid && returnDate.errors && returnDate.errors['required']">
+            Return Date is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Travel Type</mat-label>
+        <mat-select [(ngModel)]="travelForm.travelType" #travelType="ngModel" name="travelType" required>
+            <mat-option *ngFor="let type of travelTypes" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+        <mat-error  *ngIf="!travelType.valid && travelType.errors && travelType.errors['required']">
+            Travel Type is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+        <mat-label>Reason for travel</mat-label>
+        <textarea matInput [(ngModel)]="travelForm.reasonForTravel" #reasonForTravel="ngModel" name="reasonForTravel"
+            placeholder="Ex. It makes me feel..." required></textarea>
+        <mat-error *ngIf="!reasonForTravel.valid && reasonForTravel.errors && reasonForTravel.errors['required']">
+            Reason for travel<b> required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+        <mat-label>Any Special needs</mat-label>
+        <input matInput [(ngModel)]="travelForm.specialNeeds" #specialNeeds="ngModel" name="specialNeeds"
+            placeholder="Ex. Privacy Policy">
+    </mat-form-field>
+    <div class="flex spacebetween-center">
+        <button mat-raised-button class="" (click)="close()" color="accent">Cancel</button>
+        <button mat-raised-button class="" (click)="submit(_travelForm)" color="primary">Apply</button>
+    </div>
+
+</form>

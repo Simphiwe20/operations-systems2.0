@@ -1,0 +1,422 @@
+<div class="full-width full-height flex center-center">
+    <div class="height-90 full-width">
+        <div *ngIf="(user.role === 'admin' && !approvedLeaves.length)">
+            <h2 class="text-center no-margin">View Approved Leaves</h2>
+            <h3 class="text-center no-margin">The are currently no approved leaves.</h3>
+        </div>
+        <div *ngIf="(user.role === 'manager' && !userLeaves.length)">
+            <h2 class=" text-center no-margin">View Employees Leaves</h2>
+            <h3>The are currently no leaves applications made by the employee.</h3>
+        </div>
+        <div *ngIf="user.role === 'employee' && !userLeaves.length">
+            <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Make a Leave
+                Application</h2>
+            <h3>The are currently no leaves applications, you haven't made any leave applications. To make a leave
+                aplication click the button below</h3>
+            <div class="flex center-center">
+                <button mat-raised-button class="" (click)="applyLeave()" color="primary">Leave Application</button>
+            </div>
+        </div>
+        <div *ngIf="(user.role === 'manager' && userLeaves || user.role === 'employee' && userLeaves)">
+            <mat-tab-group>
+                <mat-tab label="Leaves Application">
+                    <div class="full-width full-height">
+                        <!-- <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Leaves Application</h2> -->
+                        <h2 class="flex center-center no-margin" *ngIf="user.role == 'operations personnel'">View
+                            Employees Leave Application
+                        </h2>
+                        <h2 class="flex center-center no-margin" *ngIf="user.role === 'admin'">
+                            View Approved Leaves
+                        </h2>
+                        <h2 class="flex center-center no-margin" *ngIf="user.role == 'manager'">Action Employees Leave
+                            Application</h2>
+                        <div class="table">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                            </mat-form-field>
+                            <div class="table-height mat-elevation-z8 full-width">
+                                <table mat-table [dataSource]="dataSource" matSort>
+
+                                    <!-- Surname Column -->
+                                    <ng-container matColumnDef="startDate">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.startDate | date}} </td>
+                                    </ng-container>
+
+                                    <!-- Department Column -->
+                                    <ng-container matColumnDef="endDate">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.endDate | date}} </td>
+                                    </ng-container>
+
+                                    <!-- Name Column -->
+                                    <ng-container matColumnDef="leaveType">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Leave Type </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.leaveType}} </td>
+                                    </ng-container>
+
+                                    <div *ngIf="user.role != 'employee'">
+
+                                        <!-- Name Column -->
+                                        <ng-container matColumnDef="employeeEmail">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
+                                            <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Occupation Column -->
+                                    <div *ngIf="user.role !== 'manager'">
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Occupation Column -->
+                                    <div *ngIf="user.role === 'manager'">
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <!-- Change Status -->
+                                                <button mat-raised-button matTooltip="Update status"
+                                                    (click)="decrementLeaveDays(row)" id='approved-btn'
+                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
+                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                                    [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
+                                                <mat-menu #menu="matMenu">
+                                                    <button mat-menu-item (click)="statusUpdate(status, row.appID)"
+                                                        *ngFor="let status of statuses">{{status | titlecase}}</button>
+                                                </mat-menu>
+                                            </td>
+                                        </ng-container>
+                                    </div>
+
+
+                                    <!-- Department Column -->
+                                    <ng-container matColumnDef="download">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
+                                        <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
+                                            <button (click)="generatePdf(row)" mat-mini-fab color="accent"
+                                                aria-label="Example icon button with a plus one icon">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                                    <!-- Row shown when there is no matching data. -->
+                                    <tr class="mat-row" *matNoDataRow>
+                                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                                    aria-label="Select page of users"></mat-paginator>
+                            </div>
+                        </div>
+
+                        <div class="flex center-center margin-10" *ngIf="user.role === 'employee'">
+                            <button mat-raised-button class="" (click)="applyLeave()" color="primary">Leave
+                                Application</button>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Approved Leaves">
+                    <div class="full-width full-height">
+                        <!-- <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Make a Leave
+                            Application</h2> -->
+                        <h2 class="flex center-center no-margin"> View Approved Leave</h2>
+                        <h3 *ngIf="!approvedDataSource.length">The are currently no approved leaves, a manager hasn't
+                            approved any.</h3>
+                        <h2 class="flex center-center no-margin"
+                            *ngIf="user.role == 'operations personnel' || user.role === 'admin'">View Approved
+                            Leave Application</h2>
+
+                        <div class="table" *ngIf="approvedDataSource.length">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                            </mat-form-field>
+                            <div class="table-height mat-elevation-z8 full-width">
+                                <table mat-table [dataSource]="approvedDataSource" matSort>
+
+                                    <!-- Surname Column -->
+                                    <ng-container matColumnDef="startDate">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.startDate | date}} </td>
+                                    </ng-container>
+
+                                    <!-- Department Column -->
+                                    <ng-container matColumnDef="endDate">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.endDate | date}} </td>
+                                    </ng-container>
+
+                                    <!-- Name Column -->
+                                    <ng-container matColumnDef="leaveType">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Leave Type </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.leaveType}} </td>
+                                    </ng-container>
+
+                                    <div *ngIf="user.role != 'employee'">
+
+                                        <!-- Name Column -->
+                                        <ng-container matColumnDef="employeeEmail">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
+                                            <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Occupation Column -->
+                                    <div *ngIf="user.role !== 'manager'">
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Occupation Column -->
+                                    <div *ngIf="user.role === 'manager'">
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <!-- Change Status -->
+                                                <button mat-raised-button matTooltip="Update status"
+                                                    (click)="decrementLeaveDays(row)" id='approved-btn'
+                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
+                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                                    [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
+                                                <mat-menu #menu="matMenu">
+                                                    <button mat-menu-item (click)="statusUpdate(status, row.appID)"
+                                                        *ngFor="let status of statuses">{{status | titlecase}}</button>
+                                                </mat-menu>
+                                            </td>
+                                        </ng-container>
+                                    </div>
+
+
+                                    <!-- Department Column -->
+                                    <ng-container matColumnDef="download">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
+                                        <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
+                                            <button (click)="generatePdf(row)" mat-mini-fab color="accent"
+                                                aria-label="Example icon button with a plus one icon">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                                    <!-- Row shown when there is no matching data. -->
+                                    <tr class="mat-row" *matNoDataRow>
+                                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                                    aria-label="Select page of users"></mat-paginator>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Rejected Leaves">
+                    <div class="full-width full-height">
+                        <h2>View Rejected Leaves</h2>
+                        <h3 *ngIf="!approvedDataSource.length">The are currently no rejected leaves, a manager hasn't
+                            rejected any leave application.</h3>
+
+                        <div class="table" *ngIf="rejectedDataSource.length">
+                            <mat-form-field>
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                            </mat-form-field>
+                            <div class="table-height mat-elevation-z8 full-width">
+                                <table mat-table [dataSource]="rejectedDataSource" matSort>
+
+                                    <!-- Surname Column -->
+                                    <ng-container matColumnDef="startDate">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.startDate | date}} </td>
+                                    </ng-container>
+
+                                    <!-- Department Column -->
+                                    <ng-container matColumnDef="endDate">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.endDate | date}} </td>
+                                    </ng-container>
+
+                                    <!-- Name Column -->
+                                    <ng-container matColumnDef="leaveType">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Leave Type </th>
+                                        <td mat-cell *matCellDef="let row"> {{row.leaveType}} </td>
+                                    </ng-container>
+
+                                    <div *ngIf="user.role != 'employee'">
+
+                                        <!-- Name Column -->
+                                        <ng-container matColumnDef="employeeEmail">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
+                                            <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Occupation Column -->
+                                    <div *ngIf="user.role !== 'manager'">
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Occupation Column -->
+                                    <div *ngIf="user.role === 'manager'">
+                                        <ng-container matColumnDef="status">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <!-- Change Status -->
+                                                <button mat-raised-button matTooltip="Update status"
+                                                    (click)="decrementLeaveDays(row)" id='approved-btn'
+                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
+                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                                    [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
+                                                <mat-menu #menu="matMenu">
+                                                    <button mat-menu-item (click)="statusUpdate(status, row.appID)"
+                                                        *ngFor="let status of statuses">{{status | titlecase}}</button>
+                                                </mat-menu>
+                                            </td>
+                                        </ng-container>
+                                    </div>
+
+
+                                    <!-- Department Column -->
+                                    <ng-container matColumnDef="download">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
+                                        <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
+                                            <button (click)="generatePdf(row)" mat-mini-fab color="accent"
+                                                aria-label="Example icon button with a plus one icon">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                                    <!-- Row shown when there is no matching data. -->
+                                    <tr class="mat-row" *matNoDataRow>
+                                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                                    aria-label="Select page of users"></mat-paginator>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+        <div *ngIf="user.role === 'admin' && approvedLeaves.length">
+            <div class="full-width full-height">
+                <h2 class="flex center-center no-margin">View Approved Leaves</h2>
+                <div class="table">
+                    <mat-form-field>
+                        <mat-label>Filter</mat-label>
+                        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+                    </mat-form-field>
+                    <div class="table-height mat-elevation-z8 full-width">
+                        <table mat-table [dataSource]="dataSource" matSort>
+
+                            <!-- Surname Column -->
+                            <ng-container matColumnDef="startDate">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+                                <td mat-cell *matCellDef="let row"> {{row.startDate | date}} </td>
+                            </ng-container>
+
+                            <!-- Department Column -->
+                            <ng-container matColumnDef="endDate">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+                                <td mat-cell *matCellDef="let row"> {{row.endDate | date}} </td>
+                            </ng-container>
+
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="leaveType">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Leave Type </th>
+                                <td mat-cell *matCellDef="let row"> {{row.leaveType}} </td>
+                            </ng-container>
+
+                            <div *ngIf="user.role != 'employee'">
+
+                                <!-- Name Column -->
+                                <ng-container matColumnDef="employeeEmail">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
+                                    <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+                                </ng-container>
+                            </div>
+
+                            <!-- Occupation Column -->
+                            <div *ngIf="user.role !== 'manager'">
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                    <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+                                </ng-container>
+                            </div>
+
+                            <!-- Occupation Column -->
+                            <div *ngIf="user.role === 'manager'">
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                                    <td mat-cell *matCellDef="let row">
+                                        <!-- Change Status -->
+                                        <button mat-raised-button matTooltip="Update status"
+                                            (click)="decrementLeaveDays(row)" id='approved-btn'
+                                            [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
+                                            [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                            [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
+                                        <mat-menu #menu="matMenu">
+                                            <button mat-menu-item (click)="statusUpdate(status, row.appID)"
+                                                *ngFor="let status of statuses">{{status | titlecase}}</button>
+                                        </mat-menu>
+                                    </td>
+                                </ng-container>
+                            </div>
+
+
+                            <!-- Department Column -->
+                            <ng-container matColumnDef="download">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
+                                <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
+                                    <button (click)="generatePdf(row)" mat-mini-fab color="accent"
+                                        aria-label="Example icon button with a plus one icon">
+                                        <mat-icon>download</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                            <!-- Row shown when there is no matching data. -->
+                            <tr class="mat-row" *matNoDataRow>
+                                <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
+                                </td>
+                            </tr>
+                        </table>
+
+                        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                            aria-label="Select page of users"></mat-paginator>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

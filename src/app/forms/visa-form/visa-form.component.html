@@ -1,0 +1,35 @@
+<form #_visaForm="ngForm" class="padding-20px flex column">
+    <mat-form-field appearance="fill">
+        <mat-label>Visa Request Type</mat-label>
+        <mat-select #visaType="ngModel" [(ngModel)]="visaForm.visaType" name="visaType" required>
+            <mat-option *ngFor="let type of visaRequestTypes" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="!visaType.valid && visaType.errors && visaType.errors['required']">
+            Visa Request Type is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field *ngIf="visaType.value === 'Replacement'" class="example-full-width">
+        <mat-label>Reason for Replacement</mat-label>
+        <input #replacementReason="ngModel" [(ngModel)]="visaForm.replacementReason" name="replacementReason"
+        matInput placeholder="Ex. Privacy Policy" required>
+        <mat-error *ngIf="!replacementReason.valid && replacementReason.errors && replacementReason.errors['required']">
+            Reason for replacement is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Needed Date</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="visaForm.neededDate" #neededDate="ngModel" 
+        name="neededDate" readonly required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="!neededDate.valid && neededDate.errors && neededDate.errors['required']">
+            Needed is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <div class="flex center-center gap-1em">
+        <button mat-raised-button class="" (click)="submit(_visaForm)" color="primary">Request Visa</button>
+        <button mat-raised-button class="" (click)="close()" color="accent">Cancel</button>
+    </div>
+</form>

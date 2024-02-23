@@ -1,0 +1,36 @@
+<form #_leaveForm="ngForm" class="padding-20px flex column">
+    <mat-form-field appearance="fill">
+        <mat-label>Leave Type</mat-label>
+        <mat-select [(ngModel)]="leaveForm.leaveType" name="leaveType" #leaveType="ngModel" required>
+            <mat-option *ngFor="let type of leaveTypes" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="leaveType.invalid && leaveType.errors && leaveType.errors['required']">
+            Leave type is <b> required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Start Date</mat-label>
+        <input matInput [min]="minDate" [matDatepickerFilter]="myfilter" [matDatepicker]="picker" [(ngModel)]="leaveForm.startDate" name="startDate" #startDate="ngModel" readonly required>
+        <mat-datepicker-toggle  matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="startDate.invalid && startDate.errors && startDate.errors['required']">
+            Start Date of the leave is <b> required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>End Date</mat-label>
+        <input matInput [min]="leaveForm.startDate" [matDatepickerFilter]="myfilter" [matDatepicker]="picker1" [(ngModel)]="leaveForm.endDate" name="endDate" #endDate="ngModel" readonly required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+        <mat-error *ngIf="endDate.invalid && endDate.errors && endDate.errors['required']">
+           End date of the leave is <b> required</b>
+        </mat-error>
+    </mat-form-field>
+    <div class="flex spacebetween-center">
+        <button mat-raised-button  class="" (click)="submit(_leaveForm)" color="primary">Apply</button>
+        <button mat-raised-button (click)='close()' class="" color="accent">Cancel</button>
+    </div>
+
+</form>

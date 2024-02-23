@@ -1,0 +1,70 @@
+<form #profileForm="ngForm" class="full-height full-width flex center-center padding-20px">
+    <p class="close" (click)="close()" matTooltip="close profile">X</p>
+    <div class="height-90 full-width flex column gap-05em">
+        <div class="flex center-center column left">
+            <img src="../../../assets/Neutrinos_Logo.jpg" alt="">
+        </div>
+        <div class="flex column full-width center-center">
+            <div class="flex gap-05em">
+                <mat-form-field class="full-width">
+                    <mat-label>User Name</mat-label>
+                    <input [(ngModel)]="user.firstName" type="text" matInput name="firstName"
+                        placeholder="Ex. pat@example.com" disabled>
+                </mat-form-field>
+                <mat-form-field class="full-width">
+                    <mat-label>User Surname</mat-label>
+                    <input type="text" [(ngModel)]="user.lastName" name="lastName" matInput
+                        placeholder="Makhathini" disabled>
+                </mat-form-field>
+            </div>
+            <mat-form-field class="full-width">
+                <mat-label>User Email Address</mat-label>
+                <input [(ngModel)]=" user.email" type="email" matInput name="email"
+                    placeholder="Ex. pat@example.com" disabled>
+            </mat-form-field>
+            <div class="flex gap-05em">
+                <mat-form-field class="full-width">
+                    <mat-label>User Occupation</mat-label>
+                    <input [(ngModel)]="user.occupation" type="text" matInput name="occupation"
+                        placeholder="Ex. pat@example.com" disabled>
+                </mat-form-field>
+                <mat-form-field class="full-width">
+                    <mat-label>User Department</mat-label>
+                    <input [(ngModel)]="user.department" type="text" matInput name="department"
+                        placeholder="Ex. pat@example.com" disabled>
+                </mat-form-field>
+            </div>
+            <div>
+                <hr>
+                <h2 class="text-center">Change Password</h2>
+                <div class="flex gap-05em">
+                    <mat-form-field class="width-200px">
+                        <mat-label>Password</mat-label>
+                        <input [(ngModel)]="userNewPassword.password" #password="ngModel" type="password" matInput name="password"
+                            placeholder="*****" minlength="8" required>
+                        <mat-error *ngIf="!password.valid && password.errors && password.errors['required']">
+                             Password field is required
+                        </mat-error>
+                        <mat-error *ngIf="!password.valid && password.errors && password.errors['minlength']">
+                            Password requires atleast 8 characterss
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="width-200px">
+                        <mat-label>Confirm Password</mat-label>
+                        <input [(ngModel)]="userNewPassword.confirmPassword" #confirmPassword="ngModel" type="password" matInput name="confirmPassword"
+                            placeholder="******" required>
+                        <mat-error *ngIf="!confirmPassword.valid && confirmPassword.errors && confirmPassword.errors['required']">
+                            Confirm password is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div class="flex center-center">
+            <button mat-raised-button class="half-width btn" (click)="changePwd(password)">
+                Change Password
+            </button>
+        </div>
+    </div>
+
+</form>

@@ -1,0 +1,67 @@
+<form #_transportForm="ngForm" class=" padding-20px flex column">
+    <mat-form-field appearance="fill">
+        <mat-label>Transport Request Type</mat-label>
+        <mat-select #transportType="ngModel" [(ngModel)]="transportForm.transportType" name="transportType" required>
+            <mat-option *ngFor="let type of transportTypes" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="!transportType.valid && transportType.errors && transportType.errors['required']">
+            Transport Request Type is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Needed Date</mat-label>
+        <input matInput [matDatepicker]="picker" readonly [(ngModel)]="transportForm.neededDate" #neededDate="ngModel" name="neededDate" required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="!neededDate.valid && neededDate.errors && neededDate.errors['required']">
+            Needed date is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field *ngIf="transportType.value === 'Airport Pick Up'" appearance="fill">
+        <mat-label>Pick Up Spot</mat-label>
+        <mat-select [(ngModel)]="transportForm.pickUpSpot" #pickUpSpot="ngModel" name="pickUpSpot" required>
+            <mat-option *ngFor="let spot of airportPickUpSpots" [value]="spot">
+                {{spot}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="!pickUpSpot.valid && pickUpSpot.errors && pickUpSpot.errors['required']">
+            Pick up Type is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field *ngIf="transportType.value === 'Generic Pick Up'" appearance="fill">
+        <mat-label>Pick Up Spot</mat-label>
+        <mat-select [(ngModel)]="transportForm.pickUpSpot" #pickUpSpot="ngModel" name="pickUpSpot" required>
+            <mat-option *ngFor="let spot of genericPickUpSpots" [value]="spot">
+                {{spot}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="!pickUpSpot.valid && pickUpSpot.errors && pickUpSpot.errors['required']">
+            Pick up spot is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Drop Off Spot</mat-label>
+        <mat-select [(ngModel)]="transportForm.dropOffSpot" #dropOffSpot="ngModel" name="dropOffSpot" required>
+            <mat-option *ngFor="let spot of dropOffSpots" [value]="spot">
+                {{spot}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="!dropOffSpot.valid && dropOffSpot.errors && dropOffSpot.errors['required']">
+            Pick up spot is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="">
+        <mat-label>Pick Up Reason</mat-label>
+        <textarea matInput placeholder="Ex. It makes me feel..." [(ngModel)]="transportForm.pickUpReason" #pickUpReason="ngModel" name="pickUpReason" required></textarea>
+        <mat-error *ngIf="!pickUpReason.valid && pickUpReason.errors && pickUpReason.errors['required']">
+            Pick up reason is <b>required</b>
+        </mat-error>
+    </mat-form-field>
+    <div class="flex center-center gap-2em">
+        <button mat-raised-button class="" (click)="close()" color="accent">Cancel</button>
+        <button mat-raised-button class="" color="primary" (click)="submit(_transportForm)">Request Transport</button>
+    </div>
+
+</form>
