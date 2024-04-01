@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
+import { NotificationsComponent } from 'src/app/popUps/notifications/notifications.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'app-landing',
@@ -18,7 +20,7 @@ export class LandingComponent {
   extend: boolean = false
   scale: boolean = false
 
-  constructor(private router: Router, private dialog: MatDialog) {
+  constructor(private router: Router, private dialog: MatDialog, private bottomSheet: MatBottomSheet) {
     this.user = sessionStorage.getItem('user')
     this.user = this.user ? JSON.parse(this.user) : []
     // this.dashboardClicked = 1
@@ -26,31 +28,31 @@ export class LandingComponent {
     console.log(this.user.firstName)
     this.initials = `${this.user.firstName.substring(0, 1)}${this.user.lastName.substring(0, 1)}`
 
-    if(this.user.role === 'admin') {
+    if (this.user.role === 'admin') {
       this.menuItems = [
-        {menu: 'Dashboard', route: 'dashboard'},
-        {menu: 'Users', route: 'users'},
-        {menu: 'View Approved leaves', route: 'leaves'},
-        {menu: 'Policies', route: 'policies'}
+        { menu: 'Dashboard', route: 'dashboard' },
+        { menu: 'Users', route: 'users' },
+        { menu: 'View Approved leaves', route: 'leaves' },
+        { menu: 'Policies', route: 'policies' }
       ]
-    }else if(this.user.role === 'operations personnel') {
+    } else if (this.user.role === 'operations personnel') {
       this.menuItems = [
-        {menu: 'Dashboard', route: 'dashboard'},
-        {menu: 'GuestHouse', route: 'guesthouse'},
-        {menu: 'Visa', route: 'visa'},
-        {menu: 'Transport', route: 'transport'},
-        {menu: 'Travels', route: 'travels'},
-        {menu: 'Policies', route: 'policies'}
+        { menu: 'Dashboard', route: 'dashboard' },
+        { menu: 'GuestHouse', route: 'guesthouse' },
+        { menu: 'Visa', route: 'visa' },
+        { menu: 'Transport', route: 'transport' },
+        { menu: 'Travels', route: 'travels' },
+        { menu: 'Policies', route: 'policies' }
       ]
-    }else{
+    } else {
       this.menuItems = [
-        {menu: 'Dashboard', route: 'dashboard'},
-        {menu: 'Leaves', route: 'leaves'},
-        {menu: 'GuestHouse', route: 'guesthouse'},
-        {menu: 'Visa', route: 'visa'},
-        {menu: 'Transport', route: 'transport'},
-        {menu: 'Travels', route: 'travels'},
-        {menu: 'Policies', route: 'policies'}
+        { menu: 'Dashboard', route: 'dashboard' },
+        { menu: 'Leaves', route: 'leaves' },
+        { menu: 'GuestHouse', route: 'guesthouse' },
+        { menu: 'Visa', route: 'visa' },
+        { menu: 'Transport', route: 'transport' },
+        { menu: 'Travels', route: 'travels' },
+        { menu: 'Policies', route: 'policies' }
 
       ]
     }
@@ -66,28 +68,30 @@ export class LandingComponent {
     this.router.navigate(['/landing/dashboard'])
   }
 
-  // openMessage(): void  {
-  //   this.dialog.open(MessagingComponent)
-  // }
+
+
+  openBottomSheet(): void {
+    this.bottomSheet.open(NotificationsComponent)
+  }
 
   openProfile(): void {
     this.dialog.open(ProfileComponent)
   }
 
   viewMore(): void {
-    if(!this.scale) {
+    if (!this.scale) {
       this.scale = !this.scale
-    }else {
+    } else {
       this.scale = !this.scale
     }
-    
+
   }
 
   Extend(): void {
-    if(!this.extend) {
+    if (!this.extend) {
       this.extend = !this.extend
       console.log(this.extend)
-    }else {
+    } else {
       this.extend = !this.extend
       console.log(this.extend)
 

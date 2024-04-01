@@ -6,10 +6,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { PolicyFormComponent } from 'src/app/forms/policy-form/policy-form.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-
+import * as docx from 'docx'
 import * as pdfMake from 'pdfmake/build/pdfMake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts'
 import { SharedServicesService } from 'src/app/services/shared-services.service';
+import { DeletePopUpComponent } from 'src/app/popUps/delete-pop-up/delete-pop-up.component';
 
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs
 
@@ -23,11 +24,14 @@ export class PoliciesComponent implements AfterViewInit{
   displayedColumns: string[] = ['name', 'category', 'action', 'download' ];
   dataSource!: MatTableDataSource<any>;
   user: any;
+ documentContent!: string;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  fileContent: any | ArrayBuffer = '';
 
-  constructor(private matDialog: MatDialog, private sharedService: SharedServicesService, private snackBar: MatSnackBar) {
+
+  constructor(private matDialog: MatDialog, private sharedService: SharedServicesService, private snackBar: MatSnackBar,) {
     this.dataSource = this.sharedService.getData('local', 'policies');
     this.user = sessionStorage.getItem('user')
     this.user = this.user ? JSON.parse(this.user) : {}
@@ -46,6 +50,20 @@ export class PoliciesComponent implements AfterViewInit{
      error: (err: any) => console.log(err),
      complete: () => {}
     })
+ }
+
+
+ readDocument(fileChangeEvent: Event) {
+   const file = (fileChangeEvent.target as HTMLInputElement).files![0];
+   let fileReader = new FileReader();
+   fileReader.onload = async (e) => {
+     const arrayBuffer = fileReader.result as ArrayBuffer;
+    //  const doc = await docx.Document.load(arrayBuffer);
+    //  console.log(doc)
+    //  const html = await docx.convertToHtml(doc);
+    //  this.documentContent = html.outerHTML;
+   };
+   fileReader.readAsArrayBuffer(file);
  }
 
   ngAfterViewInit() {
@@ -142,14 +160,18 @@ export class PoliciesComponent implements AfterViewInit{
   }
 
   deletePolicy(index: number): void {
-   let updatedPolicies = this.sharedService.getData('local', 'policies').filter((policy: any, indx: number) => {
-    if(index !== indx) {
-      return policy
-    }
-    this.dataSource = updatedPolicies
-    this.sharedService.storeData('local', 'polices', updatedPolicies)
-
-   })
+  let dialogRef =   this.matDialog.open(DeletePopUpComponent)
+  console.log(dialogRef)
+  dialogRef.afterClosed()
+  .subscribe({
+      next: (res) => {console.log(res)},
+      error: (err) => {console.log(err)},
+      complete: () => {}
+     })
+  //  let updatedPolicies = this.sharedService.getData('local', 'policies').filter((policy: any, indx: number) => index !== indx )
+  //  console.log(updatedPolicies)
+  //  this.sharedService.storeData('local', 'policies', updatedPolicies)
+  //  this.dataSource = this.sharedService.getData('local', 'policies')
   }
 }
 

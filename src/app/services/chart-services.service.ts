@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiServicesService } from '../api-service/api-services.service';
 import { SharedServicesService } from './shared-services.service';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class ChartServicesService {
   other: number = 0
   usersTot: number = 0
   travelReq: number = 0; transportReq: number = 0; guesthouseReq: number = 0; visaReq: number = 0
-  disabled: number = 0
+  disabled: any
   active: number = 0
 
 
@@ -175,9 +176,6 @@ export class ChartServicesService {
         this.active++
       }
     })
-
-    console.log(this.active)
-    console.log(this.disabled)
 
   }
 

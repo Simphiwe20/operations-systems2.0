@@ -23,7 +23,7 @@
         <div class="extend flex column center-center gap-05em"  [ngClass]="extend ? 'visible' : 'hide'">
             <span class="material-symbols-outlined" (click)="openProfile()" matTooltip="Profile">person</span>
             <span class="material-symbols-outlined" (click)="LogOut()" matTooltip="Log Out"> logout</span>
-            <span class="material-symbols-outlined" matTooltip="Notifications">notifications</span>
+            <span class="material-symbols-outlined" matTooltip="Notifications" (click)="openBottomSheet()">notifications</span>
         </div>
     </nav>
     <section class="full-width">

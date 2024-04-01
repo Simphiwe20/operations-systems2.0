@@ -5,6 +5,7 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
 import * as Chartjs from "chart.js";
 import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { ChartServicesService } from 'src/app/services/chart-services.service';
+import { NotificationsComponent } from 'src/app/popUps/notifications/notifications.component';
 
 Chart.register(PieController)
 Chart.register(...registerables)
@@ -38,17 +39,6 @@ export class DashboardComponent implements AfterViewInit{
   requests: any;
   reqs: any;
 
-  // Pie
-  public pieChartOptions: Chartjs.ChartOptions<'pie'> = {
-    responsive: false,
-  };
-  public pieChartLabels = [['Active'], ['Disable']];
-  public pieChartDatasets = [{
-    data: [this.charts.active, this.charts.disabled]
-  }];
-  public pieChartLegend = true;
-  public pieChartPlugins = [];
-
   @ViewChild('leaveChart') leavesChart!: ElementRef
 
   public context!: CanvasRenderingContext2D;
@@ -75,9 +65,11 @@ export class DashboardComponent implements AfterViewInit{
       }
     ]
   };
+
   public lineChartOptions: Chartjs.ChartOptions<'line'> = {
     responsive: false
   };
+
   public lineChartLegend = true;
 
 
@@ -88,6 +80,7 @@ export class DashboardComponent implements AfterViewInit{
     this.charts.getLeavesNo(this.user)
     this.charts.getDep(this.user)
     this.charts.getUserStats()
+    console.log(this.charts.disabled, 'From DashBoard')
 
     this.api.genericGetAPI('/get-users')
       .subscribe({
@@ -145,6 +138,18 @@ export class DashboardComponent implements AfterViewInit{
     { name: 'GuestHouse', status: [this.guesthouseSubmitted, this.guesthouseApproved, this.guesthouseRejected] }]
 
   }
+
+  
+  // Pie
+  public pieChartOptions: Chartjs.ChartOptions<'pie'> = {
+    responsive: false,
+  };
+  public pieChartLabels = [['Active'], ['Disable']];
+  public pieChartDatasets = [{
+    data: [this.charts.active, this.charts.disabled]
+  }];
+  public pieChartLegend = true;
+  public pieChartPlugins = [];
 
   ngAfterViewInit(): void {
     if (this.user.role === 'employee') {
@@ -265,4 +270,6 @@ export class DashboardComponent implements AfterViewInit{
 
     });
   }
+
 }
+

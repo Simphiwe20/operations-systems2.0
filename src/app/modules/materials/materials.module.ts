@@ -32,6 +32,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet'
 
 const MatComponents = [
   MatNativeDateModule,
@@ -68,6 +69,7 @@ const MatComponents = [
   MatToolbarModule,
   MatTooltipModule,
   MatTreeModule,
+  MatBottomSheetModule
 ];
 
 @NgModule({
@@ -78,7 +80,8 @@ const MatComponents = [
     MatComponents
   ],
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+    
   ]
 })
 export class MaterialModule { }

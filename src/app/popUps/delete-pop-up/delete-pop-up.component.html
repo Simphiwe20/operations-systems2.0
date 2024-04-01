@@ -1,0 +1,9 @@
+<div>
+    <div mat-dialog-content>
+        <p>You are about to delete?</p>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="close('No')">No, it's a mistake</button>
+        <button mat-button cdkFocusInitial (click)="close('Yes')">Yes</button>
+    </div>
+</div>

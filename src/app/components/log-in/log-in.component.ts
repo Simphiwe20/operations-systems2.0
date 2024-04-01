@@ -18,25 +18,10 @@ export class LogInComponent {
                       lastName: "admin", occupation:  "None", password: "admin@123", role: "admin", status:"active"}
 
   constructor(private sharedService: SharedServicesService, private router: Router, 
-    private snackBar: MatSnackBar, private apiService: ApiServicesService ) {
-      // this.users = this.sharedService.getData('local', 'users')
-      
-      // if(!this.users.length) {
-      //   this.users.push({
-      //     email: 'admin@neutrinos.co',
-      //     firstName: 'Built-in',
-      //     lastName: 'Admin',
-      //     password: 'admin@123',
-      //     status: 'active',
-      //     role: 'admin'
-      //   })
-      // }
-      // this.sharedService.storeData('local', 'users', this.users)
-    }
+    private snackBar: MatSnackBar, private apiService: ApiServicesService ) {}
 
     ngOnInit(): void {
-      this.apiService.genericGetAPI
-      ('/get-users')
+      this.apiService.genericGetAPI('/get-users')
         .subscribe({
           next: (res) => {
             console.log(res)
@@ -62,7 +47,7 @@ export class LogInComponent {
   submit(form: NgForm): any {
     if(!form.valid) return
 
-    this.apiService.genericPostAPI('/sign-in', this.adminAccount)
+    this.apiService.genericPostAPI('/sign-in', this.userCredentials)
         .subscribe({
           next: (res) => {
             this.router.navigate(['/landing'])
@@ -71,7 +56,7 @@ export class LogInComponent {
           },
           error: (err) => {
             console.log(err)
-            this.snackBar.open(err.error, 'OK', {duration: 3000})
+            this.snackBar.open(err.error.Error, 'OK', {duration: 3000})
           },
           complete: () => {}
         })

@@ -97,11 +97,20 @@ export class UsersComponent implements AfterViewInit{
       console.log(this.ExcelData)
 
       this.sharedService.storeNewUsers(this.ExcelData)
-      this.dataSource = new MatTableDataSource(this.users.filter((user: any) => {
-        if(user.email !== 'admin@neutrinos.co') {
-          return user
-        }
-      }))
+      this.api.genericGetAPI('/get-users')
+        .subscribe({
+          next: (res) => {this.users = res},
+          error: (err) => {console.log(err)},
+          complete: () => {}
+        })
+      setTimeout(() => {
+        this.dataSource = new MatTableDataSource(this.users.filter((user: any) => {
+          if (user.email !== 'admin@neutrinos.co') {
+            return user
+          }
+        }))
+      }, 5000)
+      
     };
 
     // fileReader.readAsArrayBuffer(file);
