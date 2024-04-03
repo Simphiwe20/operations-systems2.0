@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import * as pdfMake from 'pdfmake/build/pdfMake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { VisaFormComponent } from 'src/app/forms/visa-form/visa-form.component';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
 
@@ -34,46 +35,16 @@ export class VisaComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
-    private snackBar: MatSnackBar) {
-    this.userVisas = this.sharedService.getData('local', 'visas');
-    this.user = sessionStorage.getItem('user')
-    this.user = this.user ? JSON.parse(this.user) : {}
+    private snackBar: MatSnackBar, private api: ApiServicesService) {
+    this.user = this.sharedService.getData('session', 'user')
+    console.log(this.user)
     if (this.user.role === 'employee') {
       this.displayedColumns = ['visaType', 'neededDate', 'status', 'download'];
-      this.dataSource = this.userVisas.filter((visa: any) => {
-        if (visa.requestedByEmail === this.user.email) {
-          this.reqVisa.push(visa)
-          return visa
-        }
-      })
-    } else if (this.user.role === 'manager') {
-      this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download'];
-      this.userVisas = this.userVisas.filter((visa: any) => {
-        if (visa.department === this.user.department) {
-          this.reqVisa.push(visa)
-          return visa
-        }
-      })
-      this.dataSource = this.userVisas
-    } else if (this.user.role === 'admin') {
+    } else {
       this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download']
-      this.dataSource = this.userVisas.filter((visa: any) => {
-        if (visa.status === 'Approved') {
-          return visa
-        }
-      })
     }
-    else {
-      this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download']
-      this.dataSource = this.sharedService.getData('local', 'visas')
-    }
-    console.log(this.dataSource)
-    console.log(this.sharedService.getData('local', 'visas'))
-    this.moveVisas()
-
-
+    this.getVisas()
   }
-
 
 
   ngAfterViewInit() {
@@ -135,19 +106,66 @@ export class VisaComponent {
     let dialogRef = this.matDialog.open(VisaFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.userVisas = this.sharedService.getData('local', 'visas')
-        this.reqVisa = this.userVisas.filter((visa: any) => {
-          if (visa.requestedByEmail === this.user.email) {
-            return visa
-
-          }
-        })
-        this.snackBar.open(res, 'OK', { duration: 3000 })
+        this.api.genericGetAPI('/getVisas')
+          .subscribe({
+            next: (_res) => {
+              this.userVisas = _res
+              this.reqVisa = this.userVisas.filter((visa: any) => {
+                if (visa.requestedByEmail === this.user.email) {
+                  return visa
+                }
+              })
+              this.dataSource = this.reqVisa
+              this.snackBar.open(res, 'OK', { duration: 3000 })
+            },
+            error: () => { },
+            complete: () => { }
+          })
 
       }
     })
 
     this.dataSource = this.reqVisa
+  }
+
+  getVisas() {
+    this.api.genericGetAPI('/getVisas')
+      .subscribe({
+        next: (_res) => {
+          this.userVisas = _res
+          console.log(this.userVisas)
+          this.moveVisas()
+          if (this.user.role === 'employee') {
+            this.dataSource = this.userVisas.filter((visa: any) => {
+              if (visa.requestedByEmail === this.user.email) {
+                this.reqVisa.push(visa)
+                return visa
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.userVisas = this.userVisas.filter((visa: any) => {
+              if (visa.department === this.user.department) {
+                this.reqVisa.push(visa)
+                return visa
+              }
+            })
+            this.dataSource = this.userVisas
+          } else if (this.user.role === 'admin') {
+            this.dataSource = this.userVisas.filter((visa: any) => {
+              if (visa.status === 'Approved') {
+                return visa
+              }
+            })
+          }
+          else {
+            this.dataSource = this.userVisas
+          }
+          console.log(this.userVisas)
+          console.log(this.dataSource)
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
+      })
   }
 
   statusUpdate(status: string, reqID: string): void {

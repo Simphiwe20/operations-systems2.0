@@ -1,4 +1,4 @@
-<form #_leaveForm="ngForm" class="padding-20px flex column">
+<form #_leaveForm="ngForm" class="all-padding  flex column">
     <mat-form-field appearance="fill">
         <mat-label>Leave Type</mat-label>
         <mat-select [(ngModel)]="leaveForm.leaveType" name="leaveType" #leaveType="ngModel" required>
@@ -28,7 +28,7 @@
            End date of the leave is <b> required</b>
         </mat-error>
     </mat-form-field>
-    <div class="flex spacebetween-center">
+    <div class="flex jc-end gap-1em">
         <button mat-raised-button  class="" (click)="submit(_leaveForm)" color="primary">Apply</button>
         <button mat-raised-button (click)='close()' class="" color="accent">Cancel</button>
     </div>

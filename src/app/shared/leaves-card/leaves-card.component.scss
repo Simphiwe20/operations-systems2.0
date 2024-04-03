@@ -1,0 +1,13 @@
+$primary-color: white;
+$bg-color: #252525;
+$bg-grey: grey;
+
+p {
+    margin: 0;
+}
+
+.leave-card {
+    background-color: $bg-color;
+    color: $primary-color;
+    border-radius: 10px;
+}

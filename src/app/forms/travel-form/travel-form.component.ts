@@ -17,7 +17,7 @@ export class TravelFormComponent {
     travelType: '',
     reasonForTravel: '',
     specialNeeds: '',
-    status: 'Submitted'
+    status: 'Pending'
   }
   user: any;
   travelData: any;

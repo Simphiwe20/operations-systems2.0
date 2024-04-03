@@ -1,0 +1,6 @@
+<div *ngIf="user === 'admin'" class="flex column center-center full-height gap-05em">
+    <p class="text-center no-margin">User Activeness</p>
+    <canvas baseChart width="350" height="350" [type]="'line'" [data]="lineChartData" [options]="lineChartOptions"
+        [legend]="lineChartLegend">
+    </canvas>
+</div>

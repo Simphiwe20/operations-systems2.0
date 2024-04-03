@@ -99,7 +99,9 @@ export class UsersComponent implements AfterViewInit{
       this.sharedService.storeNewUsers(this.ExcelData)
       this.api.genericGetAPI('/get-users')
         .subscribe({
-          next: (res) => {this.users = res},
+          next: (res) => {this.users = res
+            console.log(this.users)
+          },
           error: (err) => {console.log(err)},
           complete: () => {}
         })

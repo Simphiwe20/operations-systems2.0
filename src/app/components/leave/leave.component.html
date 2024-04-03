@@ -17,7 +17,7 @@
                 <button mat-raised-button class="" (click)="applyLeave()" color="primary">Leave Application</button>
             </div>
         </div>
-        <div *ngIf="(user.role === 'manager' && userLeaves || user.role === 'employee' && userLeaves)">
+        <div *ngIf="(user.role === 'manager' && userLeaves.length || user.role === 'employee' && userLeaves.length)">
             <mat-tab-group>
                 <mat-tab label="Leaves Application">
                     <div class="full-width full-height">

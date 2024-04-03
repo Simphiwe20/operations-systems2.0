@@ -20,6 +20,7 @@ export class ChartServicesService {
   travelReq: number = 0; transportReq: number = 0; guesthouseReq: number = 0; visaReq: number = 0
   disabled: any
   active: number = 0
+  users: any[] = []
 
 
   constructor( private api: ApiServicesService, private sharedService: SharedServicesService) { }
@@ -28,7 +29,13 @@ export class ChartServicesService {
   getUserStats(): void {
     this.api.genericGetAPI('/get-users')
       .subscribe({
-        next: (res) => {this.getUserStatus(res)},
+        next: (res) => {
+          console.log(res)
+          let users = res
+          this.users.push(users)
+          console.log(users)
+          this.getUserStatus(res)
+          this.getDep(users)},
         error: (err) => {console.log(err)},
         complete: () => {}
       })
@@ -70,19 +77,19 @@ export class ChartServicesService {
 
   }
 
-  getDep(user: any): void {
-    if (user.role === 'admin') {
-      this.sharedService.getData('local', 'employees').forEach((_user: any) => {
-        if (_user?.Department.toLowerCase() === 'it') {
+  getDep(users: any): void {
+    console.log(users)
+      users.forEach((_user: any) => {
+        if (_user?.department.toLowerCase() === 'it') {
           this.itCount++
           this.usersTot++
-        } else if (_user.Department.toLowerCase() === 'marketing') {
+        } else if (_user.department.toLowerCase() === 'marketing') {
           this.makertingCount++
           this.usersTot++
-        } else if (_user.Department.toLowerCase() === 'sales') {
+        } else if (_user.department.toLowerCase() === 'sales') {
           this.salesCount++
           this.usersTot++
-        } else if (_user.Department.toLowerCase() === 'operations') {
+        } else if (_user.department.toLowerCase() === 'operations') {
           this.operationsCount++
           this.usersTot++
         } else {
@@ -90,7 +97,6 @@ export class ChartServicesService {
           this.usersTot++
         }
       })
-    }
   }
 
   getReqStats(user: any, req: any): void {

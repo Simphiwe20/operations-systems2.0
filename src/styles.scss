@@ -64,6 +64,10 @@ body {
     flex-wrap: wrap;
 }
 
+.jc-end {
+    justify-content: end;
+}
+
 .link {
     &:hover {
         text-decoration: underline;

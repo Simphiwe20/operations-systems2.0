@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import * as pdfMake from 'pdfmake/build/pdfMake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { LeaveFormComponent } from 'src/app/forms/leave-form/leave-form.component';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
 
@@ -34,7 +35,7 @@ export class LeaveComponent {
 
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar, private api: ApiServicesService) {
     this.user = sessionStorage.getItem('user');
     this.user = this.user ? JSON.parse(this.user) : {}
     this.userLeaves = this.sharedService.getData('local', 'leaves')
@@ -134,12 +135,19 @@ export class LeaveComponent {
 
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.userLeaves = this.sharedService.getData('local', 'leaves')
-        this.dataSource = this.userLeaves.filter((leave: any) => {
-          if (leave.email === this.user.email) {
-            return leave
-          }
-        })
+        this.api.genericGetAPI('/get-leaves')
+          .subscribe({
+            next: (_res) => {
+              this.userLeaves = _res
+              this.dataSource = this.userLeaves.filter((leave: any) => {
+                if (leave.email === this.user.email) {
+                  return leave
+                }})
+                console.log(this.dataSource)
+              },
+            error: (err) => { console.log(err) },
+            complete: () => {}    
+          })
         this.snackBar.open(res, 'OK', { duration: 3000 })
       }
     })

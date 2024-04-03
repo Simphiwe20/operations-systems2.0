@@ -21,7 +21,7 @@ export class SharedServicesService {
 
   constructor(private api: ApiServicesService) {
     this.refreshPolicies()
-  
+
   }
 
 
@@ -30,71 +30,15 @@ export class SharedServicesService {
   }
 
   getData(storage: any, key: any): any {
-    if (key === 'users' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'employees' && storage === 'local') {
-      this.data = localStorage.getItem('employees')
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'leaves' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'user' && storage === 'session') {
-      this.data = sessionStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'visas' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'travels' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'transport' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'guesthouse' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'policies' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    } else if (key === 'messages' && storage === 'local') {
-      this.data = localStorage.getItem(key)
-      this.data = this.data ? JSON.parse(this.data) : []
-      return this.data
-    }
+    console.log(storage, key)
+    this.data = storage === 'local' ? localStorage.getItem(key) : sessionStorage.getItem(key)
+    console.log(this.data)
+    this.data = this.data ? JSON.parse(this.data) : []
+    return this.data
   }
 
   storeData(storage: any, key: any, value: any): any {
-    if (key === 'user' && storage === 'session') {
-      sessionStorage.setItem('user', JSON.stringify(value))
-    } else if (key === 'users' && storage === 'local') {
-      localStorage.setItem('users', JSON.stringify(value))
-    } else if (key === 'employees' && storage === 'local') {
-      localStorage.setItem('employees', JSON.stringify(value))
-    } else if (key === 'leaves' && storage === 'local') {
-      localStorage.setItem('leaves', JSON.stringify(value))
-    } else if (key === 'visas' && storage === 'local') {
-      localStorage.setItem('visas', JSON.stringify(value))
-    } else if (key === 'travels' && storage === 'local') {
-      localStorage.setItem('travels', JSON.stringify(value))
-    } else if (key === 'transport' && storage === 'local') {
-      localStorage.setItem('transport', JSON.stringify(value))
-    } else if (key === 'guesthouse' && storage === 'local') {
-      localStorage.setItem('guesthouse', JSON.stringify(value))
-    } else if (key === 'policies' && storage === 'local') {
-      localStorage.setItem('policies', JSON.stringify(value))
-    } else if (key === 'messages' && storage === 'local') {
-      localStorage.setItem('messages', JSON.stringify(value))
-    }
+    storage === 'session' ? sessionStorage.setItem(key, JSON.stringify(value)) : localStorage.setItem(key, JSON.stringify(value))
   }
 
   generatePwd(): any {
@@ -134,16 +78,17 @@ export class SharedServicesService {
       })
       if (!doesUserExist) {
         this.newUsers.push({
-          firstName: employee.Name,
-          lastName: employee.Surname,
-          email: employee.Email,
-          department: employee.Department,
-          occupation: employee.Occupation,
-          role: employee.Department.toLowerCase() == 'hr' ? 'admin' :
-            employee.Department.toLowerCase() == 'operations' ? 'operations personnel' :
-              employee.Occupation.toLowerCase() == 'manager' ? 'manager' : 'employee',
+          firstName: employee.firstName,
+          lastName: employee.lastName,
+          email: employee.email,
+          department: employee.department,
+          occupation: employee.occupation,
+          role: employee.occupation.toLowerCase() == 'hr personnel' ? 'HR personnel' :
+            employee.occupation.toLowerCase() == 'operations personnel' ? 'operations personnel' :
+              employee.occupation.toLowerCase() == 'manager' ? 'manager' : 'employee',
           password: this.generatePwd(),
-          status: 'active'
+          status: 'active',
+          leaveDays: { annualLeaveDays: 36, sickLeaveDays: 21, familyResponsibilityLeaveDays: 4, maternityLeaveDays: 6 }
         })
       }
     })
@@ -158,7 +103,8 @@ export class SharedServicesService {
     })
   }
 
- 
+  // getLeavesDays
+
 
 }
 

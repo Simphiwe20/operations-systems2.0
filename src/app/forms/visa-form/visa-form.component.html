@@ -1,4 +1,4 @@
-<form #_visaForm="ngForm" class="padding-20px flex column">
+<form #_visaForm="ngForm" class="all-padding flex column">
     <mat-form-field appearance="fill">
         <mat-label>Visa Request Type</mat-label>
         <mat-select #visaType="ngModel" [(ngModel)]="visaForm.visaType" name="visaType" required>
@@ -28,8 +28,8 @@
             Needed is <b>required</b>
         </mat-error>
     </mat-form-field>
-    <div class="flex center-center gap-1em">
+    <div class="flex jc-end gap-1em">
         <button mat-raised-button class="" (click)="submit(_visaForm)" color="primary">Request Visa</button>
-        <button mat-raised-button class="" (click)="close()" color="accent">Cancel</button>
+        <button mat-raised-button class="" (click)="close('Visa request has been canceled successfuly')" color="accent">Cancel</button>
     </div>
 </form>

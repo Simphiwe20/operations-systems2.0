@@ -1,0 +1,19 @@
+<div *ngIf="user === 'admin'" class="flex column center-center">
+    <p class="no-margin text-center">Users By Departments</p>
+    <canvas id="usersChart" width="400" height="250"></canvas>
+</div>
+<div *ngIf="user === 'admin'" class="flex flex-1 column center-center">
+    <p class="no-margin text-center">Users Account Status</p>
+    <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="pieChartDatasets" [labels]="pieChartLabels"
+        [options]="pieChartOptions" [plugins]="pieChartPlugins" [legend]="pieChartLegend">
+    </canvas>
+</div>
+<div *ngIf="user === 'employee'" class="flex-1">
+    <p class="no-margin">Leaves status</p>
+    <div class="flex flex-1 column center-center">
+        <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="leavepieChartDatasets"
+            [labels]="leavepieChartLabels" [options]="leavepieChartOptions" [plugins]="leavepieChartPlugins"
+            [legend]="leavepieChartLegend">
+        </canvas>
+    </div>
+</div>

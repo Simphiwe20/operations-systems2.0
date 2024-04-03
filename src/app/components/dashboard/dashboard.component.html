@@ -1,9 +1,10 @@
 <div class="main-container full-width full-height flex">
     <div class="flex leave-overiew center-center width-40 full-height">
-        <div class=" height-90 full-width">
-            <div *ngIf="user.role === 'employee'">
+        <div class=" height-90 width-90">
+            <div *ngIf="user.role === 'employee'"  class="flex column gap-1em">
                 <p class="no-margin">Leaves Overview</p>
-                <canvas #leavesChart>{{ chart }}</canvas>
+                <app-leaves-card [user]="user.role"></app-leaves-card>
+                <app-pie-chart [user]="user.role" side="left"></app-pie-chart>
             </div>
             <div *ngIf="user.role === 'manager'" class="flex column gap-05em">
                 <div>
@@ -11,31 +12,15 @@
                     <canvas id="leavesChart"></canvas>
                 </div>
             </div>
-            <div *ngIf="user.role  === 'admin'" class="flex column center-center full-height gap-05em">
-                <p class="text-center no-margin">User Activeness</p>
-                    <canvas baseChart width="350" height="350"
-                      [type]="'line'"
-                      [data]="lineChartData"
-                      [options]="lineChartOptions"
-                      [legend]="lineChartLegend">
-                    </canvas>
-            </div>
-
+            <!-- <div class="flex column center-center full-height gap-05em"> -->
+                <app-line-graph [user]="user.role"></app-line-graph>
+            <!-- </div> -->
         </div>
     </div>
     <div class="flex center-center width-60 full-height">
         <div class="request-overview height-90 full-width">
-            <div *ngIf="user.role === 'admin'" class="flex column gap-05em">
-                <div class="flex column center-center">
-                    <p class="no-margin text-center">Users By Departments</p>
-                    <canvas id="leavesChart" width="400" height="250"></canvas>
-                </div>
-                <div class="flex flex-1 column center-center">
-                    <p class="no-margin text-center">Users Account Status</p>
-                    <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="pieChartDatasets" [labels]="pieChartLabels"
-                        [options]="pieChartOptions" [plugins]="pieChartPlugins" [legend]="pieChartLegend">
-                    </canvas>
-                </div>
+            <div class="flex column gap-05em">
+                <!-- <app-pie-chart [user]="user.role" side="right"></app-pie-chart> -->
             </div>
             <div *ngIf="user.role === 'manager'" class="flex column gap-2em full-height">
                 <div>
@@ -43,31 +28,7 @@
                     <canvas id="requestsChart"></canvas>
                 </div>
                 <div class="flex flex-1 padding-20px space-around wrap">
-                    <div class="req-card flex column center-center">
-                        <p class="no-margin">GuestHouse</p>
-                        <small>Submitted: {{guesthouseSubmitted}}</small>
-                        <small>Approved: {{guesthouseApproved}}</small>
-                        <small>Rejected: {{guesthouseRejected}}</small>
-                    </div>
-                    <div class="req-card flex column center-center">
-                        <p class="no-margin">Transport</p>
-                        <small>Submitted: {{transportSubmitted}}</small>
-                        <small>Approved: {{transportApproved}}</small>
-                        <small>Rejected: {{transportRejected}}</small>
-                    </div>
-                    <div class="req-card flex column center-center">
-                        <p class="no-margin">Travel</p>
-                        <small>Submitted: {{travelsSubmitted}}</small>
-                        <small>Approved: {{travelsApproved}}</small>
-                        <small>Rejected: {{travelsRejected}}</small>
-                    </div>
-                    <div class="req-card flex column center-center">
-                        <p class="no-margin">Visa</p>
-                        <small>Submitted: {{visaSubmitted}}</small>
-                        <small>Approved: {{visaApproved}}</small>
-                        <small>Rejected: {{visaRejected}}</small>
-                    </div>
-
+                    <app-request-cards></app-request-cards>
                 </div>
             </div>
         </div>

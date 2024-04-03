@@ -176,8 +176,8 @@
                                             <td mat-cell *matCellDef="let row">
                                                 <!-- Change Status -->
                                                 <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
-                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                                    [disabled]="row.status === 'Approved' || row.status === 'declined'"
+                                                    [color]="row.status === 'declined' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
                                                     [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
                                                 <mat-menu #menu="matMenu">
                                                     <button mat-menu-item (click)="statusUpdate(status, row.reqID)"
@@ -219,22 +219,22 @@
                     </div>
                 </div>
             </mat-tab>
-            <mat-tab label="Rejected GuestHouse Request">
+            <mat-tab label="declined GuestHouse Request">
                 <div class="full-width">
-                    <h2 class="flex center-center">View Rejected GuestHouse Request</h2>
-                    <h3 *ngIf="!rejectedDataSource.length">
-                        There are currently no rejected GuestHouse request, manager hasn't rejected any GuestHouse
+                    <h2 class="flex center-center">View declined GuestHouse Request</h2>
+                    <h3 *ngIf="!declinedDataSource.length">
+                        There are currently no declined GuestHouse request, manager hasn't declined any GuestHouse
                         requests.
                     </h3>
                     <div>
-                        <div class="table" *ngIf="rejectedDataSource.length">
+                        <div class="table" *ngIf="declinedDataSource.length">
                             <mat-form-field>
                                 <mat-label>Filter</mat-label>
                                 <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
                             </mat-form-field>
 
                             <div class="mat-elevation-z8 full-width">
-                                <table mat-table [dataSource]="rejectedDataSource" matSort>
+                                <table mat-table [dataSource]="declinedDataSource" matSort>
 
                                     <!-- Surname Column -->
                                     <ng-container matColumnDef="name">
@@ -278,8 +278,8 @@
                                             <td mat-cell *matCellDef="let row">
                                                 <!-- Change Status -->
                                                 <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
-                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                                    [disabled]="row.status === 'Approved' || row.status === 'declined'"
+                                                    [color]="row.status === 'declined' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
                                                     [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
                                                 <mat-menu #menu="matMenu">
                                                     <button mat-menu-item (click)="statusUpdate(status, row.appID)"

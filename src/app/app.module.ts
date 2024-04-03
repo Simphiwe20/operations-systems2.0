@@ -28,6 +28,10 @@ import { TransportFormComponent } from './forms/transport-form/transport-form.co
 import { TravelFormComponent } from './forms/travel-form/travel-form.component';
 import { DeletePopUpComponent } from './popUps/delete-pop-up/delete-pop-up.component';
 import { NotificationsComponent } from './popUps/notifications/notifications.component';
+import { PieChartComponent } from './shared/pie-chart/pie-chart.component';
+import { LineGraphComponent } from './shared/line-graph/line-graph.component';
+import { RequestCardsComponent } from './shared/request-cards/request-cards.component';
+import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +55,11 @@ import { NotificationsComponent } from './popUps/notifications/notifications.com
     TransportFormComponent,
     TravelFormComponent,
     DeletePopUpComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    PieChartComponent,
+    LineGraphComponent,
+    RequestCardsComponent,
+    LeavesCardComponent
   ],
   imports: [
     BrowserModule,

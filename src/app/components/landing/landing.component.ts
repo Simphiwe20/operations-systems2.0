@@ -72,10 +72,12 @@ export class LandingComponent {
 
   openBottomSheet(): void {
     this.bottomSheet.open(NotificationsComponent)
+    this.extend = false
   }
 
   openProfile(): void {
     this.dialog.open(ProfileComponent)
+    this.extend = false
   }
 
   viewMore(): void {
