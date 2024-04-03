@@ -20,7 +20,7 @@ export class TransportFormComponent {
     pickUpSpot: '',
     pickUpReason: '',
     dropOffSpot: '',
-    status: 'submitted' 
+    status: 'Pending' 
 
   }
   user: any;
