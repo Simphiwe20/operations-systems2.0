@@ -1,6 +1,6 @@
 <div class="full-height full-width flex center-center">
     <div class="height-90 full-width">
-        <div *ngIf="!reqTravels.length && (user.role === 'employee')">
+        <div *ngIf="!userTravels && (user.role === 'employee')">
             <h2 class="flex center-center no-margin">Make Travel Request</h2>
             <h3>You currently have no Travel request, you haven't made any request. Click the button below to make
                 requests.</h3>
@@ -8,13 +8,13 @@
                 <button mat-raised-button class="" (click)="travelReq()" color="primary">Request Travel</button>
             </div>
         </div>
-        <div *ngIf="!userTravels.length && user.role === 'operations personnel'">
+        <div *ngIf="!userTravels && user.role === 'operations personnel'">
             <h2 class="flex center-center no-margin">Travel Requests</h2>
             <h3>There are currently no Visa requests, Employee hasn't made any request. </h3>
         </div>
 
         <mat-tab-group
-            *ngIf="(reqTravels.length && user.role === 'employee') || (userTravels.length && user.role === 'manager') || (userTravels.length && user.role === 'operations personnel')">
+            *ngIf="(userTravels && user.role === 'employee') || (userTravels && user.role === 'manager') || (userTravels && user.role === 'operations personnel')">
             <mat-tab label="Travel Request">
                 <div class="full-width">
                     <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Make
@@ -27,31 +27,26 @@
 
                         <div class="mat-elevation-z8 full-width">
                             <table mat-table [dataSource]="dataSource" matSort>
-
                                 <!-- Name Column -->
                                 <ng-container matColumnDef="travelType">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Travel Type </th>
                                     <td mat-cell *matCellDef="let row"> {{row.travelType}} </td>
                                 </ng-container>
-
                                 <!-- Surname Column -->
                                 <ng-container matColumnDef="departureDate">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Date </th>
                                     <td mat-cell *matCellDef="let row"> {{row.departureDate | date}} </td>
                                 </ng-container>
-
                                 <!-- Department Column -->
                                 <ng-container matColumnDef="returnDate">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Return Date </th>
                                     <td mat-cell *matCellDef="let row"> {{row.returnDate | date}} </td>
                                 </ng-container>
-
                                 <!-- Occupation Column -->
                                 <ng-container matColumnDef="travelReason">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Travel Reason </th>
                                     <td mat-cell *matCellDef="let row"> {{row.reasonForTravel}} </td>
                                 </ng-container>
-
                                 <div *ngIf="user.role !== 'employee'">
                                     <!-- Name Column -->
                                     <ng-container matColumnDef="employeeEmail">
@@ -59,8 +54,6 @@
                                         <td mat-cell *matCellDef="let row"> {{row.email}} </td>
                                     </ng-container>
                                 </div>
-
-
                                 <!-- Occupation Column -->
                                 <div *ngIf="user.role !== 'manager'">
                                     <ng-container matColumnDef="status">
@@ -68,7 +61,6 @@
                                         <td mat-cell *matCellDef="let row"> {{row.status}} </td>
                                     </ng-container>
                                 </div>
-
                                 <!-- Occupation Column -->
                                 <div *ngIf="user.role === 'manager'">
                                     <ng-container matColumnDef="status">
@@ -85,7 +77,6 @@
                                         </td>
                                     </ng-container>
                                 </div>
-
 
                                 <!-- Department Column -->
                                 <ng-container matColumnDef="download">
@@ -121,41 +112,35 @@
             <mat-tab label="Approved Travel Request">
                 <div class="full-width">
                     <h2 class="flex center-center no-margin">View Approved Travel Request</h2>
-                    <h3 *ngIf="!approvedDataSource.length">The are currently no approved travel request. Manager hasn't made approved any request</h3>
-                    <div class="table" *ngIf="approvedDataSource.length">
+                    <h3 *ngIf="!approvedDataSource">The are currently no approved travel request. Manager hasn't made
+                        approved any request</h3>
+                    <div class="table" *ngIf="approvedDataSource">
                         <mat-form-field>
                             <mat-label>Filter</mat-label>
                             <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
                         </mat-form-field>
-
                         <div class="mat-elevation-z8 full-width">
                             <table mat-table [dataSource]="approvedDataSource" matSort>
-
                                 <!-- Name Column -->
                                 <ng-container matColumnDef="travelType">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Travel Type </th>
                                     <td mat-cell *matCellDef="let row"> {{row.travelType}} </td>
                                 </ng-container>
-
                                 <!-- Surname Column -->
                                 <ng-container matColumnDef="departureDate">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Date </th>
                                     <td mat-cell *matCellDef="let row"> {{row.departureDate | date}} </td>
                                 </ng-container>
-
                                 <!-- Department Column -->
                                 <ng-container matColumnDef="returnDate">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Return Date </th>
                                     <td mat-cell *matCellDef="let row"> {{row.returnDate | date}} </td>
                                 </ng-container>
-
                                 <!-- Occupation Column -->
                                 <ng-container matColumnDef="travelReason">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Travel Reason </th>
                                     <td mat-cell *matCellDef="let row"> {{row.reasonForTravel}} </td>
                                 </ng-container>
-
-
                                 <!-- Occupation Column -->
                                 <ng-container matColumnDef="status">
                                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
@@ -191,13 +176,13 @@
             <mat-tab label="Rejected Travel Request">
                 <div class="full-width">
                     <h2 class="flex center-center no-margin">View Rejected Travel Requests</h2>
-                    <h3 *ngIf="!rejectedDataSource.length">The are currently no rejected travel request. Manager hasn't rejected any request</h3>
-                    <div class="table" *ngIf="approvedDataSource.length">
+                    <h3 *ngIf="!rejectedDataSource">The are currently no rejected travel request. Manager hasn't
+                        rejected any request</h3>
+                    <div class="table" *ngIf="rejectedDataSource">
                         <mat-form-field>
                             <mat-label>Filter</mat-label>
                             <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
                         </mat-form-field>
-
                         <div class="mat-elevation-z8 full-width">
                             <table mat-table [dataSource]="rejectedDataSource" matSort>
 

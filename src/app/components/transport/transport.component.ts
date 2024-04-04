@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import * as pdfMake from 'pdfmake/build/pdfMake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { TransportFormComponent } from 'src/app/forms/transport-form/transport-form.component';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
 
@@ -21,7 +22,7 @@ export class TransportComponent {
   dataSource!: MatTableDataSource<any>;
   user: any;
   userTransport: any;
-  reqTransport: any[] = []
+  // reqTransport: any[] = []
   statuses: string[] = ['Approved', 'Rejected']
   approvedDataSource!: [];
   rejectedDataSource!: [];
@@ -32,44 +33,20 @@ export class TransportComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
-    private snackBar: MatSnackBar) {
-    this.userTransport = this.sharedService.getData('local', 'transport');
-    this.user = sessionStorage.getItem('user')
-    this.user = this.user ? JSON.parse(this.user) : {}
-    if (this.user.role === 'employee') {
-      this.dataSource = this.userTransport.filter((transport: any) => {
-        if (transport.requestedByEmail === this.user.email) {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-    } else if (this.user.role === 'manager') {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail' ,'status', 'download'];
-      this.userTransport = this.userTransport.filter((transport: any) => {
-        if (transport.department === this.user.department) {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-      this.dataSource = this.userTransport
-    } else if (this.user.role === 'admin') {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail' ,'status', 'download']
-      this.dataSource = this.userTransport.filter((transport: any) => {
-        if (transport.status === 'Approved') {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
+    private snackBar: MatSnackBar, private api: ApiServicesService) {
+    this.user = this.sharedService.getData('session', 'user')
+    console.log(this.user)
+    if (this.user.role === 'manager') {
+      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail', 'status', 'download'];
     }
-    else {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail' ,'status', 'download']
-      this.dataSource = this.sharedService.getData('local', 'transport')
+    else if(this.user.role !== 'employee') {
+      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail', 'status', 'download']
     }
     console.log(this.dataSource)
     console.log(this.sharedService.getData('local', 'transport'))
-    console.log(this.reqTransport)
+    this.getTransports()
     this.moveTransport()
-    
+
 
 
   }
@@ -91,49 +68,49 @@ export class TransportComponent {
   }
 
   moveTransport(): void {
-    if (this.user.role === 'employee') {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'status', 'download'];
-      this.approvedDataSource = this.userTransport.filter((transport: any) => {
-        if (transport.requestedByEmail === this.user.email && transport.status === 'Approved') {
-          this.reqTransport.push(transport)
-          return transport
-        }
+    this.api.genericGetAPI('getTransport')
+      .subscribe({
+        next: (_res) => {
+          this.userTransport = _res
+          if (this.user.role === 'employee') {
+            this.approvedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.requestedByEmail === this.user.email && transport.status === 'Approved') {
+                return transport
+              }
+            })
+            this.rejectedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.requestedByEmail === this.user.email && transport.status === 'Rejected') {
+                return transport
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.approvedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.department === this.user.department && transport.status === 'Approved') {
+                return transport
+              }
+            })
+            this.rejectedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.department === this.user.department && transport.status === 'Rejected') {
+                return transport
+              }
+            })
+          } else {
+            this.approvedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.status === 'Approved') {
+                return transport
+              }
+            })
+            this.rejectedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.status === 'Rejected') {
+                return transport
+              }
+            })
+          }
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
       })
-      this.rejectedDataSource = this.userTransport.filter((transport: any) => {
-        if (transport.requestedByEmail === this.user.email && transport.status === 'Rejected') {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-    } else if (this.user.role === 'manager') {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail' ,'status', 'download'];
-      this.approvedDataSource = this.userTransport.filter((transport: any) => {
-        if (transport.department === this.user.department && transport.status === 'Approved') {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-      this.rejectedDataSource = this.userTransport.filter((transport: any) => {
-        if (transport.department === this.user.department && transport.status === 'Rejected') {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-    } else {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail' ,'status', 'download']; 
-      this.approvedDataSource = this.userTransport.filter((transport: any) => {
-        if (transport.status === 'Approved') {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-      this.rejectedDataSource = this.userTransport.filter((transport: any) => {
-        if (transport.status === 'Rejected') {
-          this.reqTransport.push(transport)
-          return transport
-        }
-      })
-    }
+
   }
 
 
@@ -141,16 +118,53 @@ export class TransportComponent {
     let dialogRef = this.matDialog.open(TransportFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.userTransport = this.sharedService.getData('local', 'transport');
-        this.dataSource = this.userTransport.filter((transport: any) => {
-          if (transport.requestedByEmail === this.user.email) {
-            this.reqTransport.push(transport)
-            return transport
-          }
-        })
+        this.api.genericGetAPI('/getTransport')
+          .subscribe({
+            next: (_res) => {
+              console.log(res)
+              this.userTransport = _res
+              this.dataSource = this.userTransport.filter((transport: any) => {
+                if (transport.requestedByEmail === this.user.email) {
+                  return transport
+                }
+              })
+            },
+            error: (err) => { console.log(err) },
+            complete: () => { }
+          })
         this.snackBar.open(res, 'OK', { duration: 3000 })
       }
     })
+  }
+
+  getTransports() {
+    this.api.genericGetAPI('/getTransport')
+      .subscribe({
+        next: (_res) => {
+          this.userTransport = _res
+          if (this.user.role === 'employee') {
+            this.dataSource = this.userTransport.filter((transport: any) => {
+              if (transport.requestedByEmail === this.user.email) {
+                return transport
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.dataSource = this.userTransport.filter((transport: any) => {
+              if (transport.department === this.user.department) {
+                return transport
+              }
+            })
+          } else if (this.user.role === 'admin') {
+            this.dataSource = this.userTransport.filter((transport: any) => {
+              if (transport.status === 'Approved') {
+                return transport
+              }
+            })
+          }
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
+      })
   }
 
   statusUpdate(status: string, reqID: string): void {
@@ -183,7 +197,7 @@ export class TransportComponent {
 
   generatePdf(_row: any): void {
     let row = this.sharedService.getData('local', 'transport').find((policy: any, i: number) => {
-      if(policy.reqID === _row.reqID) {
+      if (policy.reqID === _row.reqID) {
         return policy
       }
     })
@@ -239,7 +253,7 @@ export class TransportComponent {
         row.pickUpReason,
       ]
     }
-    
+
     pdfMake.createPdf(docDefinition).open();
   }
 }

@@ -36,82 +36,61 @@ export class LeaveComponent {
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
     private snackBar: MatSnackBar, private api: ApiServicesService) {
-    this.user = sessionStorage.getItem('user');
-    this.user = this.user ? JSON.parse(this.user) : {}
-    this.userLeaves = this.sharedService.getData('local', 'leaves')
-
+    this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'employee') {
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
-      this.userLeaves = this.userLeaves.filter((leave: any) => {
-        if (leave.email === this.user.email) {
-          return leave
-        }
-      })
-      this.dataSource = this.userLeaves
-    } else if (this.user.role === 'manager') {
-      this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download'];
-      this.userLeaves = this.userLeaves.filter((leave: any) => {
-        if (leave.department === this.user.department) {
-          return leave
-        }
-      })
-      this.dataSource = this.userLeaves
-    } else if (this.user.role === 'admin') {
+    } else {
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download']
-      this.dataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.status === 'Approved') {
-          this.approvedLeaves.push(leave)
-          return leave
-        }
-      })
     }
-    else {
-      this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download']
-      this.dataSource = this.sharedService.getData('local', 'leaves')
-    }
-    console.log(this.dataSource)
-    console.log(this.sharedService.getData('local', 'leaves'))
+    this.getLeaves()
     this.moveLeaves()
-    // this.dataSource = this.userLeaves
   }
 
   moveLeaves(): void {
-    if (this.user.role === 'employee') {
-      this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
-      this.approvedDataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.email === this.user.email && leave.status === 'Approved') {
-          return leave
-        }
+    this.api.genericGetAPI('/get-leaves')
+      .subscribe({
+        next: (_res) => {
+          this.userLeaves = _res
+          if (this.user.role === 'employee') {
+            this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
+            this.approvedDataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.email === this.user.email && leave.status === 'Approved') {
+                return leave
+              }
+            })
+            this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.email === this.user.email && leave.status === 'Rejected') {
+                return leave
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download'];
+            this.approvedDataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.department === this.user.department && leave.status === 'Approved') {
+                return leave
+              }
+            })
+            this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.department === this.user.department && leave.status === 'Rejected') {
+                return leave
+              }
+            })
+          } else {
+            this.approvedDataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.status === 'Approved') {
+                return leave
+              }
+            })
+            this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.status === 'Rejected') {
+                return leave
+              }
+            })
+          }
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
       })
-      this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.email === this.user.email && leave.status === 'Rejected') {
-          return leave
-        }
-      })
-    } else if (this.user.role === 'manager') {
-      this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download'];
-      this.approvedDataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.department === this.user.department && leave.status === 'Approved') {
-          return leave
-        }
-      })
-      this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.department === this.user.department && leave.status === 'Rejected') {
-          return leave
-        }
-      })
-    } else {
-      this.approvedDataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.status === 'Approved') {
-          return leave
-        }
-      })
-      this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
-        if (leave.status === 'Rejected') {
-          return leave
-        }
-      })
-    }
   }
 
 
@@ -132,25 +111,60 @@ export class LeaveComponent {
 
   applyLeave(): void {
     let dialogRef = this.matDialog.open(LeaveFormComponent)
-
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.api.genericGetAPI('/get-leaves')
           .subscribe({
             next: (_res) => {
               this.userLeaves = _res
+              console.log(this.userLeaves)
               this.dataSource = this.userLeaves.filter((leave: any) => {
                 if (leave.email === this.user.email) {
                   return leave
-                }})
-                console.log(this.dataSource)
-              },
+                }
+              })
+              console.log(this.dataSource)
+            },
             error: (err) => { console.log(err) },
-            complete: () => {}    
+            complete: () => { }
           })
         this.snackBar.open(res, 'OK', { duration: 3000 })
       }
     })
+  }
+
+  getLeaves() {
+    this.api.genericGetAPI('/get-leaves')
+      .subscribe({
+        next: (_res) => {
+          this.userLeaves = _res
+          if (this.user.role === 'employee') {
+            this.dataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.email === this.user.email) {
+                return leave
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.userLeaves = this.userLeaves.filter((leave: any) => {
+              if (leave.department === this.user.department) {
+                return leave
+              }
+            })
+          } else if (this.user.role = 'admin') {
+            this.dataSource = this.userLeaves.filter((leave: any) => {
+              if (leave.status === 'Approved') {
+                this.approvedLeaves.push(leave)
+                return leave
+              }
+            })
+          } else {
+            this.dataSource = this.userLeaves
+          }
+          console.log(this.dataSource)
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
+      })
   }
 
   statusUpdate(status: string, appID: string): void {

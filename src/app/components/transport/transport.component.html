@@ -1,21 +1,21 @@
 <div class="full-height full-width flex center-center">
     <div class="height-90 full-width">
-        <div *ngIf="(!reqTransport?.length && user.role === 'employee')">
+        <div *ngIf="(!userTransport && user.role === 'employee')">
             <h2 class="text-center no-margin">Make Transport Requests</h2>
             <h3>You currently have no Transport request, you haven't made any request. Click the button below to make
                 requests.</h3>
             <div class="flex center-center margin-10">
-                <button mat-raised-button class="" (click)="requestTransport()" *ngIf="user.role === 'employee'"
+                <button mat-raised-button class="" (click)="requestTransport()"
                     color="primary">Request
                     Transport</button>
             </div>
         </div>
-        <div *ngIf="!userTransport?.length &&  (user.role === 'operations personnel' || user.role === 'manager')">
+        <div *ngIf="!userTransport &&  (user.role === 'operations personnel' || user.role === 'manager')">
             <h2 class="text-center no-margin">Transport Requests</h2>
             <h3>There are currently no Visa request, Employee hasn't made any request.</h3>
         </div>
         <mat-tab-group
-            *ngIf="(user.role === 'employee' && reqTransport.length) || (user.role === 'operations personnel' && userTransport?.length) || (user.role === 'manager' && reqTransport.length)">
+            *ngIf="(user.role === 'employee' && userTransport) || (user.role === 'operations personnel' && userTransport) || (user.role === 'manager' && userTransport)">
             <mat-tab label="Transport Request">
                 <div class="full-width">
                     <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Make Transport
@@ -24,7 +24,7 @@
                         *ngIf="user.role === 'operations personnel' || user.role === 'manager'">
                         Transport Requests</h2>
                     <div
-                        *ngIf="(user.role === 'employee' && reqTransport.length) || (user.role === 'manager' && reqTransport.length) || (user.role === 'operations personnel' && userTransport.length)">
+                        *ngIf="(user.role === 'employee' && userTransport) || (user.role === 'manager' && userTransport) || (user.role === 'operations personnel' && userTransport)">
                         <div class="table">
                             <mat-form-field>
                                 <mat-label>Filter</mat-label>
@@ -136,9 +136,9 @@
                     <h2 class="flex center-center">View Approved Transport
                         Request</h2>
                         
-                    <h3 *ngIf="!approvedDataSource.length">The are currently no approved requests a manager hasn't approved any request</h3>
+                    <h3 *ngIf="!approvedDataSource">The are currently no approved requests a manager hasn't approved any request</h3>
                     <div
-                        *ngIf="(user.role === 'employee' && approvedDataSource.length) || (user.role === 'operations personnel' && approvedDataSource.length) || (user.role === 'manager' && approvedDataSource.length)">
+                        *ngIf="(user.role === 'employee' && approvedDataSource) || (user.role === 'operations personnel' && approvedDataSource) || (user.role === 'manager' && approvedDataSource)">
                         <div class="table">
                             <mat-form-field>
                                 <mat-label>Filter</mat-label>
@@ -245,9 +245,9 @@
                 <div class="full-width">
                     <h2 class="flex center-center" >View Rejected Transport
                         Request</h2>
-                    <h3 *ngIf="!rejectedDataSource.length">The are currently no rejected requests a manager hasn't rejected any request</h3>
+                    <h3 *ngIf="!rejectedDataSource">The are currently no rejected requests a manager hasn't rejected any request</h3>
                     <div
-                        *ngIf="(user.role === 'employee' && rejectedDataSource.length) || (user.role === 'operations personnel' && rejectedDataSource.length) || (user.role === 'manager' && rejectedDataSource.length)">
+                        *ngIf="(user.role === 'employee' && rejectedDataSource) || (user.role === 'operations personnel' && rejectedDataSource) || (user.role === 'manager' && rejectedDataSource)">
                         <div class="table">
                             <mat-form-field>
                                 <mat-label>Filter</mat-label>

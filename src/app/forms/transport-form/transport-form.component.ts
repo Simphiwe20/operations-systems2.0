@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
 
 @Component({
@@ -20,29 +21,33 @@ export class TransportFormComponent {
     pickUpSpot: '',
     pickUpReason: '',
     dropOffSpot: '',
-    status: 'submitted' 
+    status: 'Pending' 
 
   }
   user: any;
   transportData: any;
   id: any = `${new Date().getFullYear()}${0}${Math.floor((Math.random() * 500 ) + 100)}`
 
-  constructor(private sharedService: SharedServicesService, private dialogRef: MatDialogRef<TransportFormComponent>) {
+  constructor(private sharedService: SharedServicesService, private dialogRef: MatDialogRef<TransportFormComponent>,
+    private api: ApiServicesService) {
     this.transportData = this.sharedService.getData('local', 'transport')
     this.user = this.sharedService.getData('session', 'user')
   }
 
   submit(form: NgForm): void {
-    if(form.valid) {
+    if(!form.valid) return
+
       console.log(this.transportForm)
       this.transportForm['reqID'] = `transport-${this.id}`
       this.transportForm['requestedBy'] = `${this.user.firstName} ${this.user.lastName}`
       this.transportForm['requestedByEmail'] = this.user.email
       this.transportForm['department'] = this.user.department
-      this.transportData.push(this.transportForm)
-      this.sharedService.storeData('local', 'transport', this.transportData)
-      console.log(this.id)
-    }
+      this.api.genericPostAPI('/addTransport', this.transportForm)
+        .subscribe({
+          next: (res) => {console.log(res)},
+          error: (err) => {console.log(err)},
+          complete: () => {}
+        })
 
     this.close('Transport request added successfuly')
   }

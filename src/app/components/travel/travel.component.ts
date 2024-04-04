@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import * as pdfMake from 'pdfmake/build/pdfMake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { TravelFormComponent } from 'src/app/forms/travel-form/travel-form.component';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
 
@@ -16,65 +17,37 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   templateUrl: './travel.component.html',
   styleUrls: ['./travel.component.scss']
 })
-export class TravelComponent implements AfterViewInit{
+export class TravelComponent implements AfterViewInit {
   displayedColumns: string[] = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'employeeEmail', 'status', 'download'];
   dataSource!: MatTableDataSource<any>;
   user: any;
   userTravels: any;
   reqTravels: any[] = []
   statuses: string[] = ['Approved', 'Rejected']
-  approvedDataSource!: [];
-  rejectedDataSource!: [];
-  approvedTravel: any[] = []
-  rejectedTravel: any[] = []
+  approvedDataSource: any;
+  rejectedDataSource: any;
+  // approvedTravel: any[] = []
+  // rejectedTravel: any[] = []
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
-    private snackBar: MatSnackBar) {
-    this.userTravels = this.sharedService.getData('local', 'travels');
-    this.user = this.sharedService.getData('session', 'user')
+    private snackBar: MatSnackBar, private api: ApiServicesService) {
+      this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'employee') {
       this.displayedColumns = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'status', 'download'];
-      this.dataSource = this.userTravels.filter((travel: any) => {
-        if (travel.requestedByEmail === this.user.email) {
-          this.reqTravels.push(travel)
-          return travel
-        }
-      })
-    } else if (this.user.role === 'manager') {
-      this.userTravels = this.userTravels.filter((travel: any) => {
-        if (travel.department === this.user.department) {
-          this.reqTravels.push(travel)
-          return travel
-        }
-      })
-      this.dataSource = this.userTravels
-    } else if (this.user.role === 'admin') {
-      this.dataSource = this.userTravels.filter((travel: any) => {
-        if (travel.status === 'Approved') {
-          this.reqTravels.push(travel)
-          return travel
-        }
-      })
     }
-    else {
-      this.dataSource = this.sharedService.getData('local', 'travels')
-    }
-    console.log(this.dataSource)
-    console.log(this.sharedService.getData('local', 'travels'))
-    console.log(this.reqTravels)
+    this.getTravel()
     this.moveTravel()
-    
-
+    console.log(this.approvedDataSource)
+    console.log(this.rejectedDataSource)
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -85,59 +58,68 @@ export class TravelComponent implements AfterViewInit{
   }
 
   moveTravel(): void {
-    if (this.user.role === 'employee') {
-      this.displayedColumns = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'status', 'download'];
-      this.approvedDataSource = this.userTravels.filter((travel: any) => {
-        if (travel.requestedByEmail === this.user.email && travel.status === 'Approved') {
-          this.userTravels.push(travel)
-          return travel
-        }
+    this.api.genericGetAPI('/getTravel')
+      .subscribe({
+        next: (_res) => {
+          this.userTravels = _res
+          if (this.user.role === 'employee') {
+            this.displayedColumns = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'status', 'download'];
+            this.approvedDataSource = this.userTravels.filter((travel: any) => {
+              if (travel.requestedByEmail === this.user.email && travel.status === 'Approved') {
+                return travel
+              }
+            })
+            this.rejectedDataSource = this.userTravels.filter((travel: any) => {
+              if (travel.requestedByEmail === this.user.email && travel.status === 'Rejected') {
+                return travel
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.approvedDataSource = this.userTravels.filter((travel: any) => {
+              if (travel.department === this.user.department && travel.status === 'Approved') {
+                return travel
+              }
+            })
+            this.rejectedDataSource = this.userTravels.filter((travel: any) => {
+              if (travel.department === this.user.department && travel.status === 'Rejected') {
+                return travel
+              }
+            })
+          } else {
+            this.approvedDataSource = this.userTravels.filter((travel: any) => {
+              if (travel.status === 'Approved') {
+                return travel
+              }
+            })
+            this.rejectedDataSource = this.userTravels.filter((travel: any) => {
+              if (travel.status === 'Rejected') {
+                return travel
+              }
+            })
+          }
+        },
+        error: () => { },
+        complete: () => { }
       })
-      this.rejectedDataSource = this.userTravels.filter((travel: any) => {
-        if (travel.requestedByEmail === this.user.email && travel.status === 'Rejected') {
-          this.userTravels.push(travel)
-          return travel
-        }
-      })
-    } else if (this.user.role === 'manager') {
-      this.approvedDataSource = this.userTravels.filter((travel: any) => {
-        if (travel.department === this.user.department && travel.status === 'Approved') {
-          this.userTravels.push(travel)
-          return travel
-        }
-      })
-      this.rejectedDataSource = this.userTravels.filter((travel: any) => {
-        if (travel.department === this.user.department && travel.status === 'Rejected') {
-          this.userTravels.push(travel)
-          return travel
-        }
-      })
-    } else {
-      this.approvedDataSource = this.userTravels.filter((travel: any) => {
-        if (travel.status === 'Approved') {
-          this.userTravels.push(travel)
-          return travel
-        }
-      })
-      this.rejectedDataSource = this.userTravels.filter((travel: any) => {
-        if (travel.status === 'Rejected') {
-          this.userTravels.push(travel)
-          return travel
-        }
-      })
-    }
   }
 
   travelReq(): void {
     let dialogRef = this.matDialog.open(TravelFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.userTravels = this.sharedService.getData('local', 'travels');
-        this.dataSource = this.userTravels.filter((travel: any) => {
-          if (travel.requestedByEmail === this.user.email) {
-            return travel
-          }
-        })
+        this.api.genericGetAPI('/getTravel')
+          .subscribe({
+            next: (_res) => {
+              this.userTravels = _res
+              this.dataSource = this.userTravels.filter((travel: any) => {
+                if (travel.requestedByEmail === this.user.email) {
+                  return travel
+                }
+              })
+            },
+            error: () => { },
+            complete: () => { }
+          })
         this.snackBar.open(res, 'OK', { duration: 3000 })
       }
     })
@@ -155,8 +137,39 @@ export class TravelComponent implements AfterViewInit{
         this.moveTravel()
       }
     });
-    // localStorage.setItem('userGuestHouse', JSON.stringify(this.userGuestHouse));
-    // this.updateUser();
+  }
+
+  getTravel() {
+    this.api.genericGetAPI('/getTravel')
+      .subscribe({
+        next: (_res) => {
+          this.userTravels = _res
+          if (this.user.role === 'employee') {
+            this.dataSource = this.userTravels.filter((travel: any) => {
+              if (travel.requestedByEmail === this.user.email) {
+                return travel
+              }
+            })
+          } else if (this.user.role === 'manager') {
+            this.userTravels = this.userTravels.filter((travel: any) => {
+              if (travel.department === this.user.department) {
+                this.reqTravels.push(travel)
+                return travel
+              }
+            })
+          }
+          else if (this.user.role === 'admin') {
+            this.dataSource = this.userTravels.filter((travel: any) => {
+              if (travel.status === 'Approved') {
+                this.reqTravels.push(travel)
+                return travel
+              }
+            })
+          }
+        },
+        error: () => { },
+        complete: () => { }
+      })
   }
 
   updateStorageStatus(status: string, travel: any): void {
@@ -174,7 +187,7 @@ export class TravelComponent implements AfterViewInit{
 
   generatePdf(indx: number): void {
     let row = this.sharedService.getData('local', 'travels').find((travel: any, i: number) => {
-      if(i === indx) {
+      if (i === indx) {
         return travel
       }
     })
@@ -236,7 +249,7 @@ export class TravelComponent implements AfterViewInit{
         row.status
       ]
     }
-    
+
     pdfMake.createPdf(docDefinition).open();
   }
 }

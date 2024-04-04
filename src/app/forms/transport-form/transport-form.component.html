@@ -1,4 +1,4 @@
-<form #_transportForm="ngForm" class=" padding-20px flex column">
+<form #_transportForm="ngForm" class=" all-padding flex column">
     <mat-form-field appearance="fill">
         <mat-label>Transport Request Type</mat-label>
         <mat-select #transportType="ngModel" [(ngModel)]="transportForm.transportType" name="transportType" required>
@@ -59,8 +59,8 @@
             Pick up reason is <b>required</b>
         </mat-error>
     </mat-form-field>
-    <div class="flex center-center gap-2em">
-        <button mat-raised-button class="" (click)="close()" color="accent">Cancel</button>
+    <div class="flex jc-end gap-1em">
+        <button mat-raised-button class="" (click)="close('Transport Request has been canceled')" color="accent">Cancel</button>
         <button mat-raised-button class="" color="primary" (click)="submit(_transportForm)">Request Transport</button>
     </div>
 
