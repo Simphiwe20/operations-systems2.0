@@ -2,14 +2,15 @@
     <div class="flex leave-overiew center-center width-40 full-height">
         <div class=" height-90 width-90">
             <div *ngIf="user.role === 'employee'"  class="flex column gap-1em">
-                <p class="no-margin">Leaves Overview</p>
+                <h4 class="no-margin">Leaves Overview</h4>
+                <p>Leave Days Left</p>
                 <app-leaves-card [user]="user.role"></app-leaves-card>
-                <app-pie-chart [user]="user.role" side="left"></app-pie-chart>
+                <app-pie-chart [user]="user.role" type="leaves"></app-pie-chart>
             </div>
             <div *ngIf="user.role === 'manager'" class="flex column gap-05em">
                 <div>
                     <p class="no-margin text-center">Leaves for {{user.department}}</p>
-                    <canvas id="leavesChart"></canvas>
+                    <app-pie-chart [user]="user.role" type="leaves"></app-pie-chart>
                 </div>
             </div>
             <!-- <div class="flex column center-center full-height gap-05em"> -->
@@ -18,18 +19,24 @@
         </div>
     </div>
     <div class="flex center-center width-60 full-height">
-        <div class="request-overview height-90 full-width">
+        <div class="request-overview height-90 width-90">
             <div class="flex column gap-05em">
                 <!-- <app-pie-chart [user]="user.role" side="right"></app-pie-chart> -->
             </div>
             <div *ngIf="user.role === 'manager'" class="flex column gap-2em full-height">
                 <div>
                     <p class="no-margin text-center">Requests for {{user.department}}</p>
-                    <canvas id="requestsChart"></canvas>
+                    <!-- <canvas id="requestsChart"></canvas> -->
                 </div>
                 <div class="flex flex-1 padding-20px space-around wrap">
                     <app-request-cards></app-request-cards>
                 </div>
+
+            </div>
+            <div *ngIf="user.role === 'employee'" class="flex column gap-1em">
+                <h4 class="no-margin">Requests Overview</h4>
+                <app-request-cards></app-request-cards>
+                <app-pie-chart [user]="user.role" type="requests"></app-pie-chart>
             </div>
         </div>
     </div>

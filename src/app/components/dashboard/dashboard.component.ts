@@ -63,7 +63,6 @@ export class DashboardComponent implements AfterViewInit{
 
   constructor(private sharedService: SharedServicesService, private router: Router,
     private api: ApiServicesService, private charts: ChartServicesService) {
-    this.users = this.sharedService.getData('local', 'users')
     this.user = this.sharedService.getData('session', 'user')
     this.charts.getLeavesNo(this.user)
     // this.charts.getDep(this.user)
@@ -85,24 +84,15 @@ export class DashboardComponent implements AfterViewInit{
 
     this.TotUsers = this.charts.usersTot
 
-    this.charts.getReqs(this.user)
-    this.charts.getReqs(this.user)
+    // this.charts.getReqs(this.user)
+    // this.charts.getReqs(this.user)
     console.log(this.charts.guesthouseReq)
-    console.log(this.charts.rejected)
-    console.log(this.charts.submitted)
+    console.log(this.charts.declined)
+    console.log(this.charts.pending)
 
   }
 
   ngAfterViewInit(): void {
-    // if (this.user.role === 'employee') {
-    //   this.createChart()
-    // }
-    // else if (this.user.role === 'manager') {
-    //   this.managerChart()
-    //   this.reqChart()
-    // } else {
-    //   this.createChart()
-    // }
 
 
   }

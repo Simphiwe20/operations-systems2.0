@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ApiServicesService } from '../api-service/api-services.service';
 import { SharedServicesService } from './shared-services.service';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class ChartServicesService {
 
   approved: number = 0;
-  rejected: number = 0;
-  submitted: number = 0
+  declined: number = 0;
+  pending: number = 0
   itCount: number = 0
   makertingCount: number = 0;
   salesCount: number = 0
@@ -18,14 +19,24 @@ export class ChartServicesService {
   other: number = 0
   usersTot: number = 0
   travelReq: number = 0; transportReq: number = 0; guesthouseReq: number = 0; visaReq: number = 0
+  guestHouseApproved: number = 0; guestHouseDeclined: number = 0; guestHousePending: number = 0
+  transportApproved: number = 0; transportDeclined: number = 0; transportPending: number = 0
+  travelApproved: number = 0; travelDeclined: number = 0; travelPending: number = 0
+  visaApproved: number = 0; visaDeclined: number = 0; visaPending: number = 0
   disabled: any
   active: number = 0
   users: any[] = []
+  leaves: any;
+  _req: any;
+  apiReques: any[] = []
+  done: Observable<boolean> = new Observable();
+  
 
 
-  constructor( private api: ApiServicesService, private sharedService: SharedServicesService) { }
 
-      
+  constructor(private api: ApiServicesService, private sharedService: SharedServicesService) { }
+
+
   getUserStats(): void {
     this.api.genericGetAPI('/get-users')
       .subscribe({
@@ -35,141 +46,144 @@ export class ChartServicesService {
           this.users.push(users)
           console.log(users)
           this.getUserStatus(res)
-          this.getDep(users)},
-        error: (err) => {console.log(err)},
-        complete: () => {}
+          this.getDep(users)
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
       })
-
-      // this.getUserStatus()
   }
 
   getLeavesNo(user: any): void {
-    this.sharedService.getData('local', 'leaves').forEach((leave: any) => {
-      if (user.email === leave.email) {
-        if (leave.status === 'Approved') {
-          this.approved++
-        } else if (leave.status === 'Rejected') {
-          this.rejected++
-        } else if (leave.status.toLowerCase() === 'submitted') {
-          this.submitted++
-        }
-      } else if (user.role === 'operations personnel') {
-        if (leave.status === 'Approved') {
-          this.approved++
-        } else if (leave.status === 'Rejected') {
-          this.rejected++
-        } else if (leave.status.toLowerCase() === 'submitted') {
-          this.submitted++
-        }
-      } else if (user.role === 'manager') {
-        if (leave.department === user.department) {
-          if (leave.status === 'Approved') {
-            this.approved++
-          } else if (leave.status === 'Rejected') {
-            this.rejected++
-          } else if (leave.status.toLowerCase() === 'submitted') {
-            this.submitted++
-          }
-        }
-      }
+    this.api.genericGetAPI('/get-leaves')
+      .subscribe({
+        next: (res) => {
+          this.pending = 0
+          this.declined = 0
+          this.approved = 0
 
-    })
+          this.leaves = res
+          console.log(this.leaves)
+          console.log(user)
+          this.leaves.forEach((leave: any) => {
+            if (user.email === leave.email) {
+              if (leave.status.toLowerCase() === 'approved') {
+                this.approved++
+              } else if (leave.status.toLowerCase() === 'declined') {
+                this.declined++
+              } else if (leave.status.toLowerCase() === 'pending') {
+                this.pending++
+              }
+            } else if (user.role === 'operations personnel') {
+              if (leave.status.toLowerCase() === 'approved') {
+                this.approved++
+              } else if (leave.status.toLowerCase() === 'declined') {
+                this.declined++
+              } else if (leave.status.toLowerCase() === 'pending') {
+                this.pending++
+              }
+            } else if (user.role === 'manager') {
+              if (leave.department === user.department) {
+                if (leave.status.toLowerCase() === 'approved') {
+                  this.approved++
+                } else if (leave.status.toLowerCase() === 'declined') {
+                  this.declined++
+                } else if (leave.status.toLowerCase() === 'pending') {
+                  this.pending++
+                }
+              }
+            }
+          })
+        },
+        error: () => { },
+        complete: () => { }
+      })
 
+    console.log(this.pending)
   }
 
   getDep(users: any): void {
     console.log(users)
-      users.forEach((_user: any) => {
-        if (_user?.department.toLowerCase() === 'it') {
-          this.itCount++
-          this.usersTot++
-        } else if (_user.department.toLowerCase() === 'marketing') {
-          this.makertingCount++
-          this.usersTot++
-        } else if (_user.department.toLowerCase() === 'sales') {
-          this.salesCount++
-          this.usersTot++
-        } else if (_user.department.toLowerCase() === 'operations') {
-          this.operationsCount++
-          this.usersTot++
-        } else {
-          this.other++
-          this.usersTot++
-        }
-      })
+    users.forEach((_user: any) => {
+      if (_user?.department.toLowerCase() === 'it') {
+        this.itCount++
+        this.usersTot++
+      } else if (_user.department.toLowerCase() === 'marketing') {
+        this.makertingCount++
+        this.usersTot++
+      } else if (_user.department.toLowerCase() === 'sales') {
+        this.salesCount++
+        this.usersTot++
+      } else if (_user.department.toLowerCase() === 'operations') {
+        this.operationsCount++
+        this.usersTot++
+      } else {
+        this.other++
+        this.usersTot++
+      }
+    })
   }
 
   getReqStats(user: any, req: any): void {
     this.approved = 0
-    this.rejected = 0
-    this.submitted = 0
-    this.sharedService.getData('local', req)?.forEach((_req: any) => {
-      if (user.email === _req.requestedByEmail || (user.role === 'manager' && user.department === _req.department)) {
-        if (_req.status.toLowerCase() === 'approved') {
-          this.approved++
-        } else if (_req.status.toLowerCase() === 'rejected') {
-          this.rejected++
-        } else if (_req.status.toLowerCase() === 'submitted') {
-          this.submitted++
-        }
-      }
-    })
-
+    this.declined = 0
+    // this.pending = 0
+    // this.sharedService.getData('local', req)?.forEach((_req: any) => {
+    //   if (user.email === _req.requestedByEmail || (user.role === 'manager' && user.department === _req.department)) {
+    //     if (_req.status.toLowerCase() === 'approved') {
+    //       this.approved++
+    //     } else if (_req.status.toLowerCase() === 'declined') {
+    //       this.declined++
+    //     } else if (_req.status.toLowerCase() === 'pending') {
+    //       this.pending++
+    //     }
+    //   }
+    // })
   }
 
-  getReqs(user: any): void {
-    if (user.role === 'manager') {
-      this.travelReq = 0; this.transportReq = 0; this.guesthouseReq = 0; this.visaReq = 0
-      this.submitted = 0
-      this.sharedService.getData('local', 'travels').forEach((travel: any) => {
-        if (user.department === travel.department) {
-          this.travelReq++
-          if (travel.status.toLowerCase() === 'approved') {
-            this.approved++
-          } else if (travel.status.toLowerCase() === 'rejected') {
-            this.rejected++
-          } else if (travel.status.toLowerCase() === 'submitted') {
-            this.submitted++
-          }
-        }
+  async getReqs(user: any, path: any) {
+    this.travelReq = 0; this.transportReq = 0; this.guesthouseReq = 0; this.visaReq = 0
+    this.pending = 0
+    this.api.genericGetAPI(path)
+      .subscribe({
+        next: (res) => {
+          this._req = res
+          this._req.forEach((reqs: any, indx: number) => {
+            if ((reqs.reqID.includes('guestHouse') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+              this.guesthouseReq++
+              reqs.status.toLowerCase() === 'approved' ? this.guestHouseApproved++ : reqs.status.toLowerCase() === 'declined' ? this.guestHouseDeclined++ : this.guestHousePending++
+              console.log('Inside guesthouse', path)
+            } else if ((reqs.reqID.includes('transport') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+              this.transportReq++
+              reqs.status.toLowerCase() === 'approved' ? this.transportApproved++ : reqs.status.toLowerCase() === 'declined' ? this.transportDeclined++ : this.transportPending++
+
+            } else if ((reqs.reqID.includes('travel') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+              this.travelReq++
+              reqs.status.toLowerCase() === 'approved' ? this.travelApproved++ : reqs.status.toLowerCase() === 'declined' ? this.travelDeclined++ : this.travelPending++
+
+            } else if ((reqs.reqID.includes('visa') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+              this.visaReq++
+              reqs.status.toLowerCase() === 'approved' ? this.visaApproved++ : reqs.status.toLowerCase() === 'declined' ? this.visaDeclined++ : this.visaPending++
+
+              if (this._req.length - 1 === indx) {
+                this.done = new Observable(observer => {
+                  observer.next(true)
+                  observer.complete()
+                  return observer
+                })
+              }
+            }
+            this.apiReques.push(reqs.reqID)
+          })
+          console.log(this.guesthouseReq)
+          console.log(this.transportReq)
+          console.log(this.travelReq)
+          console.log(this.visaReq)
+        },
+        error: () => { },
+        complete: () => { }
       })
-      this.sharedService.getData('local', 'transport').forEach((transport: any) => {
-        if (user.department === transport.department) {
-          this.transportReq++
-          if (transport.status.toLowerCase() === 'approved') {
-            this.approved++
-          } else if (transport.status.toLowerCase() === 'rejected') {
-            this.rejected++
-          } else if (transport.status.toLowerCase() === 'submitted') {
-            this.submitted++
-          }
-        }
-      })
-      this.sharedService.getData('local', 'visas').forEach((visa: any) => {
-        if (user.department === visa.department) {
-          this.visaReq++
-          if (visa.status.toLowerCase() === 'approved') {
-            this.approved++
-          } else if (visa.status.toLowerCase() === 'rejected') {
-            this.rejected++
-          } else if (visa.status.toLowerCase() === 'submitted') {
-            this.submitted++
-          }
-        }
-      })
-      this.sharedService.getData('local', 'guesthouse').forEach((guesthouse: any) => {
-        if (user.department === guesthouse.department) {
-          this.guesthouseReq++
-          if (guesthouse.status.toLowerCase() === 'approved') {
-            this.approved++
-          } else if (guesthouse.status.toLowerCase() === 'rejected') {
-            this.rejected++
-          } else if (guesthouse.status.toLowerCase() === 'submitted') {
-            this.submitted++
-          }
-        }
-      })
-    }
+
+      return Promise.resolve(this.done)
   }
 
   getUserStatus(users: any = []): void {
@@ -182,6 +196,11 @@ export class ChartServicesService {
         this.active++
       }
     })
+
+  }
+
+
+  getRequests() {
 
   }
 

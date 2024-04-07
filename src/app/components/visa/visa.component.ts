@@ -25,7 +25,7 @@ export class VisaComponent {
   user: any;
   userVisas: any;
   reqVisa: any = [];
-  statuses: string[] = ['Approved', 'Rejected']
+  statuses: string[] = ['Approved', 'Declined']
   approvedDataSource!: [];
   rejectedDataSource!: [];
   approvedVisa: any[] = []
@@ -62,7 +62,7 @@ export class VisaComponent {
         }
       })
       this.rejectedDataSource = this.userVisas.filter((visa: any) => {
-        if (visa.email === this.user.email && visa.status === 'Rejected') {
+        if (visa.email === this.user.email && visa.status === 'Declined') {
           return visa
         }
       })
@@ -75,7 +75,7 @@ export class VisaComponent {
         }
       })
       this.rejectedDataSource = this.userVisas.filter((visa: any) => {
-        if (visa.department === this.user.department && visa.status === 'Rejected') {
+        if (visa.department === this.user.department && visa.status === 'Declined') {
           return visa
         }
       })
@@ -86,7 +86,7 @@ export class VisaComponent {
         }
       })
       this.rejectedDataSource = this.userVisas.filter((visa: any) => {
-        if (visa.status === 'Rejected') {
+        if (visa.status === 'Declined') {
           return visa
         }
       })
@@ -169,41 +169,31 @@ export class VisaComponent {
   }
 
   statusUpdate(status: string, reqID: string): void {
-    this.userVisas.forEach((visa: any, indx: number) => {
-      console.log(reqID, visa.reqID)
-      if (visa.reqID === reqID) {
-        if (status === 'Approved' || status === 'Rejected') {
-          this.userVisas['dateUpdated'] = new Date();
-        }
-        this.userVisas[indx]['status'] = status;
-        this.updateStorageStatus(status, visa)
-        this.moveVisas()
-      }
-    });
-    // localStorage.setItem('userGuestHouse', JSON.stringify(this.userGuestHouse));
-    // this.updateUser();
+    this.api.genericGetAPI('/getVisas')
+      .subscribe({
+        next: (res) => {
+          res = this.userVisas
+          this.userVisas.forEach((visa: any, indx: number) => {
+            if (visa.reqID === reqID) {
+              if (status === 'Approved' || status === 'Declined') {
+                visa['dateUpdated'] = new Date();
+              }
+              visa['status'] = status;
+              this.updateStorageStatus(status, visa)
+              this.moveVisas()
+            }
+          });
+        },
+        error: () => { },
+        complete: () => { }
+      })
   }
 
-  updateStorageStatus(status: string, visa: any): void {
-    this.userVisas = []
-    this.sharedService.getData('local', 'visas').forEach((_visa: any) => {
-      if (visa.reqID === _visa.reqID) {
-        _visa['status'] = status
-      }
-      this.userVisas.push(_visa)
-      console.log(_visa)
-    })
-
-    this.sharedService.storeData('local', 'visas', this.userVisas)
+  async updateStorageStatus(status: string, travel: any) {
+    await this.sharedService.updateRequest('/updateVisa', travel)
   }
 
-  generatePdf(ele: any): void {
-    let row = this.sharedService.getData('local', 'visas').find((visa: any, i: number) => {
-      if (ele.reqID === visa.reqID) {
-        return visa
-      }
-    })
-    console.log(row)
+  generatePdf(row: any): void {
     let docDefinition = {
       content: [
         {

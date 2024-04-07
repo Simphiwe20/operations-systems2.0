@@ -43,25 +43,13 @@ export class GuesthouseComponent {
     this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'manager') {
       this.displayedColumns = ['name', 'checkInDate', 'checkOutDate', 'employeeEmail', 'status', 'download'];
-      this.dataSource = this.userGuestHouse.filter((guestHouse: any) => {
-        if (guestHouse.department === this.user.department) {
-          this.reqGuestHouse.push(guestHouse)
-          return guestHouse
-        }
-      })
     } else if (this.user.role === 'admin') {
       this.displayedColumns = ['name', 'checkInDate', 'checkOutDate', 'employeeEmail', 'status', 'download'];
-      this.dataSource = this.userGuestHouse.filter((guestHouse: any) => {
-        if (guestHouse.status === 'Approved') {
-          this.reqGuestHouse.push(guestHouse)
-          return guestHouse
-        }
-      })
     } else {
       this.dataSource = this.userGuestHouse
     }
 
-    // this.moveGuestHouse()
+    this.moveGuestHouse()
   }
   // this.dataSource = this.reqGuestHouse
 
@@ -151,32 +139,28 @@ export class GuesthouseComponent {
   }
 
   statusUpdate(status: string, reqID: string): void {
-    this.userGuestHouse.forEach((guestHouse: any, indx: number) => {
-      console.log(guestHouse.reqID, reqID)
-      if (guestHouse.reqID === reqID) {
-        if (status === 'Approved' || status === 'declined') {
-          this.userGuestHouse['dateUpdated'] = new Date();
-        }
-        this.userGuestHouse[indx]['status'] = status;
-        this.updateStorageStatus(status, guestHouse)
-        this.moveGuestHouse()
-      }
-    });
-    // localStorage.setItem('userGuestHouse', JSON.stringify(this.userGuestHouse));
-    // this.updateUser();
+    this.api.genericGetAPI('/getGHRequests')
+      .subscribe({
+        next: (res) => {
+          this.userGuestHouse = res 
+          this.userGuestHouse.forEach((travel: any, indx: number) => {
+            if (travel.reqID === reqID) {
+              if (status === 'Approved' || status === 'Declined') {
+                travel['dateUpdated'] = new Date();
+              }
+              travel['status'] = status;
+              this.updateStorageStatus(status, travel)
+              this.moveGuestHouse()
+            }
+          });
+        },
+        error: () => { },
+        complete: () => { }
+      })
   }
 
-  updateStorageStatus(status: string, guestHouse: any): void {
-    this.userGuestHouse = []
-    this.sharedService.getData('local', 'guesthouse').forEach((_guestHouse: any) => {
-      if (guestHouse.reqID === _guestHouse.reqID) {
-        _guestHouse['status'] = status
-      }
-      this.userGuestHouse.push(_guestHouse)
-      console.log(_guestHouse)
-    })
-
-    this.sharedService.storeData('local', 'guesthouse', this.userGuestHouse)
+  async updateStorageStatus(status: string, travel: any) {
+    await this.sharedService.updateRequest('/updateGHRequest', travel)
   }
 
   showGuestHouse() {
@@ -209,16 +193,10 @@ export class GuesthouseComponent {
 
 
   generatePdf(ele: any): void {
-    let row = this.sharedService.getData('local', 'guesthouse').find((policy: any, indx: number) => {
-      if (policy.reqID === ele.reqID) {
-        return policy
-      }
-    })
-    console.log(row)
     let docDefinition = {
       content: [
         {
-          text: `${row.requestedBy}`,
+          text: `${ele.requestedBy}`,
           fontSize: 30,
           alignment: 'center'
         },
@@ -227,43 +205,43 @@ export class GuesthouseComponent {
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.requestedByEmail,
+        ele.requestedByEmail,
         {
           text: "Employee Department",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.department,
+        ele.department,
         {
           text: "GuestHouse Name",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.guestHouseName,
+        ele.guestHouseName,
         {
           text: "Check In Date",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.checkInDate.split('T')[0],
+        ele.checkInDate.split('T')[0],
         {
           text: "Check Out Date",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.checkOutDate.split('T')[0],
+        ele.checkOutDate.split('T')[0],
         {
           text: "Any Special Needs",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.specialNeeds,
+        ele.specialNeeds,
         {
           text: "GuestHouse Request Status",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.status,
+        ele.status,
       ]
     }
 

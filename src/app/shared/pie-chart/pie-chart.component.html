@@ -8,12 +8,20 @@
         [options]="pieChartOptions" [plugins]="pieChartPlugins" [legend]="pieChartLegend">
     </canvas>
 </div>
-<div *ngIf="user === 'employee'" class="flex-1">
+<div *ngIf="(user === 'employee' || user === 'manager') &&  type == 'leaves'" class="flex-1">
     <p class="no-margin">Leaves status</p>
     <div class="flex flex-1 column center-center">
         <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="leavepieChartDatasets"
             [labels]="leavepieChartLabels" [options]="leavepieChartOptions" [plugins]="leavepieChartPlugins"
             [legend]="leavepieChartLegend">
+        </canvas>
+    </div>
+</div>
+<div *ngIf="user === 'employee' && type == 'requests'" class="flex-1">
+    <div class="flex flex-1 column center-center">
+        <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="requestChartDatasets"
+            [labels]="requestspieChartLabels" [options]="requestpieChartOptions" [plugins]="requestpieChartPlugins"
+            [legend]="requestpieChartLegend">
         </canvas>
     </div>
 </div>

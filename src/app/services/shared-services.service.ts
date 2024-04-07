@@ -10,8 +10,11 @@ export class SharedServicesService {
   data: any;
   user: any;
   employees: any;
-  users: any[] = [];
+  users: any;
   newUsers: any[] = []
+  leave: any;
+  leaveTypes: string[] = ['Annual Leave', 'Sick Leave', 'Family Responsibility Leave', 'Maternity leave']
+
 
 
   // this is todoList that stores the any list 
@@ -103,8 +106,46 @@ export class SharedServicesService {
     })
   }
 
-  // getLeavesDays
+  async updateRequest(path: string, payload: any) {
+    this.api.genericUpdateAPI(path, payload)
+      .subscribe({
+        next: (res) => { console.log(res) },
+        error: (err) => { console.log(err) },
+        complete: () => { }
+      })
+  }
 
+
+
+  decrementLeaveDays(leave: any): void {
+    this.api.genericGetAPI('/get-users')
+      .subscribe({
+        next: (res) => {
+          this.users = res
+          this.users.forEach((user: any) => {
+            if (user.email === leave.email) {
+              if (leave.leaveType === 'Annual Leave') {
+                user.leaveDays.annualLeaveDays -= leave.days
+              } else if (leave.leaveType === 'Sick Leave') {
+                user.leaveDays.sickLeaveDays -= leave.days
+              } else if (leave.leaveType === 'Family Responsibility Leave') {
+                user.leaveDays.familyResponsibilityLeaveDays -= leave.days
+              } else {
+                user.leaveDays.maternityLeaveDays -= leave.days
+              }
+              this.api.genericUpdateAPI('/update-user', user)
+                .subscribe({
+                  next: (res) => { console.log(res) },
+                  error: (err) => { console.log(err) },
+                  complete: () => { }
+                })
+            }
+          })
+        },
+        error: (err) => { },
+        complete: () => { }
+      })
+
+  }
 
 }
-

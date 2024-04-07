@@ -23,7 +23,7 @@ export class TravelComponent implements AfterViewInit {
   user: any;
   userTravels: any;
   reqTravels: any[] = []
-  statuses: string[] = ['Approved', 'Rejected']
+  statuses: string[] = ['Approved', 'Declined']
   approvedDataSource: any;
   rejectedDataSource: any;
   // approvedTravel: any[] = []
@@ -34,7 +34,7 @@ export class TravelComponent implements AfterViewInit {
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
     private snackBar: MatSnackBar, private api: ApiServicesService) {
-      this.user = this.sharedService.getData('session', 'user')
+    this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'employee') {
       this.displayedColumns = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'status', 'download'];
     }
@@ -70,7 +70,7 @@ export class TravelComponent implements AfterViewInit {
               }
             })
             this.rejectedDataSource = this.userTravels.filter((travel: any) => {
-              if (travel.requestedByEmail === this.user.email && travel.status === 'Rejected') {
+              if (travel.requestedByEmail === this.user.email && travel.status === 'Declined') {
                 return travel
               }
             })
@@ -81,7 +81,7 @@ export class TravelComponent implements AfterViewInit {
               }
             })
             this.rejectedDataSource = this.userTravels.filter((travel: any) => {
-              if (travel.department === this.user.department && travel.status === 'Rejected') {
+              if (travel.department === this.user.department && travel.status === 'Declined') {
                 return travel
               }
             })
@@ -92,7 +92,7 @@ export class TravelComponent implements AfterViewInit {
               }
             })
             this.rejectedDataSource = this.userTravels.filter((travel: any) => {
-              if (travel.status === 'Rejected') {
+              if (travel.status === 'Declined') {
                 return travel
               }
             })
@@ -127,16 +127,24 @@ export class TravelComponent implements AfterViewInit {
   }
 
   statusUpdate(status: string, reqID: string): void {
-    this.userTravels.forEach((travel: any, indx: number) => {
-      if (travel.reqID === reqID) {
-        if (status === 'Approved' || status === 'Rejected') {
-          this.userTravels['dateUpdated'] = new Date();
-        }
-        this.userTravels[indx]['status'] = status;
-        this.updateStorageStatus(status, travel)
-        this.moveTravel()
-      }
-    });
+    this.api.genericGetAPI('/getTravel')
+      .subscribe({
+        next: (res) => {
+          res = this.userTravels
+          this.userTravels.forEach((travel: any, indx: number) => {
+            if (travel.reqID === reqID) {
+              if (status === 'Approved' || status === 'Declined') {
+                travel['dateUpdated'] = new Date();
+              }
+              travel['status'] = status;
+              this.updateStorageStatus(status, travel)
+              this.moveTravel()
+            }
+          });
+        },
+        error: () => { },
+        complete: () => { }
+      })
   }
 
   getTravel() {
@@ -151,7 +159,7 @@ export class TravelComponent implements AfterViewInit {
               }
             })
           } else if (this.user.role === 'manager') {
-            this.userTravels = this.userTravels.filter((travel: any) => {
+            this.dataSource = this.userTravels.filter((travel: any) => {
               if (travel.department === this.user.department) {
                 this.reqTravels.push(travel)
                 return travel
@@ -172,26 +180,11 @@ export class TravelComponent implements AfterViewInit {
       })
   }
 
-  updateStorageStatus(status: string, travel: any): void {
-    this.userTravels = []
-    this.sharedService.getData('local', 'travels').forEach((_travel: any) => {
-      if (travel.reqID === _travel.reqID) {
-        _travel['status'] = status
-      }
-      this.userTravels.push(_travel)
-      console.log(_travel)
-    })
-
-    this.sharedService.storeData('local', 'travels', this.userTravels)
+  async updateStorageStatus(status: string, travel: any) {
+    await this.sharedService.updateRequest('/updateTravel', travel)
   }
 
-  generatePdf(indx: number): void {
-    let row = this.sharedService.getData('local', 'travels').find((travel: any, i: number) => {
-      if (i === indx) {
-        return travel
-      }
-    })
-    console.log(row)
+  generatePdf(row: any): void {
     let docDefinition = {
       content: [
         {

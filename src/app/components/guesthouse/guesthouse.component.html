@@ -9,7 +9,7 @@
                     color="primary">Request GuestHouse</button>
             </div>
         </div>
-        <div *ngIf="!userGuestHouse?.length && (user.role === 'operations personnel' || user.role === 'manager')">
+        <div *ngIf="!reqGuestHouse?.length && (user.role === 'operations personnel' || user.role === 'manager')">
             <h2>View GuestHouse Request</h2>
             <h3>There are currently no GuestHouse request, Employee hasn't made any request.</h3>
         </div>
@@ -118,7 +118,6 @@
 
             </mat-tab>
             <mat-tab label="Approved GuestHouse Request">
-                <h2 class="flex center-center">View Approved GuestHouse Request</h2>
                 <h3 *ngIf="!approvedDataSource.length">
                     There are currently no approved GuestHouse request, manager hasn't approved any.
                 </h3>
@@ -221,7 +220,6 @@
             </mat-tab>
             <mat-tab label="declined GuestHouse Request">
                 <div class="full-width">
-                    <h2 class="flex center-center">View declined GuestHouse Request</h2>
                     <h3 *ngIf="!declinedDataSource.length">
                         There are currently no declined GuestHouse request, manager hasn't declined any GuestHouse
                         requests.

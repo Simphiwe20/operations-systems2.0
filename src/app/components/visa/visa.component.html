@@ -68,7 +68,7 @@
                                         <td mat-cell *matCellDef="let row">
                                             <!-- Change Status -->
                                             <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                                [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
+                                                [color]="row.status === 'Declined' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
                                                 [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
                                             <mat-menu #menu="matMenu">
                                                 <button mat-menu-item (click)="statusUpdate(status, row.reqID)"
@@ -196,11 +196,11 @@
                     </div>
                 </div>
             </mat-tab>
-            <mat-tab label="Rejected Visa Request">
+            <mat-tab label="Declined Visa Request">
                 <div class="full-width">
-                    <h2 class="flex center-center">View Rejected Visa
+                    <h2 class="flex center-center">View Declined Visa
                         Request</h2>
-                    <h3 *ngIf="!rejectedDataSource.length">The are no rejected Visa request currently. </h3>
+                    <h3 *ngIf="!rejectedDataSource.length">The are no declined Visa request currently. </h3>
                     <div class="table" *ngIf="rejectedDataSource.length">
                         <mat-form-field>
                             <mat-label>Filter</mat-label>

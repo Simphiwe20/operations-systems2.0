@@ -168,44 +168,35 @@ export class TransportComponent {
   }
 
   statusUpdate(status: string, reqID: string): void {
-    this.userTransport.forEach((transport: any, indx: number) => {
-      if (transport.reqID === reqID) {
-        if (status === 'Approved' || status === 'Rejected') {
-          this.userTransport['dateUpdated'] = new Date();
-        }
-        this.userTransport[indx]['status'] = status;
-        this.updateStorageStatus(status, transport)
-        this.moveTransport()
-      }
-    });
-    // localStorage.setItem('userGuestHouse', JSON.stringify(this.userGuestHouse));
-    // this.updateUser();
+    this.api.genericGetAPI('/getTransport')
+      .subscribe({
+        next: (res) => {
+          res = this.userTransport
+          this.userTransport.forEach((transport: any, indx: number) => {
+            if (transport.reqID === reqID) {
+              if (status === 'Approved' || status === 'Declined') {
+                transport['dateUpdated'] = new Date();
+              }
+              transport['status'] = status;
+              this.updateStorageStatus(status, transport)
+              this.moveTransport()
+            }
+          });
+        },
+        error: () => { },
+        complete: () => { }
+      })
   }
 
-  updateStorageStatus(status: string, transport: any): void {
-    this.userTransport = []
-    this.sharedService.getData('local', 'transport').forEach((_transport: any) => {
-      if (transport.reqID === _transport.reqID) {
-        _transport['status'] = status
-      }
-      this.userTransport.push(_transport)
-      console.log(_transport)
-    })
-
-    this.sharedService.storeData('local', 'transport', this.userTransport)
+  async updateStorageStatus(status: string, travel: any) {
+    await this.sharedService.updateRequest('/updateTransport', travel)
   }
 
   generatePdf(_row: any): void {
-    let row = this.sharedService.getData('local', 'transport').find((policy: any, i: number) => {
-      if (policy.reqID === _row.reqID) {
-        return policy
-      }
-    })
-    console.log(row)
     let docDefinition = {
       content: [
         {
-          text: `${row.requestedBy}`,
+          text: `${_row.requestedBy}`,
           fontSize: 30,
           alignment: 'center'
         },
@@ -214,43 +205,43 @@ export class TransportComponent {
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.requestedByEmail,
+        _row.requestedByEmail,
         {
           text: "Employee Department",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.department,
+        _row.department,
         {
           text: "Transport Type",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.transportType,
+        _row.transportType,
         {
           text: "Date Needed",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.neededDate.split('T')[0],
+        _row.neededDate.split('T')[0],
         {
           text: "Pick Up Spot",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.pickUpSpot,
+        _row.pickUpSpot,
         {
           text: "Drop Off Spot",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.dropOffSpot,
+        _row.dropOffSpot,
         {
           text: "Pick Up Reason",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.pickUpReason,
+        _row.pickUpReason,
       ]
     }
 

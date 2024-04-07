@@ -133,9 +133,6 @@
             </mat-tab>
             <mat-tab label="Approved Transport Request">
                 <div class="full-width">
-                    <h2 class="flex center-center">View Approved Transport
-                        Request</h2>
-                        
                     <h3 *ngIf="!approvedDataSource">The are currently no approved requests a manager hasn't approved any request</h3>
                     <div
                         *ngIf="(user.role === 'employee' && approvedDataSource) || (user.role === 'operations personnel' && approvedDataSource) || (user.role === 'manager' && approvedDataSource)">
@@ -243,8 +240,6 @@
             </mat-tab>
             <mat-tab label="Rejected Transport Requests">
                 <div class="full-width">
-                    <h2 class="flex center-center" >View Rejected Transport
-                        Request</h2>
                     <h3 *ngIf="!rejectedDataSource">The are currently no rejected requests a manager hasn't rejected any request</h3>
                     <div
                         *ngIf="(user.role === 'employee' && rejectedDataSource) || (user.role === 'operations personnel' && rejectedDataSource) || (user.role === 'manager' && rejectedDataSource)">

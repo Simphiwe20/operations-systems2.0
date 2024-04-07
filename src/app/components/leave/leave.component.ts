@@ -23,11 +23,12 @@ export class LeaveComponent {
   dataSource!: MatTableDataSource<any>;
   user: any;
   userLeaves: any;
-  statuses: string[] = ['Approved', 'Rejected']
-  approvedDataSource!: [];
-  rejectedDataSource!: [];
+  statuses: string[] = ['Approved', 'Declined']
+  approvedDataSource: any;
+  rejectedDataSource: any;
   approvedLeaves: any[] = []
   rejectedLeaves: any[] = []
+  leave: any;
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -59,7 +60,7 @@ export class LeaveComponent {
               }
             })
             this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
-              if (leave.email === this.user.email && leave.status === 'Rejected') {
+              if (leave.email === this.user.email && leave.status === 'Declined') {
                 return leave
               }
             })
@@ -71,7 +72,7 @@ export class LeaveComponent {
               }
             })
             this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
-              if (leave.department === this.user.department && leave.status === 'Rejected') {
+              if (leave.department === this.user.department && leave.status === 'Declined') {
                 return leave
               }
             })
@@ -82,7 +83,7 @@ export class LeaveComponent {
               }
             })
             this.rejectedDataSource = this.userLeaves.filter((leave: any) => {
-              if (leave.status === 'Rejected') {
+              if (leave.status === 'Declined') {
                 return leave
               }
             })
@@ -91,9 +92,9 @@ export class LeaveComponent {
         error: (err) => { console.log(err) },
         complete: () => { }
       })
+    console.log(this.approvedDataSource)
+    console.log(this.rejectedDataSource)
   }
-
-
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -145,7 +146,7 @@ export class LeaveComponent {
               }
             })
           } else if (this.user.role === 'manager') {
-            this.userLeaves = this.userLeaves.filter((leave: any) => {
+            this.dataSource = this.userLeaves.filter((leave: any) => {
               if (leave.department === this.user.department) {
                 return leave
               }
@@ -168,64 +169,40 @@ export class LeaveComponent {
   }
 
   statusUpdate(status: string, appID: string): void {
-    this.userLeaves.forEach((leave: any, indx: number) => {
-      if (leave.appID === appID) {
-        if (status === 'Approved' || status === 'Rejected') {
-          this.userLeaves['dateUpdated'] = new Date();
-        }
-        this.userLeaves[indx]['status'] = status;
-        this.updateStorageStatus(status, leave)
-        this.moveLeaves()
-      }
-    });
-    // localStorage.setItem('userGuestHouse', JSON.stringify(this.userGuestHouse));
-    // this.updateUser();
-  }
-
-  updateStorageStatus(status: string, leave: any): void {
-    this.userLeaves = []
-    this.sharedService.getData('local', 'leaves').forEach((_leave: any) => {
-      if (leave.appID === _leave.appID) {
-        _leave['status'] = status
-      }
-      this.userLeaves.push(_leave)
-      console.log(_leave)
-    })
-
-    this.sharedService.storeData('local', 'leaves', this.userLeaves)
-  }
-
-  decrementLeaveDays(ele: any): void {
-    setTimeout(() => {
-      if (ele.status === 'Approved') {
-        if (ele.leaveType.toLowerCase() === 'annual leave') {
-          ele.annualLeaveDays = ele.annualLeaveDays - ele.days
-        } else {
-          ele.sickLeaveDays = ele.sickLeaveDays - ele.days
-        }
-      }
-      this.sharedService.getData('local', 'leaves').forEach((leave: any, indx: number) => {
-        if (leave.appID === ele.appID) {
-          this.userLeaves[indx] = ele
-          this.sharedService.storeData('local', 'leaves', this.userLeaves)
-        }
+    this.api.genericGetAPI('/get-leaves')
+      .subscribe({
+        next: (res) => {
+          this.userLeaves = res 
+          this.userLeaves.forEach((leave: any, indx: number) => {
+            if (leave.appID === appID) {
+              if (status === 'Approved' || status === 'Declined') {
+                leave['dateUpdated'] = new Date();
+              }
+              leave['status'] = status;
+              this.updateStorageStatus(status, leave)
+              if(status === 'Approved') {
+                this.sharedService.decrementLeaveDays(leave)
+              }
+              this.moveLeaves()
+            }
+          });
+        },
+        error: () => { },
+        complete: () => { }
       })
-    }, 3000
+  }
 
-    )
+  async updateStorageStatus(status: string, leave: any) {
+    await this.sharedService.updateRequest('/updateLeave', leave)
   }
 
   generatePdf(_row: any): void {
-    let row = this.sharedService.getData('local', 'leaves').find((policy: any, i: number) => {
-      if (policy.appID === _row.appID) {
-        return policy
-      }
-    })
-    console.log(row)
+    console.log(_row)
+    this.leave = _row
     let docDefinition = {
       content: [
         {
-          text: `${row.employeeName}`,
+          text: `${this.leave.employeeName}`,
           fontSize: 30,
           alignment: 'center'
         },
@@ -234,37 +211,37 @@ export class LeaveComponent {
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.email,
+        this.leave.email,
         {
           text: "Employee Department",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.department,
+        this.leave.department,
         {
           text: "Leave Start Date",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.startDate.split('T')[0],
+        this.leave.startDate.split('T')[0],
         {
           text: "Leave End Date",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.endDate.split('T')[0],
+        this.leave.endDate.split('T')[0],
         {
           text: "Days Taken",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.days,
+        this.leave.days,
         {
           text: "Leave Application Status",
           fontSize: 20,
           margin: [0, 10, 0, 10]
         },
-        row.status,
+        this.leave.status,
       ]
     }
 

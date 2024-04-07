@@ -1,12 +1,13 @@
-$leave-bg: lightgrey;
+$primary-color: white;
+$bg-color: #252525;
+$bg-grey: grey;
 
-.leave-overiew {
-    background-color: $leave-bg;
+p {
+    margin: 0;
 }
 
 .req-card {
-    width: 35%;
-    height: 40%;
-    background-color: $leave-bg;
+    background-color: $bg-color;
+    color: $primary-color;
     border-radius: 10px;
 }
