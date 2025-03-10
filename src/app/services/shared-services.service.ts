@@ -2,11 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ApiServicesService } from '../api-service/api-services.service';
+import { Notification } from '../interface/notification';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedServicesService {
+  notification: any;
   data: any;
   user: any;
   employees: any;
@@ -14,7 +16,6 @@ export class SharedServicesService {
   newUsers: any[] = []
   leave: any;
   leaveTypes: string[] = ['Annual Leave', 'Sick Leave', 'Family Responsibility Leave', 'Maternity leave']
-
 
 
   // this is todoList that stores the any list 
@@ -115,8 +116,6 @@ export class SharedServicesService {
       })
   }
 
-
-
   decrementLeaveDays(leave: any): void {
     this.api.genericGetAPI('/get-users')
       .subscribe({
@@ -142,10 +141,21 @@ export class SharedServicesService {
             }
           })
         },
-        error: (err) => { },
+        error: (err) => { console.log(err) },
         complete: () => { }
       })
-
   }
+
+  sendNotification(_message: any, _type: any, notificationID: string): any {
+    let notification: Notification = {message: _message, date: new Date(), viewed: false, type: _type, notificationID: notificationID}
+    console.log(notification)
+    this.api.genericPostAPI('/add-notification', notification)
+      .subscribe({
+        next: (res) => {console.log(res)},
+        error: (err) => {console.log(err)},
+        complete: () => {}
+      })
+  }
+
 
 }

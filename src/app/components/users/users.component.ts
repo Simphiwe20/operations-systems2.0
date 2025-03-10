@@ -57,7 +57,7 @@ export class UsersComponent implements AfterViewInit{
   showUsers(users: any): void {
     // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource(users?.filter((user: any) => {
-      if(user.email !== 'admin@neutrinos.co') {
+      if(user.email !== 'admin@opsystem.co') {
         return user
       }
     }))
@@ -71,14 +71,14 @@ export class UsersComponent implements AfterViewInit{
     this.disabledUsers = []
     this.enabledUsers = []
     users.forEach((user: any) => {
-      if(user.status === 'disable' && user.email !== 'admin@neutrinos.co') {
+      if(user.status === 'disable' && user.email !== 'admin@opsystem.co') {
         this.disabledUsers.push(user)
       }
     })
     this.disabledDataSource = this.disabledUsers
 
     users.forEach((user: any) => {
-      if(user.status === 'active' && user.email !== 'admin@neutrinos.co') {
+      if(user.status === 'active' && user.email !== 'admin@opsystem.co') {
         this.enabledUsers.push(user)
       }
     })
@@ -107,7 +107,7 @@ export class UsersComponent implements AfterViewInit{
         })
       setTimeout(() => {
         this.dataSource = new MatTableDataSource(this.users.filter((user: any) => {
-          if (user.email !== 'admin@neutrinos.co') {
+          if (user.email !== 'admin@opsystem.co') {
             return user
           }
         }))

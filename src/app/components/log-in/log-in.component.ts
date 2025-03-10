@@ -14,7 +14,7 @@ export class LogInComponent {
   users: any;
   userCredentials: any = {email: '', password: ''}
   emailPattern: any = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/
-  adminAccount: any = {department: "IT", email : "admin@neutrinos.co", firstName: "built-in", 
+  adminAccount: any = {department: "IT", email : "admin@opsystem.co", firstName: "built-in", 
                       lastName: "admin", occupation:  "None", password: "admin@123", role: "admin", status:"active"}
 
   constructor(private sharedService: SharedServicesService, private router: Router, 
