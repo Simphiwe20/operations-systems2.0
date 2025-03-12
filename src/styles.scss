@@ -16,6 +16,14 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+// background and text colors
+.bg-color {
+    background-color: $bg-color;
+}
+
+.color {
+    color: $bg-color;
+}
 
 // Flex styles
 
@@ -75,8 +83,11 @@ body {
     }
 }
 
-// Size styles
+.active-route {
+    text-decoration: underline;
+}
 
+// Size styles
 .full-width {
     width: 100%;
 }

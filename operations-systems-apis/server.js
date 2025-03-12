@@ -21,5 +21,4 @@ app.use(routes)
 
 app.listen(3000, (req, res) => {
     console.log('Listening to 3000....')
-    
 })

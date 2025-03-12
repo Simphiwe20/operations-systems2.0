@@ -7,7 +7,7 @@
                 <img class="logo" src="../../../assets/Neutrinos_Logo.jpg" alt="">
             </div>
             <div>
-                <p class="link" *ngFor="let item of menuItems" [routerLink]="item.route">{{item.menu}}</p>
+                <p class="link" *ngFor="let item of menuItems" [routerLink]="item.route" routerLinkActive="active-route">{{item.menu}}</p>
             </div>
             <div>
                 <hr>
