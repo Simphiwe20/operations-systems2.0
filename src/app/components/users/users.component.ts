@@ -148,9 +148,10 @@ export class UsersComponent implements AfterViewInit {
       let doesUserExist = false
       let newUser;
       users.forEach((_user: any) => {
-        newUser = _user
         if (user.email == _user.email) {
           doesUserExist = true
+        }else {
+          newUser = _user
         }
       })
       if(!doesUserExist) {

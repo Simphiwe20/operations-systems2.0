@@ -16,7 +16,7 @@ Chart.register(...Chartjs.registerables)
   templateUrl: './pie-chart.component.html',
   styleUrls: ['./pie-chart.component.scss']
 })
-export class PieChartComponent implements AfterViewInit, AfterViewChecked{
+export class PieChartComponent implements AfterViewInit, AfterViewChecked {
 
   public chart: any;
   @Input() user: any
@@ -38,8 +38,8 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked{
     private cdr: ChangeDetectorRef) {
     this.currentUser = this.shared.getData('session', 'user')
 
-   this.request = ['/getGHRequests', '/getTransport', '/getTravel', '/getVisas']
-   this.request.forEach(async(req: any) => {
+    this.request = ['/getGHRequests', '/getTransport', '/getTravel', '/getVisas']
+    this.request.forEach(async (req: any) => {
       await this.charts.getReqs(this.currentUser, req)
     })
 
@@ -47,7 +47,7 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked{
 
     setTimeout(() => {
       this.getReqs()
-    }, 200) 
+    }, 200)
   }
 
   ngAfterViewChecked(): void {
@@ -57,22 +57,22 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked{
 
 
   // Pie
-  public pieChartOptions: Chartjs.ChartOptions<'pie'> = {
-    responsive: false,
-  };
-  public pieChartLabels = [['Active'], ['Disable']];
-  public pieChartDatasets = [{
-    data: [this.charts.active, this.charts.disabled]
-  }];
-  public pieChartLegend = true;
-  public pieChartPlugins = [];
+  // public pieChartOptions: Chartjs.ChartOptions<'pie'> = {
+  //   responsive: false,
+  // };
+  // public pieChartLabels = [['Active'], ['Disable']];
+  // public pieChartDatasets = [{
+  //   data: [this.charts.active, this.charts.disabled]
+  // }];
+  // public pieChartLegend = true;
+  // public pieChartPlugins = [];
 
   // Leaves Pie charts
   public leavepieChartOptions: Chartjs.ChartOptions<'pie'> = {
     responsive: false,
   };
   public leavepieChartLabels = [['Pending'], ['Approved'], ['Declined']];
-  
+
   public leavepieChartLegend = true;
   public leavepieChartPlugins = [];
 
@@ -95,11 +95,6 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked{
     this.leavepieChartDatasets = [{
       data: [this.charts.pending, this.charts.approved, this.charts.declined]
     }];
-
-      console.log(this.charts.guesthouseReq,
-      this.charts.travelReq,
-      this.charts.visaReq,
-      this.charts.transportReq)
   }
 
   public requestpieChartLegend = true;
@@ -124,43 +119,70 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked{
               else this.other++
             })
 
-            console.log(this.chart.data.datasets[0].data)
-            this.chart.data.datasets[0].data.push(Number(this.itCount))
-            this.chart.data.datasets[0].data.push(this.makertingCount)
-            this.chart.data.datasets[0].data.push(this.salesCount)
-            this.chart.data.datasets[0].data.push(this.operationsCount)
-            this.chart.data.datasets[0].data.push(this.other)
 
+            let chartData: any = {
+              data: [this.itCount, this.makertingCount, this.salesCount, this.operationsCount, this.other],
+              label: ['IT', 'Marketing', 'Sales', 'Operations', 'Others'],
+              backgroundColor: ['green', 'orange', 'blue', 'yellow', 'purple'],
+              hoverOffset: 4,
+              chartName: "usersChart"
+            }
 
+            this.getUserStatus(this.users)
+            this.setChart(chartData)
           },
         })
-      console.log(this.charts.itCount, this.charts.makertingCount, this.charts.salesCount, this.charts.operationsCount, this.charts.other)
-      this.chart = new Chart("usersChart", {
-        type: 'pie', //this denotes tha type of chart
-
-        data: {// values on X-Axis
-          labels: ['IT', 'Marketing', 'Sales', 'Operations', 'Others'],
-          datasets: [{
-            // label: 'My First Dataset',
-            data: [],
-            backgroundColor: [
-              'green',
-              'orange',
-              'blue',
-              'yellow',
-              'purple'
-            ],
-            hoverOffset: 4
-          }],
-        },
-        options: {
-          aspectRatio: 2.5,
-          responsive: false
-        }
-
-      });
     }
   }
 
+  setChart(chartData: any) {
+    let data = chartData.data
+    let label = chartData.label
+    let backgroundColor = chartData.backgroundColor
+    let hoverOffset = chartData.hoverOffset
+    let chartName = chartData.chartName
+
+    this.chart = new Chart(chartName, {
+      type: 'pie', //this denotes tha type of chart
+      data: {// values on X-Axis
+        labels: [...label],
+        datasets: [{
+          // label: 'My First Dataset',
+          data: [...data],
+          backgroundColor: [...backgroundColor],
+          hoverOffset: hoverOffset
+        }],
+      },
+      options: {
+        aspectRatio: 2.5,
+        responsive: false
+      }
+    });
+
+    console.log("this.chart: ", this.chart)
+  }
+
+  getUserStatus(users: any) {
+
+    let disable = 0
+    let active = 0
+    users.forEach((user: any) => {
+      if (user.status == 'active') {
+        active++
+      } else {
+        disable++
+      }
+    })
+
+    let chartData: any = {
+      data: [active, disable],
+      label: ['Active', 'Disable'],
+      backgroundColor: ['green', 'grey'],
+      hoverOffset: 2,
+      chartName: "usersStatus"
+    }
+
+    this.setChart(chartData)
+  }
 
 }

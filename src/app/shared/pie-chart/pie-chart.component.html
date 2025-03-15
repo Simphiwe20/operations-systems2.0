@@ -4,9 +4,7 @@
 </div>
 <div *ngIf="user === 'admin'" class="flex flex-1 column center-center">
     <p class="no-margin text-center">Users Account Status</p>
-    <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="pieChartDatasets" [labels]="pieChartLabels"
-        [options]="pieChartOptions" [plugins]="pieChartPlugins" [legend]="pieChartLegend">
-    </canvas>
+    <canvas width="400" height="250" id="usersStatus"></canvas>
 </div>
 <div *ngIf="(user === 'employee' || user === 'manager') &&  type == 'leaves'" class="flex-1">
     <p class="no-margin">Leaves status</p>
