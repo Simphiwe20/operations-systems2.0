@@ -54,20 +54,7 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked {
     // this.getReqs()
     this.cdr.detectChanges()
   }
-
-
-  // Pie
-  // public pieChartOptions: Chartjs.ChartOptions<'pie'> = {
-  //   responsive: false,
-  // };
-  // public pieChartLabels = [['Active'], ['Disable']];
-  // public pieChartDatasets = [{
-  //   data: [this.charts.active, this.charts.disabled]
-  // }];
-  // public pieChartLegend = true;
-  // public pieChartPlugins = [];
-
-  // Leaves Pie charts
+  
   public leavepieChartOptions: Chartjs.ChartOptions<'pie'> = {
     responsive: false,
   };
@@ -158,8 +145,6 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked {
         responsive: false
       }
     });
-
-    console.log("this.chart: ", this.chart)
   }
 
   getUserStatus(users: any) {
