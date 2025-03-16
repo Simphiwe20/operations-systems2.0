@@ -1,8 +1,6 @@
-// Import expess to get the router
 const express = require('express')
-
-// Import router
 const router = express.Router()
+const multer = require("multer");
 
 // import controllers
 const userController = require('../Controllers/userControllers') 
@@ -13,19 +11,18 @@ const visaController = require('../Controllers/visaControllers')
 const transportController = require('../Controllers/transportController')
 const travelController = require('../Controllers/travelController')
 const notificationController = require('../Controllers/notificationsController')
+const docsController = require('../Controllers/fileController')
+
+// 
+const storage = multer.memoryStorage()
+const upload  =   multer({storage})
 
 // Users routes
-// Get all users route
 router.get('/get-users', userController.defaultRoute)
-// Get users by email, route
 router.get('/getUserByEmail/:email', userController.getUserByEmail)
-// add users router
 router.post('/add-user', userController.addUsers)
-// sign-in router
 router.post('/sign-in', userController.signIn)
-// update users router
 router.put('/update-user', userController.updateUser)
-// Delete users router
 router.delete('/delete-user/:email', userController.deleteUser)
 
 
@@ -82,5 +79,10 @@ router.put('/updateTravel', travelController.updateTravel)
 router.post('/add-notification', notificationController.addNotification)
 // Get notifications
 router.get('/get-notification', notificationController.getNotification)
+
+// Documents routes
+router.post('/upload', upload.single("file"), docsController.uploadDocument)
+router.get('/file', docsController.getFile)
+router.get('/files', docsController.getDocs)
 
 module.exports = router

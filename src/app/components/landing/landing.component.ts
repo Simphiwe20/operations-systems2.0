@@ -32,7 +32,7 @@ export class LandingComponent {
       this.menuItems = [
         { menu: 'Dashboard', route: 'dashboard' },
         { menu: 'Users', route: 'users' },
-        { menu: 'View Approved leaves', route: 'leaves' },
+        { menu: 'Approved leaves', route: 'leaves' },
         { menu: 'Policies', route: 'policies' }
       ]
     } else if (this.user.role === 'operations personnel') {

@@ -20,7 +20,6 @@ import { UsersComponent } from './components/users/users.component';
 import { PoliciesComponent } from './components/policies/policies.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { PolicyFormComponent } from './forms/policy-form/policy-form.component';
 import { LeaveFormComponent } from './forms/leave-form/leave-form.component';
 import { GuesthouseFormComponent } from './forms/guesthouse-form/guesthouse-form.component';
 import { VisaFormComponent } from './forms/visa-form/visa-form.component';
@@ -31,7 +30,7 @@ import { NotificationsComponent } from './popUps/notifications/notifications.com
 import { PieChartComponent } from './shared/pie-chart/pie-chart.component';
 import { LineGraphComponent } from './shared/line-graph/line-graph.component';
 import { RequestCardsComponent } from './shared/request-cards/request-cards.component';
-import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component';
+import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component'
 
 @NgModule({
   declarations: [
@@ -48,7 +47,6 @@ import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component'
     PoliciesComponent,
     PageNotFoundComponent,
     ProfileComponent,
-    PolicyFormComponent,
     LeaveFormComponent,
     GuesthouseFormComponent,
     VisaFormComponent,

@@ -25,7 +25,6 @@ export class SharedServicesService {
 
   constructor(private api: ApiServicesService) {
     this.refreshPolicies()
-
   }
 
 
@@ -67,7 +66,6 @@ export class SharedServicesService {
     console.log(" New users: ", this.newUsers[0])
 
     console.log("Employees from the spreasSheet", employees)
-
   }
 
   getNewUser(users: any, employees: any): void {

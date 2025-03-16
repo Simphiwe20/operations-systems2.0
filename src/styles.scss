@@ -139,7 +139,8 @@ body {
     height: 40px;
 }
 
-.profile span, .extend span {
+.profile span,
+.extend span {
     &:hover {
         cursor: pointer;
     }
@@ -157,6 +158,10 @@ body {
 .padding-20px {
     padding: 0px 20px;
     box-sizing: border-box;
+}
+
+.padding-10px {
+    padding: 10px;
 }
 
 #approved-btn[disabled] {
@@ -208,6 +213,33 @@ form {
     background-color: $primary-color;
     color: white;
 }
+
+
+.mdc-line-ripple::before,
+.mdc-line-ripple::after {
+    position: relative !important;
+}
+
+.mat-input {
+    .mat-mdc-text-field-wrapper {
+        height: 40px !important;
+        padding: 5px 10px !important;
+        border-radius: 5px !important;
+    }
+}
+
+.download {
+    .mat-icon {
+        color: grey;
+    }
+}
+
+.custom-upload {
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: lightgray;
+}
+
 
 canvas {
     width: 100%;
