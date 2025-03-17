@@ -51,7 +51,6 @@ export class PieChartComponent implements AfterViewInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    // this.getReqs()
     this.cdr.detectChanges()
   }
   

@@ -184,11 +184,6 @@ form {
     background-color: $bg-color;
 }
 
-// Customize a Scroll Bar
-::-webkit-scrollbar {
-    width: 20px;
-}
-
 /* Track */
 ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 5px grey;

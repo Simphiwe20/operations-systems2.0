@@ -13,7 +13,7 @@ import { ApiServicesService } from 'src/app/api-service/api-services.service';
   styleUrls: ['./policies.component.scss']
 })
 export class PoliciesComponent implements AfterViewInit {
-  displayedColumns: string[] = ['name', 'category', 'action', 'download'];
+  displayedColumns: string[] = ['name', 'uploadedDate', 'action', 'download'];
   dataSource!: MatTableDataSource<any>;
   user: any;
   documentContent!: string;
@@ -35,7 +35,7 @@ export class PoliciesComponent implements AfterViewInit {
     this.user = this.user ? JSON.parse(this.user) : {}
 
     if (this.user.role !== 'admin' || this.user.role === 'employee') {
-      this.displayedColumns = ['name', 'category', 'download']
+      this.displayedColumns = ['name', 'uploadedDate', 'download']
     }
     
     this.getPolicyDocs()
@@ -69,6 +69,10 @@ export class PoliciesComponent implements AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  viewPolicy() {
+    
   }
 
   editPolicy(policy: any): void {

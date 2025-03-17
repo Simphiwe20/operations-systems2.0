@@ -21,18 +21,15 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
 })
 
 export class GuesthouseComponent {
-  displayedColumns: string[] = ['name', 'checkInDate', 'checkOutDate', 'status', 'download'];
+  displayedColumns: string[] = ['guestHouseName', 'checkInDate', 'checkOutDate', 'status', 'download'];
+  columnNames: string[] = ['Guest House', 'Check In', 'Check Out', 'Status', 'Download']
   dataSource!: MatTableDataSource<any>;
   user: any;
   userGuestHouse: any;
   reqGuestHouse: any = []
-  approvedDataSource: any[] = [];
-  declinedDataSource: any[] = [];
-  approvedGuest: any[] = []
-  declinedGuest: any;
+  approvedDataSource!: MatTableDataSource<any>;
+  declinedDataSource!: MatTableDataSource<any>;
   statuses: string[] = ['Approved', 'declined']
-
-
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -113,6 +110,17 @@ export class GuesthouseComponent {
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
+    }
+  }
+
+  selectedIndex(event: any) {
+    console.log('EVENT: ', event)
+    if(event == 1) {
+      this.dataSource = this.approvedDataSource
+    }else if(event == 2) {
+      this.dataSource = this.declinedDataSource
+    }else {
+      this.dataSource = this.userGuestHouse
     }
   }
 

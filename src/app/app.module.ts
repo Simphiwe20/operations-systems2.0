@@ -30,7 +30,8 @@ import { NotificationsComponent } from './popUps/notifications/notifications.com
 import { PieChartComponent } from './shared/pie-chart/pie-chart.component';
 import { LineGraphComponent } from './shared/line-graph/line-graph.component';
 import { RequestCardsComponent } from './shared/request-cards/request-cards.component';
-import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component'
+import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component';
+import { TableComponent } from './shared/table/table.component'
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component'
     PieChartComponent,
     LineGraphComponent,
     RequestCardsComponent,
-    LeavesCardComponent
+    LeavesCardComponent,
+    TableComponent
   ],
   imports: [
     BrowserModule,

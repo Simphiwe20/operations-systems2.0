@@ -18,44 +18,31 @@
             <div class="mat-elevation-z8 full-width">
                 <table mat-table [dataSource]="dataSource" matSort>
 
-                    <!-- Persal No Column -->
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Policy Name </th>
                         <td mat-cell *matCellDef="let row"> {{row.policyName}} </td>
                     </ng-container>
 
-                    <!-- Surname Column -->
-                    <ng-container matColumnDef="category">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Category </th>
-                        <td mat-cell *matCellDef="let row"> {{row.category}} </td>
+                    <ng-container matColumnDef="uploadedDate">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Uploaded Date </th>
+                        <td mat-cell *matCellDef="let row"> {{row.uploadDate | date }} </td>
                     </ng-container>
 
-                    <!-- Department Column -->
                     <ng-container matColumnDef="action">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header class="flex center-center inherit-height">
                             Action </th>
                         <td mat-cell *matCellDef="let row, let i = index"
                             class="download pointer flex gap-1em center-center">
-                            <!-- <button (click)="editPolicy(row)" mat-mini-fab color="primary"
-                                aria-label="Example icon button with a plus one icon"> -->
                             <mat-icon matTooltip="re-upload">upload</mat-icon>
-                            <mat-icon matTooltip="View Policy">visibility</mat-icon>
-                            <!-- </button> -->
-                            <!-- <button (click)="deletePolicy(i)" mat-mini-fab color="primary"
-                                aria-label="Example icon button with a plus one icon"> -->
+                            <mat-icon matTooltip="View Policy" (click)="viewPolicy()">visibility</mat-icon>
                             <mat-icon matTooltip="Delete Policy">delete</mat-icon>
-                            <!-- </button> -->
                         </td>
                     </ng-container>
 
-                    <!-- Department Column -->
                     <ng-container matColumnDef="download">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
                         <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
-                            <!-- <button (click)="generatePdf(row)" mat-mini-fab color="accent"
-                                aria-label="Example icon button with a plus one icon"> -->
                             <mat-icon>download</mat-icon>
-                            <!-- </button> -->
                         </td>
                     </ng-container>
 

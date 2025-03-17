@@ -19,7 +19,8 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   styleUrls: ['./leave.component.scss']
 })
 export class LeaveComponent {
-  displayedColumns!: string[]
+  displayedColumns!: string[];
+  columnNames!: string[];
   dataSource!: MatTableDataSource<any>;
   user: any;
   userLeaves: any;
@@ -39,10 +40,14 @@ export class LeaveComponent {
     private snackBar: MatSnackBar, private api: ApiServicesService) {
     this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'employee') {
+      this.columnNames = ['Start Date', 'End Date', 'Leave  Type', 'Status', 'Download']
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
     } else {
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download']
+      this.columnNames = ['Start Date', 'End Date', 'Leave  Type', 'Employee Email', 'Status', 'Download']
     }
+
+
     this.getLeaves()
     this.moveLeaves()
   }
@@ -53,7 +58,6 @@ export class LeaveComponent {
         next: (_res) => {
           this.userLeaves = _res
           if (this.user.role === 'employee') {
-            this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
             this.approvedDataSource = this.userLeaves.filter((leave: any) => {
               if (leave.email === this.user.email && leave.status === 'Approved') {
                 return leave
@@ -65,7 +69,6 @@ export class LeaveComponent {
               }
             })
           } else if (this.user.role === 'manager') {
-            this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download'];
             this.approvedDataSource = this.userLeaves.filter((leave: any) => {
               if (leave.department === this.user.department && leave.status === 'Approved') {
                 return leave
@@ -132,6 +135,17 @@ export class LeaveComponent {
         this.snackBar.open(res, 'OK', { duration: 3000 })
       }
     })
+  }
+
+  selectedIndex(event: any) {
+    console.log('EVENT: ', event)
+    if(event == 1) {
+      this.dataSource = this.approvedDataSource
+    }else if(event == 2) {
+      this.dataSource = this.rejectedDataSource
+    }else {
+      this.dataSource = this.userLeaves
+    }
   }
 
   getLeaves() {
