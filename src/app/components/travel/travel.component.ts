@@ -18,7 +18,7 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   styleUrls: ['./travel.component.scss']
 })
 export class TravelComponent implements AfterViewInit {
-  displayedColumns: string[] = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'employeeEmail', 'status', 'download'];
+  displayedColumns: string[] = ['travelType', 'returnDate', 'reasonForTravel', 'departureDate', 'employeeEmail', 'status', 'download'];
   dataSource!: MatTableDataSource<any>;
   user: any;
   userTravels: any;
@@ -26,8 +26,7 @@ export class TravelComponent implements AfterViewInit {
   statuses: string[] = ['Approved', 'Declined']
   approvedDataSource: any;
   rejectedDataSource: any;
-  // approvedTravel: any[] = []
-  // rejectedTravel: any[] = []
+  columnNames!: string[]
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -36,7 +35,7 @@ export class TravelComponent implements AfterViewInit {
     private snackBar: MatSnackBar, private api: ApiServicesService) {
     this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'employee') {
-      this.displayedColumns = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'status', 'download'];
+      this.displayedColumns = ['travelType', 'returnDate', 'reasonForTravel', 'departureDate', 'status', 'download'];
     }
     this.getTravel()
     this.moveTravel()
@@ -45,6 +44,7 @@ export class TravelComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.columnNames = ['Travel Type', 'Return Date', 'Travel Reason', 'Departure Date', 'Status', 'Download']
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -63,7 +63,7 @@ export class TravelComponent implements AfterViewInit {
         next: (_res) => {
           this.userTravels = _res
           if (this.user.role === 'employee') {
-            this.displayedColumns = ['travelType', 'returnDate', 'travelReason', 'departureDate', 'status', 'download'];
+            this.displayedColumns = ['travelType', 'returnDate', 'reasonForTravel', 'departureDate', 'status', 'download'];
             this.approvedDataSource = this.userTravels.filter((travel: any) => {
               if (travel.requestedByEmail === this.user.email && travel.status === 'Approved') {
                 return travel
@@ -182,6 +182,18 @@ export class TravelComponent implements AfterViewInit {
 
   async updateStorageStatus(status: string, travel: any) {
     await this.sharedService.updateRequest('/updateTravel', travel)
+  }
+
+  
+  selectedIndex(event: any) {
+    console.log('EVENT: ', event)
+    if(event == 1) {
+      this.dataSource = this.approvedDataSource
+    }else if(event == 2) {
+      this.dataSource = this.rejectedDataSource
+    }else {
+      this.dataSource = this.userTravels
+    }
   }
 
   generatePdf(row: any): void {

@@ -1,347 +1,59 @@
-<div class="full-height full-width flex center-center">
-    <div class="height-90 full-width">
-        <div *ngIf="(!userTransport && user.role === 'employee')">
-            <h2 class="text-center no-margin">Make Transport Requests</h2>
-            <h3>You currently have no Transport request, you haven't made any request. Click the button below to make
-                requests.</h3>
-            <div class="flex center-center margin-10">
-                <button mat-raised-button class="" (click)="requestTransport()"
-                    color="primary">Request
-                    Transport</button>
+<div class="full-height full-width flex">
+    <div class="height-90 full-width  padding-10px">
+        <div *ngIf="(!userTransport?.length && user.role === 'employee')" class="full-height">
+            <div class="flex jc-end">
+                <button mat-raised-button class="" (click)="requestTransport()" *ngIf="user.role === 'employee'"
+                    color="primary">Request transport</button>
+            </div>
+            <div class="full-height">
+                <img class="full-height full-width" src="../../../assets/nonfound.jpg" alt="" srcset="">
+                <!-- <small>No request</small> -->
             </div>
         </div>
-        <div *ngIf="!userTransport &&  (user.role === 'operations personnel' || user.role === 'manager')">
-            <h2 class="text-center no-margin">Transport Requests</h2>
-            <h3>There are currently no Visa request, Employee hasn't made any request.</h3>
-        </div>
-        <mat-tab-group
-            *ngIf="(user.role === 'employee' && userTransport) || (user.role === 'operations personnel' && userTransport) || (user.role === 'manager' && userTransport)">
-            <mat-tab label="Transport Request">
+        <mat-tab-group (selectedIndexChange)="selectedIndex($event)"
+            *ngIf="(user.role === 'employee' && userTransport?.length) || (user.role === 'operations personnel' && userTransport?.length) || (user.role === 'manager' && userTransport?.length)">
+            <mat-tab label="Transport Requests">
                 <div class="full-width">
-                    <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Make Transport
-                        Request</h2>
+                    <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Request Transport
+                    </h2>
                     <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">
-                        Transport Requests</h2>
-                    <div
-                        *ngIf="(user.role === 'employee' && userTransport) || (user.role === 'manager' && userTransport) || (user.role === 'operations personnel' && userTransport)">
-                        <div class="table">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
-                            </mat-form-field>
-
-                            <div class="mat-elevation-z8 full-width">
-                                <table mat-table [dataSource]="dataSource" matSort>
-
-                                    <!-- Department Column -->
-                                    <ng-container matColumnDef="transportType">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Transport Type </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.transportType}} </td>
-                                    </ng-container>
-
-                                    <!-- Surname Column -->
-                                    <ng-container matColumnDef="neededDate">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Needed Date </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.neededDate | date}} </td>
-                                    </ng-container>
-
-
-                                    <!-- Occupation Column -->
-                                    <ng-container matColumnDef="dropOffSpot">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Drop Off Spot </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.dropOffSpot}} </td>
-                                    </ng-container>
-
-                                    <!-- Occupation Column -->
-                                    <ng-container matColumnDef="pickUpSpot">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pick Up Spot </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.pickUpSpot}} </td>
-                                    </ng-container>
-
-                                    <!-- Name Column -->
-                                    <ng-container matColumnDef="pickUpReason">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pick Up Reason </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.pickUpReason}} </td>
-                                    </ng-container>
-
-                                    <div *ngIf="user.role !== 'employee'">
-                                        <!-- Name Column -->
-                                        <ng-container matColumnDef="employeeEmail">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
-                                            <td mat-cell *matCellDef="let row"> {{row.email}} </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div *ngIf="user.role !== 'manager'">
-                                        <ng-container matColumnDef="status">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div *ngIf="user.role === 'manager'">
-                                        <ng-container matColumnDef="status">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                                            <td mat-cell *matCellDef="let row">
-                                                <!-- Change Status -->
-                                                <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
-                                                    [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
-                                                <mat-menu #menu="matMenu">
-                                                    <button mat-menu-item (click)="statusUpdate(status, row.reqID)"
-                                                        *ngFor="let status of statuses">{{status | titlecase}}</button>
-                                                </mat-menu>
-                                            </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Department Column -->
-                                    <ng-container matColumnDef="download">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
-                                        <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
-                                            <button (click)="generatePdf(row)" mat-mini-fab color="accent"
-                                                aria-label="Example icon button with a plus one icon">
-                                                <mat-icon>download</mat-icon>
-                                            </button>
-                                        </td>
-                                    </ng-container>
-
-                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-                                    <!-- Row shown when there is no matching data. -->
-                                    <tr class="mat-row" *matNoDataRow>
-                                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
-                                    aria-label="Select page of users"></mat-paginator>
-                            </div>
-                        </div>
+                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">Transport Requests</h2>
+                    <div>
+                        <app-table [dataSource]="dataSource" [columnNames]="columnNames"
+                            [displayedColumns]="displayedColumns"></app-table>
                     </div>
                     <div class="flex center-center margin-10">
                         <button mat-raised-button class="" (click)="requestTransport()" *ngIf="user.role === 'employee'"
-                            color="primary">Request
-                            Transport</button>
+                            color="primary">Request transport</button>
+                    </div>
+                </div>
+
+            </mat-tab>
+            <mat-tab label="Approved Transport Requests">
+                <div>
+                    <h2 class="flex center-center no-margin"
+                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">userTransport</h2>
+                    <div>
+                        <app-table [dataSource]="dataSource" [columnNames]="columnNames"
+                            [displayedColumns]="displayedColumns"></app-table>
+                    </div>
+                    <div class="flex center-center margin-10">
+                        <button mat-raised-button class="" (click)="requestTransport()" *ngIf="user.role === 'employee'"
+                            color="primary">Request transport</button>
                     </div>
                 </div>
             </mat-tab>
-            <mat-tab label="Approved Transport Request">
-                <div class="full-width">
-                    <h3 *ngIf="!approvedDataSource">The are currently no approved requests a manager hasn't approved any request</h3>
-                    <div
-                        *ngIf="(user.role === 'employee' && approvedDataSource) || (user.role === 'operations personnel' && approvedDataSource) || (user.role === 'manager' && approvedDataSource)">
-                        <div class="table">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
-                            </mat-form-field>
-
-                            <div class="mat-elevation-z8 full-width">
-                                <table mat-table [dataSource]="approvedDataSource" matSort>
-
-                                    <!-- Department Column -->
-                                    <ng-container matColumnDef="transportType">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Transport Type </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.transportType}} </td>
-                                    </ng-container>
-
-                                    <!-- Surname Column -->
-                                    <ng-container matColumnDef="neededDate">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Needed Date </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.neededDate | date}} </td>
-                                    </ng-container>
-
-
-                                    <!-- Occupation Column -->
-                                    <ng-container matColumnDef="dropOffSpot">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Drop Off Spot </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.dropOffSpot}} </td>
-                                    </ng-container>
-
-                                    <!-- Occupation Column -->
-                                    <ng-container matColumnDef="pickUpSpot">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pick Up Spot </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.pickUpSpot}} </td>
-                                    </ng-container>
-
-                                    <!-- Name Column -->
-                                    <ng-container matColumnDef="pickUpReason">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pick Up Reason </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.pickUpReason}} </td>
-                                    </ng-container>
-
-                                    <div *ngIf="user.role !== 'employee'">
-                                        <!-- Name Column -->
-                                        <ng-container matColumnDef="employeeEmail">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
-                                            <td mat-cell *matCellDef="let row"> {{row.email}} </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div *ngIf="user.role !== 'manager'">
-                                        <ng-container matColumnDef="status">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div *ngIf="user.role === 'manager'">
-                                        <ng-container matColumnDef="status">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                                            <td mat-cell *matCellDef="let row">
-                                                <!-- Change Status -->
-                                                <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
-                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
-                                                    [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
-                                                <mat-menu #menu="matMenu">
-                                                    <button mat-menu-item (click)="statusUpdate(status, row.appID)"
-                                                        *ngFor="let status of statuses">{{status | titlecase}}</button>
-                                                </mat-menu>
-                                            </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Department Column -->
-                                    <ng-container matColumnDef="download">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
-                                        <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
-                                            <button (click)="generatePdf(row)" mat-mini-fab color="accent"
-                                                aria-label="Example icon button with a plus one icon">
-                                                <mat-icon>download</mat-icon>
-                                            </button>
-                                        </td>
-                                    </ng-container>
-
-                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-                                    <!-- Row shown when there is no matching data. -->
-                                    <tr class="mat-row" *matNoDataRow>
-                                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
-                                    aria-label="Select page of users"></mat-paginator>
-                            </div>
-                        </div>
+            <mat-tab label="Declined Transport Requests">
+                <div>
+                    <h2 class="flex center-center no-margin"
+                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">Transport Requests</h2>
+                    <div>
+                        <app-table [dataSource]="dataSource" [columnNames]="columnNames"
+                            [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                </div>
-            </mat-tab>
-            <mat-tab label="Rejected Transport Requests">
-                <div class="full-width">
-                    <h3 *ngIf="!rejectedDataSource">The are currently no rejected requests a manager hasn't rejected any request</h3>
-                    <div
-                        *ngIf="(user.role === 'employee' && rejectedDataSource) || (user.role === 'operations personnel' && rejectedDataSource) || (user.role === 'manager' && rejectedDataSource)">
-                        <div class="table">
-                            <mat-form-field>
-                                <mat-label>Filter</mat-label>
-                                <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
-                            </mat-form-field>
-
-                            <div class="mat-elevation-z8 full-width">
-                                <table mat-table [dataSource]="rejectedDataSource" matSort>
-
-                                    <!-- Department Column -->
-                                    <ng-container matColumnDef="transportType">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Transport Type </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.transportType}} </td>
-                                    </ng-container>
-
-                                    <!-- Surname Column -->
-                                    <ng-container matColumnDef="neededDate">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Needed Date </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.neededDate | date}} </td>
-                                    </ng-container>
-
-
-                                    <!-- Occupation Column -->
-                                    <ng-container matColumnDef="dropOffSpot">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Drop Off Spot </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.dropOffSpot}} </td>
-                                    </ng-container>
-
-                                    <!-- Occupation Column -->
-                                    <ng-container matColumnDef="pickUpSpot">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pick Up Spot </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.pickUpSpot}} </td>
-                                    </ng-container>
-
-                                    <!-- Name Column -->
-                                    <ng-container matColumnDef="pickUpReason">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Pick Up Reason </th>
-                                        <td mat-cell *matCellDef="let row"> {{row.pickUpReason}} </td>
-                                    </ng-container>
-
-                                    <div *ngIf="user.role !== 'employee'">
-                                        <!-- Name Column -->
-                                        <ng-container matColumnDef="employeeEmail">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
-                                            <td mat-cell *matCellDef="let row"> {{row.email}} </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div *ngIf="user.role !== 'manager'">
-                                        <ng-container matColumnDef="status">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                                            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Occupation Column -->
-                                    <div *ngIf="user.role === 'manager'">
-                                        <ng-container matColumnDef="status">
-                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                                            <td mat-cell *matCellDef="let row">
-                                                <!-- Change Status -->
-                                                <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                                    [disabled]="row.status === 'Approved' || row.status === 'Rejected'"
-                                                    [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
-                                                    [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
-                                                <mat-menu #menu="matMenu">
-                                                    <button mat-menu-item (click)="statusUpdate(status, row.appID)"
-                                                        *ngFor="let status of statuses">{{status | titlecase}}</button>
-                                                </mat-menu>
-                                            </td>
-                                        </ng-container>
-                                    </div>
-
-                                    <!-- Department Column -->
-                                    <ng-container matColumnDef="download">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
-                                        <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
-                                            <button (click)="generatePdf(row)" mat-mini-fab color="accent"
-                                                aria-label="Example icon button with a plus one icon">
-                                                <mat-icon>download</mat-icon>
-                                            </button>
-                                        </td>
-                                    </ng-container>
-
-                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-                                    <!-- Row shown when there is no matching data. -->
-                                    <tr class="mat-row" *matNoDataRow>
-                                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
-                                    aria-label="Select page of users"></mat-paginator>
-                            </div>
-                        </div>
+                    <div class="flex center-center margin-10">
+                        <button mat-raised-button class="" (click)="requestTransport()" *ngIf="user.role === 'employee'"
+                            color="primary">Request transport</button>
                     </div>
                 </div>
             </mat-tab>

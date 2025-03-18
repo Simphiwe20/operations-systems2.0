@@ -20,16 +20,15 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   styleUrls: ['./visa.component.scss']
 })
 export class VisaComponent {
-  displayedColumns: string[] = ['visaType', 'neededDate', 'status', 'download'];
+  displayedColumns: string[];
   dataSource!: MatTableDataSource<any>;
   user: any;
   userVisas: any;
   reqVisa: any = [];
   statuses: string[] = ['Approved', 'Declined']
-  approvedDataSource!: [];
-  rejectedDataSource!: [];
-  approvedVisa: any[] = []
-  rejectedVisa: any[] = []
+  approvedDataSource!: MatTableDataSource<any>;
+  rejectedDataSource!: MatTableDataSource<any>;
+  columnNames: string[] = []
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -40,8 +39,10 @@ export class VisaComponent {
     console.log(this.user)
     if (this.user.role === 'employee') {
       this.displayedColumns = ['visaType', 'neededDate', 'status', 'download'];
+      this.columnNames = ['Visa Type', 'Needed Date', 'Status', 'Download']
     } else {
-      this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download']
+      this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download'];
+      this.columnNames = ['Visa Type', 'Needed Date', 'Employee Email', 'Status', 'Download']
     }
     this.getVisas()
   }
@@ -93,14 +94,14 @@ export class VisaComponent {
     }
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  // applyFilter(event: Event) {
+  //   const filterValue = (event.target as HTMLInputElement).value;
+  //   this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
+  //   if (this.dataSource.paginator) {
+  //     this.dataSource.paginator.firstPage();
+  //   }
+  // }
 
   RequestVisa(): void {
     let dialogRef = this.matDialog.open(VisaFormComponent)
@@ -125,7 +126,8 @@ export class VisaComponent {
       }
     })
 
-    this.dataSource = this.reqVisa
+    this.dataSource = this.userVisas
+    console.log('this.dataSource: ', this.dataSource)
   }
 
   getVisas() {
@@ -133,7 +135,6 @@ export class VisaComponent {
       .subscribe({
         next: (_res) => {
           this.userVisas = _res
-          console.log(this.userVisas)
           this.moveVisas()
           if (this.user.role === 'employee') {
             this.dataSource = this.userVisas.filter((visa: any) => {
@@ -159,9 +160,12 @@ export class VisaComponent {
           }
           else {
             this.dataSource = this.userVisas
+            console.log('this.dataSource.........: ',   this.dataSource)
+
           }
-          console.log(this.userVisas)
-          console.log(this.dataSource)
+          console.log('this.userVisas: ', this.userVisas)
+          // console.log('this.dataSource: ',   this.dataSource)
+
         },
         error: (err) => { console.log(err) },
         complete: () => { }
@@ -191,6 +195,18 @@ export class VisaComponent {
 
   async updateStorageStatus(status: string, travel: any) {
     await this.sharedService.updateRequest('/updateVisa', travel)
+  }
+
+
+  selectedIndex(event: any) {
+    console.log('EVENT: ', event)
+    if (event == 1) {
+      this.dataSource = this.approvedDataSource
+    } else if (event == 2) {
+      this.dataSource = this.rejectedDataSource
+    } else {
+      this.dataSource = this.reqVisa
+    }
   }
 
   generatePdf(row: any): void {

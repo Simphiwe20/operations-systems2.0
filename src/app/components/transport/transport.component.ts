@@ -22,12 +22,10 @@ export class TransportComponent {
   dataSource!: MatTableDataSource<any>;
   user: any;
   userTransport: any;
-  // reqTransport: any[] = []
   statuses: string[] = ['Approved', 'Rejected']
-  approvedDataSource!: [];
-  rejectedDataSource!: [];
-  approvedTransport: any[] = []
-  rejectedTransport: any[] = []
+  approvedDataSource!: MatTableDataSource<any>;
+  rejectedDataSource!: MatTableDataSource<any>;
+  columnNames: string[] = []
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -47,13 +45,12 @@ export class TransportComponent {
     this.getTransports()
     this.moveTransport()
 
-
-
   }
 
 
 
   ngAfterViewInit() {
+    this.columnNames = ['Transport Type', 'Needed Date', 'Pick Up Spot', 'Pick Up Reason', 'Drop Off Spot', 'Employee Email', 'Status', 'Download']
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -111,6 +108,18 @@ export class TransportComponent {
         complete: () => { }
       })
 
+  }
+
+  
+  selectedIndex(event: any) {
+    console.log('EVENT: ', event)
+    if(event == 1) {
+      this.dataSource = this.approvedDataSource
+    }else if(event == 2) {
+      this.dataSource = this.rejectedDataSource
+    }else {
+      this.dataSource = this.userTransport
+    }
   }
 
 
