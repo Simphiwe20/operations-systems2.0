@@ -31,7 +31,8 @@ import { PieChartComponent } from './shared/pie-chart/pie-chart.component';
 import { LineGraphComponent } from './shared/line-graph/line-graph.component';
 import { RequestCardsComponent } from './shared/request-cards/request-cards.component';
 import { LeavesCardComponent } from './shared/leaves-card/leaves-card.component';
-import { TableComponent } from './shared/table/table.component'
+import { TableComponent } from './shared/table/table.component';
+import { LoaderComponent } from './shared/loader/loader.component'
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { TableComponent } from './shared/table/table.component'
     LineGraphComponent,
     RequestCardsComponent,
     LeavesCardComponent,
-    TableComponent
+    TableComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,

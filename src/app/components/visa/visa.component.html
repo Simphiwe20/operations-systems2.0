@@ -1,5 +1,5 @@
 <div class="full-height full-width flex">
-    <div class="height-90 full-width  padding-10px">
+    <div class="standard-height full-width  padding-10px">
         <div *ngIf="(!userVisas?.length && user.role === 'employee')" class="full-height">
             <div class="flex jc-end">
                 <button mat-raised-button class="" (click)="RequestVisa()" *ngIf="user.role === 'employee'"
@@ -10,7 +10,7 @@
                 <!-- <small>No request</small> -->
             </div>
         </div>
-        <mat-tab-group (selectedIndexChange)="selectedIndex($event)"
+        <mat-tab-group (selectedIndexChange)="selectedIndex($event)" class="full-height"
             *ngIf="(user.role === 'employee' && userVisas?.length) || (user.role === 'operations personnel' && userVisas?.length) || (user.role === 'manager' && userVisas?.length)">
             <mat-tab label="Leaves">
                 <div class="full-width">
@@ -22,7 +22,7 @@
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex center-center margin-10">
+                    <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="RequestVisa()" *ngIf="user.role === 'employee'"
                             color="primary">Request Visa</button>
                     </div>
@@ -37,7 +37,7 @@
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex center-center margin-10">
+                    <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="RequestVisa()" *ngIf="user.role === 'employee'"
                             color="primary">Request Visa</button>
                     </div>
@@ -51,12 +51,15 @@
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex center-center margin-10">
+                    <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="RequestVisa()" *ngIf="user.role === 'employee'"
                             color="primary">Request Visa</button>
                     </div>
                 </div>
             </mat-tab>
         </mat-tab-group>
+    </div>
+    <div class="overlay" *ngIf="showLoader">
+        <div class="loader"></div>
     </div>
 </div>

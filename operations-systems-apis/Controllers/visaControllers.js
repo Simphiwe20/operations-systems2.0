@@ -5,6 +5,7 @@ module.exports = {
         try {
             let payload = {...req.body}
             let newVisa = visa(payload)
+            
             console.log(newVisa)
             let result = await newVisa.save()
             console.log(result)

@@ -1,14 +1,12 @@
-<div>
-    <div class="table">
+<div class="full-height">
+    <div class="full-height">
         <mat-form-field>
             <mat-label>Filter</mat-label>
             <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
         </mat-form-field>
 
-        <div class="mat-elevation-z8 full-width">
+        <div class="mat-elevation-z8 table-container full-width">
             <table mat-table [dataSource]="dataSource" matSort>
-                
-                <!-- Surname Column -->
                 <ng-container *ngFor="let column of displayedColumns, let i = index" [matColumnDef]="column">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNames[i] }} </th>
                     <td mat-cell *matCellDef="let row"> 
@@ -16,64 +14,6 @@
                         <mat-icon *ngIf="i == displayedColumns.length - 1 " class="pointer">download</mat-icon>
                     </td>
                 </ng-container>
-
-                <!-- Department Column -->
-                <!-- <ng-container matColumnDef="checkInDate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Check In Date </th>
-                    <td mat-cell *matCellDef="let row"> {{row.checkInDate | date}} </td>
-                </ng-container> -->
-
-                <!-- Occupation Column -->
-                <!-- <ng-container matColumnDef="checkOutDate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Check Out Date </th>
-                    <td mat-cell *matCellDef="let row"> {{row.checkOutDate | date}} </td>
-                </ng-container> -->
-
-
-                <!-- <div *ngIf="user.role !== 'employee'"> -->
-                    <!-- Name Column -->
-                    <!-- <ng-container matColumnDef="employeeEmail">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Employee Email </th>
-                        <td mat-cell *matCellDef="let row"> {{row.requestedByEmail}} </td>
-                    </ng-container>
-                </div> -->
-
-                <!-- Occupation Column -->
-                <!-- <div *ngIf="user.role !== 'manager'">
-                    <ng-container matColumnDef="status">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                        <td mat-cell *matCellDef="let row"> {{row.status}} </td>
-                    </ng-container>
-                </div> -->
-
-                <!-- Occupation Column -->
-                <!-- <div *ngIf="user.role === 'manager'">
-                    <ng-container matColumnDef="status">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-                        <td mat-cell *matCellDef="let row"> -->
-                            <!-- Change Status -->
-                            <!-- <button mat-raised-button matTooltip="Update status" id='approved-btn'
-                                [color]="row.status === 'Rejected' ? 'accent' : row.status === 'Approved' ? 'primary' : 'warn' "
-                                [matMenuTriggerFor]="menu">{{row.status | titlecase}}</button>
-                            <mat-menu #menu="matMenu">
-                                <button mat-menu-item (click)="statusUpdate(status, row.reqID)"
-                                    *ngFor="let status of statuses">{{status | titlecase}}</button>
-                            </mat-menu>
-                        </td>
-                    </ng-container>
-                </div> -->
-
-                <!-- Department Column -->
-                <!-- <ng-container matColumnDef="download">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Download </th>
-                    <td mat-cell *matCellDef="let row, let i = index" class="download pointer">
-                        <button (click)="generatePdf(row)" mat-mini-fab color="accent"
-                            aria-label="Example icon button with a plus one icon">
-                            <mat-icon>download</mat-icon>
-                        </button>
-                    </td>
-                </ng-container> -->
-
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 

@@ -6,9 +6,6 @@
 
     </div>
     <div class="full-width">
-        <!-- <h2 class="flex center-center">View, Edit and Delete Policies</h2> -->
-        <!-- <h3 *ngIf="!dataSource">Currently the are no policies, Click the button below to
-            add policies for employees to view and download </h3> -->
         <div class="table">
             <mat-form-field>
                 <mat-label>Filter</mat-label>
@@ -58,5 +55,8 @@
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
             </div>
         </div>
+    </div>
+    <div class="overlay" *ngIf="showLoader">
+        <div class="loader"></div>
     </div>
 </div>

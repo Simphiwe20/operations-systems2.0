@@ -18,6 +18,7 @@ export class PoliciesComponent implements AfterViewInit {
   user: any;
   documentContent!: string;
   policyDocs: any;
+  showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -43,6 +44,7 @@ export class PoliciesComponent implements AfterViewInit {
 
 
   readDocument(fileChangeEvent: Event) {
+    this.showLoader = true;
     const file = (fileChangeEvent.target as HTMLInputElement).files![0];
     const formData = new FormData()
     formData.append('file', file)
@@ -51,9 +53,13 @@ export class PoliciesComponent implements AfterViewInit {
     this.api.genericPostAPI('/upload', formData)
       .subscribe({
         next: (res: any) => {
-          this.snackBar.open(res.message, 'OK')
+          this.snackBar.open(res.message, 'OK');
+          this.showLoader = false;
         },
-        error: (err) => { console.log("ERR: ", err) }
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK'), {duration: 3000} 
+         }
       })
   }
 
@@ -82,14 +88,17 @@ export class PoliciesComponent implements AfterViewInit {
   }
 
   getPolicyDocs() {
+    this.showLoader = true;
     this.api.genericGetAPI('/files')
       .subscribe({
         next: (docs: any) => {
           this.dataSource = new MatTableDataSource(docs)
-          console.log('this.dataSource: ', this.dataSource)
+          console.log('this.dataSource: ', this.dataSource) 
+          this.showLoader = false;
         },
         error: (err) => {
-          console.log("ERROR: ", err)
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
         }
       })
   }

@@ -30,6 +30,7 @@ export class LeaveComponent {
   approvedLeaves: any[] = []
   rejectedLeaves: any[] = []
   leave: any;
+  showLoader: boolean = true
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -53,6 +54,7 @@ export class LeaveComponent {
   }
 
   moveLeaves(): void {
+    this.showLoader = true;
     this.api.genericGetAPI('/get-leaves')
       .subscribe({
         next: (_res) => {
@@ -91,8 +93,12 @@ export class LeaveComponent {
               }
             })
           }
+          this.showLoader = false
         },
-        error: (err) => { console.log(err) },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+        },
         complete: () => { }
       })
     console.log(this.approvedDataSource)
@@ -116,6 +122,7 @@ export class LeaveComponent {
   applyLeave(): void {
     let dialogRef = this.matDialog.open(LeaveFormComponent)
     dialogRef.afterClosed().subscribe(res => {
+      this.showLoader = true;
       if (res) {
         this.api.genericGetAPI('/get-leaves')
           .subscribe({
@@ -127,9 +134,12 @@ export class LeaveComponent {
                   return leave
                 }
               })
-              console.log(this.dataSource)
+              this.showLoader = false;
             },
-            error: (err) => { console.log(err) },
+            error: (err) => {
+              this.showLoader = false;
+              this.snackBar.open(err.Error, 'OK')
+  , {duration: 3000}          },
             complete: () => { }
           })
         this.snackBar.open(res, 'OK', { duration: 3000 })
@@ -139,16 +149,17 @@ export class LeaveComponent {
 
   selectedIndex(event: any) {
     console.log('EVENT: ', event)
-    if(event == 1) {
+    if (event == 1) {
       this.dataSource = this.approvedDataSource
-    }else if(event == 2) {
+    } else if (event == 2) {
       this.dataSource = this.rejectedDataSource
-    }else {
+    } else {
       this.dataSource = this.userLeaves
     }
   }
 
   getLeaves() {
+    this.showLoader = true;
     this.api.genericGetAPI('/get-leaves')
       .subscribe({
         next: (_res) => {
@@ -175,18 +186,22 @@ export class LeaveComponent {
           } else {
             this.dataSource = this.userLeaves
           }
-          console.log('this.dataSource: ', this.dataSource)
+          this.showLoader = false;
         },
-        error: (err) => { console.log(err) },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK'), {duration: 3000} 
+        },
         complete: () => { }
       })
   }
 
   statusUpdate(status: string, appID: string): void {
+    this.showLoader = true;
     this.api.genericGetAPI('/get-leaves')
       .subscribe({
         next: (res) => {
-          this.userLeaves = res 
+          this.userLeaves = res
           this.userLeaves.forEach((leave: any, indx: number) => {
             if (leave.appID === appID) {
               if (status === 'Approved' || status === 'Declined') {
@@ -194,14 +209,19 @@ export class LeaveComponent {
               }
               leave['status'] = status;
               this.updateStorageStatus(status, leave)
-              if(status === 'Approved') {
+              if (status === 'Approved') {
                 this.sharedService.decrementLeaveDays(leave)
               }
               this.moveLeaves()
             }
           });
+          this.showLoader = false;
+
         },
-        error: () => { },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK'), {duration: 3000} 
+        },
         complete: () => { }
       })
   }

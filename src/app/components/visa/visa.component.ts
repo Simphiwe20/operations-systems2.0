@@ -29,6 +29,7 @@ export class VisaComponent {
   approvedDataSource!: MatTableDataSource<any>;
   rejectedDataSource!: MatTableDataSource<any>;
   columnNames: string[] = []
+  showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -94,18 +95,19 @@ export class VisaComponent {
     }
   }
 
-  // applyFilter(event: Event) {
-  //   const filterValue = (event.target as HTMLInputElement).value;
-  //   this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
-  //   if (this.dataSource.paginator) {
-  //     this.dataSource.paginator.firstPage();
-  //   }
-  // }
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
   RequestVisa(): void {
     let dialogRef = this.matDialog.open(VisaFormComponent)
     dialogRef.afterClosed().subscribe(res => {
+      this.showLoader = true
       if (res) {
         this.api.genericGetAPI('/getVisas')
           .subscribe({
@@ -118,8 +120,12 @@ export class VisaComponent {
               })
               this.dataSource = this.reqVisa
               this.snackBar.open(res, 'OK', { duration: 3000 })
+              this.showLoader = false
             },
-            error: () => { },
+            error: (err) => {
+              this.showLoader = false;
+              this.snackBar.open(err.Error, 'OK', {duration: 3000})
+            },
             complete: () => { }
           })
 
@@ -131,6 +137,7 @@ export class VisaComponent {
   }
 
   getVisas() {
+    this.showLoader = true
     this.api.genericGetAPI('/getVisas')
       .subscribe({
         next: (_res) => {
@@ -140,9 +147,11 @@ export class VisaComponent {
             this.dataSource = this.userVisas.filter((visa: any) => {
               if (visa.requestedByEmail === this.user.email) {
                 this.reqVisa.push(visa)
+                console.log('visa: ', visa)
                 return visa
               }
             })
+            console.log('this.dataSource.........', this.dataSource)
           } else if (this.user.role === 'manager') {
             this.userVisas = this.userVisas.filter((visa: any) => {
               if (visa.department === this.user.department) {
@@ -160,19 +169,23 @@ export class VisaComponent {
           }
           else {
             this.dataSource = this.userVisas
-            console.log('this.dataSource.........: ',   this.dataSource)
+            console.log('this.dataSource.........: ', this.dataSource)
 
           }
           console.log('this.userVisas: ', this.userVisas)
-          // console.log('this.dataSource: ',   this.dataSource)
+          this.showLoader = false
 
         },
-        error: (err) => { console.log(err) },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+        },
         complete: () => { }
       })
   }
 
   statusUpdate(status: string, reqID: string): void {
+    this.showLoader = true
     this.api.genericGetAPI('/getVisas')
       .subscribe({
         next: (res) => {
@@ -187,8 +200,12 @@ export class VisaComponent {
               this.moveVisas()
             }
           });
+          this.showLoader = false
         },
-        error: () => { },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+        },
         complete: () => { }
       })
   }

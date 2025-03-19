@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiServicesService } from 'src/app/api-service/api-services.service';
@@ -22,13 +23,14 @@ export class UsersComponent implements AfterViewInit {
   employees: any;
   statuses: any = ['active', 'disable']
   disabledUsers: any = [];
-  enabledUsers: any = []
+  enabledUsers: any = [];
+  showLoader: boolean = true;
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private sharedService: SharedServicesService, private api: ApiServicesService) {
+  constructor(private sharedService: SharedServicesService, private api: ApiServicesService, private snackBar: MatSnackBar) {
     this.getUsers()
     this.dataSource = new MatTableDataSource(this.users)
     console.log(this.users)
@@ -48,8 +50,12 @@ export class UsersComponent implements AfterViewInit {
           console.log('Inside the next: ', this.users)
           this.showUsers(res)
           this.moveUsers(res)
+          this.showLoader = false
         },
-        error: () => { },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+        },
         complete: () => { }
       })
   }
@@ -96,13 +102,18 @@ export class UsersComponent implements AfterViewInit {
       this.ExcelData = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]])
       console.log(this.ExcelData)
 
+      this.showLoader = true
       this.api.genericGetAPI('/get-users')
         .subscribe({
           next: (res) => {
             this.users = res
             this.checkUser(this.users)
+            this.showLoader = false
           },
-          error: (err) => { console.log(err) },
+          error: (err) => { 
+            this.showLoader = false;
+            this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+           },
           complete: () => { }
         })
       setTimeout(() => {
@@ -129,13 +140,17 @@ export class UsersComponent implements AfterViewInit {
 
   updateUserStatus(status: string, user: any): void {
     console.log(status)
+    this.showLoader = true
     this.users?.forEach((_user: any) => {
       if (user.email === _user.email) {
         _user['status'] = status
         this.api.genericUpdateAPI('/update-user', _user)
           .subscribe({
             next: (res) => { this.getUsers() },
-            error: (err) => { console.log(err) },
+            error: (err) => { 
+              this.showLoader = false;
+              this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+             },
             complete: () => { }
           })
       }

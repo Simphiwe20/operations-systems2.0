@@ -9,9 +9,6 @@ $bg-grey: grey;
 html,
 body {
     height: 100%;
-}
-
-body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
 }
@@ -94,6 +91,10 @@ body {
 
 .full-height {
     height: 100%;
+}
+
+.standard-height {
+    height: calc(100% - 20px);
 }
 
 .half-width {
@@ -278,4 +279,66 @@ canvas {
 
 .mat-mdc-tab-body-wrapper {
     height: 100%;
+}
+
+.table-container {
+    height: calc(100% - 50px);
+}
+
+app-table {
+    display: block;
+    height: 100%;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f8ff;
+    opacity: 0.9;
+}
+
+// loader
+.loader {
+    width: 40px;
+    height: 26px;
+    --c: no-repeat linear-gradient(#000 0 0);
+    background:
+        var(--c) 0 100%,
+        var(--c) 50% 100%,
+        var(--c) 100% 100%;
+    background-size: 8px calc(100% - 4px);
+    position: relative;
+}
+
+.loader:before {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #000;
+    left: 0;
+    top: 0;
+    animation:
+        l3-1 1.5s linear infinite alternate,
+        l3-2 0.75s cubic-bezier(0, 200, .8, 200) infinite;
+}
+
+@keyframes l3-1 {
+    100% {
+        left: calc(100% - 8px)
+    }
+}
+
+@keyframes l3-2 {
+    100% {
+        top: -0.1px
+    }
 }

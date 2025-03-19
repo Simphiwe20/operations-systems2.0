@@ -26,6 +26,7 @@ export class TransportComponent {
   approvedDataSource!: MatTableDataSource<any>;
   rejectedDataSource!: MatTableDataSource<any>;
   columnNames: string[] = []
+  showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -37,7 +38,7 @@ export class TransportComponent {
     if (this.user.role === 'manager') {
       this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail', 'status', 'download'];
     }
-    else if(this.user.role !== 'employee') {
+    else if (this.user.role !== 'employee') {
       this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail', 'status', 'download']
     }
     console.log(this.dataSource)
@@ -103,21 +104,26 @@ export class TransportComponent {
               }
             })
           }
+          this.showLoader = false
         },
-        error: (err) => { console.log(err) },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK')
+          console.log('ERR: ', err)
+        },
         complete: () => { }
       })
 
   }
 
-  
+
   selectedIndex(event: any) {
     console.log('EVENT: ', event)
-    if(event == 1) {
+    if (event == 1) {
       this.dataSource = this.approvedDataSource
-    }else if(event == 2) {
+    } else if (event == 2) {
       this.dataSource = this.rejectedDataSource
-    }else {
+    } else {
       this.dataSource = this.userTransport
     }
   }
@@ -127,6 +133,7 @@ export class TransportComponent {
     let dialogRef = this.matDialog.open(TransportFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
+        this.showLoader = true;
         this.api.genericGetAPI('/getTransport')
           .subscribe({
             next: (_res) => {
@@ -137,8 +144,13 @@ export class TransportComponent {
                   return transport
                 }
               })
+              this.showLoader = false;
             },
-            error: (err) => { console.log(err) },
+            error: (err) => {
+              this.showLoader = false;
+              this.snackBar.open(err.Error, 'OK')
+              console.log('ERR: ', err)
+            },
             complete: () => { }
           })
         this.snackBar.open(res, 'OK', { duration: 3000 })
@@ -147,6 +159,7 @@ export class TransportComponent {
   }
 
   getTransports() {
+    this.showLoader = true;
     this.api.genericGetAPI('/getTransport')
       .subscribe({
         next: (_res) => {
@@ -170,13 +183,18 @@ export class TransportComponent {
               }
             })
           }
+          this.showLoader = false;
         },
-        error: (err) => { console.log(err) },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+         },
         complete: () => { }
       })
   }
 
   statusUpdate(status: string, reqID: string): void {
+    this.showLoader = true;
     this.api.genericGetAPI('/getTransport')
       .subscribe({
         next: (res) => {
@@ -191,8 +209,12 @@ export class TransportComponent {
               this.moveTransport()
             }
           });
+          this.showLoader = false;
         },
-        error: () => { },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+        },
         complete: () => { }
       })
   }

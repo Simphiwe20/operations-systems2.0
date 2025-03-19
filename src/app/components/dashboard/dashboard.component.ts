@@ -6,6 +6,7 @@ import * as Chartjs from "chart.js";
 import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { ChartServicesService } from 'src/app/services/chart-services.service';
 import { NotificationsComponent } from 'src/app/popUps/notifications/notifications.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 Chart.register(PieController)
 Chart.register(...registerables)
@@ -26,6 +27,7 @@ export class DashboardComponent implements AfterViewInit{
   leaveSubmitted: number = 0
   leaveApproved: number = 0
   leaveRejected: number = 0
+  showLoader: boolean = true
 
   @ViewChild('leaveChart') leavesChart!: ElementRef
 
@@ -62,7 +64,7 @@ export class DashboardComponent implements AfterViewInit{
 
 
   constructor(private sharedService: SharedServicesService, private router: Router,
-    private api: ApiServicesService, private charts: ChartServicesService) {
+    private api: ApiServicesService, private charts: ChartServicesService, private snackBar: MatSnackBar) {
     this.user = this.sharedService.getData('session', 'user')
     this.charts.getLeavesNo(this.user)
     // this.charts.getDep(this.user)
@@ -76,19 +78,17 @@ export class DashboardComponent implements AfterViewInit{
             this.router.navigate(['/log-in'])
             sessionStorage.clear()
           }
+          this.showLoader = false
         },
-        error: (err) => { console.log(err) },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+         },
         complete: () => { }
       })
 
 
     this.TotUsers = this.charts.usersTot
-
-    // this.charts.getReqs(this.user)
-    // this.charts.getReqs(this.user)
-    console.log(this.charts.guesthouseReq)
-    console.log(this.charts.declined)
-    console.log(this.charts.pending)
 
   }
 

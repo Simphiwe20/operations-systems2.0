@@ -1,5 +1,5 @@
 <div class="full-height full-width flex">
-    <div class="height-90 full-width  padding-10px">
+    <div class="standard-height full-width  padding-10px">
         <div *ngIf="(!reqGuestHouse?.length && user.role === 'employee')" class="full-height">
             <div class="flex jc-end">
                 <button mat-raised-button class="" (click)="guesthouseRequest()" *ngIf="user.role === 'employee'"
@@ -10,19 +10,15 @@
                 <!-- <small>No request</small> -->
             </div>
         </div>
-        <mat-tab-group (selectedIndexChange)="selectedIndex($event)"
+        <mat-tab-group (selectedIndexChange)="selectedIndex($event)" class="full-height"
             *ngIf="(user.role === 'employee' && reqGuestHouse?.length) || (user.role === 'operations personnel' && userGuestHouse?.length) || (user.role === 'manager' && reqGuestHouse?.length)">
             <mat-tab label="GuestHouse Requests">
-                <div class="full-width">
-                    <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Make GuestHouse Request
-                    </h2>
-                    <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">GuestHouse Requests</h2>
-                    <div>
+                <div class="full-width flex column gap-05em full-height">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex center-center margin-10">
+                    <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="guesthouseRequest()"
                             *ngIf="user.role === 'employee'" color="primary">Request Guest House</button>
                     </div>
@@ -30,33 +26,32 @@
 
             </mat-tab>
             <mat-tab label="Approved GuestHouse Request">
-                <div>
-                    <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">GuestHouse Requests</h2>
-                    <div>
+                <div class="full-width flex column gap-05em full-height">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex center-center margin-10">
+                    <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="guesthouseRequest()"
                             *ngIf="user.role === 'employee'" color="primary">Request Guest House</button>
                     </div>
                 </div>
             </mat-tab>
             <mat-tab label="declined GuestHouse Request">
-                <div>
-                    <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">GuestHouse Requests</h2>
-                    <div>
+                <div class="full-width flex column gap-05em full-height">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex center-center margin-10">
+                    <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="guesthouseRequest()"
                             *ngIf="user.role === 'employee'" color="primary">Request Guest House</button>
                     </div>
                 </div>
             </mat-tab>
         </mat-tab-group>
+    </div>
+    <div class="overlay" *ngIf="showLoader">
+        <div class="loader"></div>
     </div>
 </div>

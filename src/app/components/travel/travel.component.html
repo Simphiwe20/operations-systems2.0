@@ -1,5 +1,5 @@
 <div class="full-height full-width flex">
-    <div class="height-90 full-width  padding-10px">
+    <div class="standard-height full-width  padding-10px">
         <div *ngIf="(!userTravels?.length && user.role === 'employee')" class="full-height">
             <div class="flex jc-end">
                 <button mat-raised-button class="" (click)="travelReq()" *ngIf="user.role === 'employee'"
@@ -14,7 +14,7 @@
             *ngIf="(user.role === 'employee' && userTravels?.length) || (user.role === 'operations personnel' && userTravels?.length) || (user.role === 'manager' && userTravels?.length)">
             <mat-tab label="Travel Requests">
                 <div class="full-width flex column gap-05em full-height">
-                    <div class="height-90">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
@@ -27,7 +27,7 @@
             </mat-tab>
             <mat-tab label="Approved Travel Requests">
                 <div class="flex column gap-05em full-height">
-                    <div class="height-90">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
@@ -39,7 +39,7 @@
             </mat-tab>
             <mat-tab label="Declined Travel Requests">
                 <div class="flex column gap-05em full-height">
-                    <div class="height-90">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
@@ -50,5 +50,8 @@
                 </div>
             </mat-tab>
         </mat-tab-group>
+    </div>
+    <div class="overlay" *ngIf="showLoader">
+        <div class="loader"></div>
     </div>
 </div>

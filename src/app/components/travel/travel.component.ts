@@ -26,7 +26,8 @@ export class TravelComponent implements AfterViewInit {
   statuses: string[] = ['Approved', 'Declined']
   approvedDataSource: any;
   rejectedDataSource: any;
-  columnNames!: string[]
+  columnNames!: string[];
+  showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -39,8 +40,6 @@ export class TravelComponent implements AfterViewInit {
     }
     this.getTravel()
     this.moveTravel()
-    console.log(this.approvedDataSource)
-    console.log(this.rejectedDataSource)
   }
 
   ngAfterViewInit() {
@@ -97,8 +96,13 @@ export class TravelComponent implements AfterViewInit {
               }
             })
           }
+          this.showLoader = false
+
         },
-        error: () => { },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
+        },
         complete: () => { }
       })
   }
@@ -107,6 +111,7 @@ export class TravelComponent implements AfterViewInit {
     let dialogRef = this.matDialog.open(TravelFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
+        this.showLoader = true
         this.api.genericGetAPI('/getTravel')
           .subscribe({
             next: (_res) => {
@@ -116,10 +121,15 @@ export class TravelComponent implements AfterViewInit {
                   return travel
                 }
               })
+              this.showLoader = false;
             },
-            error: () => { },
+            error: (err) => {
+              this.showLoader = false;
+              this.snackBar.open(err.Error, 'OK')
+            },
             complete: () => { }
           })
+        this.showLoader = false
         this.snackBar.open(res, 'OK', { duration: 3000 })
       }
     })
@@ -127,6 +137,7 @@ export class TravelComponent implements AfterViewInit {
   }
 
   statusUpdate(status: string, reqID: string): void {
+    this.showLoader = true
     this.api.genericGetAPI('/getTravel')
       .subscribe({
         next: (res) => {
@@ -141,8 +152,13 @@ export class TravelComponent implements AfterViewInit {
               this.moveTravel()
             }
           });
+          this.showLoader = false
+
         },
-        error: () => { },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
+        },
         complete: () => { }
       })
   }
@@ -174,8 +190,12 @@ export class TravelComponent implements AfterViewInit {
               }
             })
           }
+          this.showLoader = false
         },
-        error: () => { },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
+        },
         complete: () => { }
       })
   }
@@ -184,14 +204,14 @@ export class TravelComponent implements AfterViewInit {
     await this.sharedService.updateRequest('/updateTravel', travel)
   }
 
-  
+
   selectedIndex(event: any) {
     console.log('EVENT: ', event)
-    if(event == 1) {
+    if (event == 1) {
       this.dataSource = this.approvedDataSource
-    }else if(event == 2) {
+    } else if (event == 2) {
       this.dataSource = this.rejectedDataSource
-    }else {
+    } else {
       this.dataSource = this.userTravels
     }
   }

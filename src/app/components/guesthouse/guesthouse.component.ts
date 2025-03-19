@@ -30,6 +30,7 @@ export class GuesthouseComponent {
   approvedDataSource!: MatTableDataSource<any>;
   declinedDataSource!: MatTableDataSource<any>;
   statuses: string[] = ['Approved', 'declined']
+  showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -91,9 +92,15 @@ export class GuesthouseComponent {
               }
             })
           }
+          this.showLoader = false
+
         },
-        error: (err) => { console.log(err) },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+        },
         complete: () => { }
+
       })
 
   }
@@ -115,11 +122,11 @@ export class GuesthouseComponent {
 
   selectedIndex(event: any) {
     console.log('EVENT: ', event)
-    if(event == 1) {
+    if (event == 1) {
       this.dataSource = this.approvedDataSource
-    }else if(event == 2) {
+    } else if (event == 2) {
       this.dataSource = this.declinedDataSource
-    }else {
+    } else {
       this.dataSource = this.userGuestHouse
     }
   }
@@ -129,10 +136,10 @@ export class GuesthouseComponent {
     dialogRef.afterClosed().subscribe(res => {
       console.log(res)
       if (res) {
+        this.showLoader = true;
         this.snackBar.open(res, 'OK', { duration: 3000 })
         this.api.genericGetAPI('/getGHRequests')
           .subscribe({
-            error: (err) => { console.log(err) },
             next: (_res) => {
               this.reqGuestHouse = _res
               this.dataSource = this.reqGuestHouse.filter((guesthouse: any) => {
@@ -140,17 +147,25 @@ export class GuesthouseComponent {
                   return guesthouse
                 }
               })
-            }, complete: () => { }
+              this.showLoader = false;
+            }, 
+            error: (err) => { 
+              this.showLoader = false;
+              this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+            },
+            complete: () => { }
           })
       }
     })
   }
 
   statusUpdate(status: string, reqID: string): void {
+    this.showLoader = true;
+
     this.api.genericGetAPI('/getGHRequests')
       .subscribe({
         next: (res) => {
-          this.userGuestHouse = res 
+          this.userGuestHouse = res
           this.userGuestHouse.forEach((travel: any, indx: number) => {
             if (travel.reqID === reqID) {
               if (status === 'Approved' || status === 'Declined') {
@@ -161,8 +176,13 @@ export class GuesthouseComponent {
               this.moveGuestHouse()
             }
           });
+          this.showLoader = false;
+
         },
-        error: () => { },
+        error: (err) => {
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+         },
         complete: () => { }
       })
   }
@@ -172,6 +192,8 @@ export class GuesthouseComponent {
   }
 
   showGuestHouse() {
+    this.showLoader = true;
+
     this.api.genericGetAPI('/getGHRequests')
       .subscribe({
         next: (_res) => {
@@ -192,9 +214,13 @@ export class GuesthouseComponent {
               }
             })
           }
+          this.showLoader = false;
 
         },
-        error: (err) => { console.log(err) },
+        error: (err) => { 
+          this.showLoader = false;
+          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+         },
         complete: () => { }
       })
   }
