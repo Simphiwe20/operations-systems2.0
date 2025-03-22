@@ -4,6 +4,7 @@
 $primary-color: white;
 $bg-color: #252525;
 $bg-grey: grey;
+$light-grey: lightgray;
 
 
 html,
@@ -163,6 +164,10 @@ body {
 
 .padding-10px {
     padding: 10px;
+}
+
+.padding-0px-10px {
+    padding: 0px 10px;
 }
 
 #approved-btn[disabled] {
@@ -340,5 +345,46 @@ app-table {
 @keyframes l3-2 {
     100% {
         top: -0.1px
+    }
+}
+
+// mat table custom styles
+
+.search-inp {
+    .mdc-text-field--filled {
+        height: 44px !important;
+    }
+}
+
+.custom-table {
+
+    .mat-mdc-table .mdc-data-table__header-row {
+        height: 33px;
+    }
+
+    .mat-mdc-paginator .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+
+    .mat-mdc-form-field-flex,
+    .mat-mdc-paginator-range-actions {
+        height: 32px !important;
+    }
+
+    .mat-mdc-paginator-container {
+        min-height: auto;
+    }
+
+    .mat-mdc-table .mdc-data-table__row {
+        height: 32px;
+    }
+
+    .mat-mdc-paginator-container {
+        padding: 8px !important;
+    }
+
+    thead {
+        background: $light-grey !important;
     }
 }

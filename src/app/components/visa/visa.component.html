@@ -12,13 +12,10 @@
         </div>
         <mat-tab-group (selectedIndexChange)="selectedIndex($event)" class="full-height"
             *ngIf="(user.role === 'employee' && userVisas?.length) || (user.role === 'operations personnel' && userVisas?.length) || (user.role === 'manager' && userVisas?.length)">
-            <mat-tab label="Leaves">
-                <div class="full-width">
-                    <h2 class="flex center-center no-margin" *ngIf="user.role === 'employee'">Request Visa
-                    </h2>
-                    <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">Visas</h2>
-                    <div>
+            <mat-tab label="Visas Request">
+                <div class="full-width flex column gap-05em full-height">
+    
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
@@ -29,11 +26,9 @@
                 </div>
 
             </mat-tab>
-            <mat-tab label="Approved Leaves">
-                <div>
-                    <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">Visas</h2>
-                    <div>
+            <mat-tab label="Approved Visas Request">
+                <div class="flex column gap-05em full-height">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
@@ -43,11 +38,9 @@
                     </div>
                 </div>
             </mat-tab>
-            <mat-tab label="Declined Leaves">
-                <div>
-                    <h2 class="flex center-center no-margin"
-                        *ngIf="user.role === 'operations personnel' || user.role === 'manager'">Visas</h2>
-                    <div>
+            <mat-tab label="Declined Visas Request">
+                <div class="flex column gap-05em full-height">
+                    <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>

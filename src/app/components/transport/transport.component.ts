@@ -48,25 +48,13 @@ export class TransportComponent {
 
   }
 
-
-
   ngAfterViewInit() {
     this.columnNames = ['Transport Type', 'Needed Date', 'Pick Up Spot', 'Pick Up Reason', 'Drop Off Spot', 'Employee Email', 'Status', 'Download']
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
 
   moveTransport(): void {
-    this.api.genericGetAPI('getTransport')
+    this.api.genericGetAPI('/getTransport')
       .subscribe({
         next: (_res) => {
           this.userTransport = _res
@@ -108,7 +96,7 @@ export class TransportComponent {
         },
         error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK')
+          this.snackBar.open(err.Error, 'OK', {duration: 3000})
           console.log('ERR: ', err)
         },
         complete: () => { }
@@ -188,6 +176,7 @@ export class TransportComponent {
         error: (err) => { 
           this.showLoader = false;
           this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+          console.log("ERRORS: ", err)
          },
         complete: () => { }
       })

@@ -44,16 +44,6 @@ export class TravelComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.columnNames = ['Travel Type', 'Return Date', 'Travel Reason', 'Departure Date', 'Status', 'Download']
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   moveTravel(): void {

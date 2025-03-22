@@ -1,4 +1,15 @@
 .table-container {
     height: calc(100% - 78px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.table {
+    height: calc(100% - 32px);
     overflow: auto;
+}
+
+.table-data {
+    height: 200px;
 }

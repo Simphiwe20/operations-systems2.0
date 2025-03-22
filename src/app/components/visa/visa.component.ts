@@ -31,9 +31,6 @@ export class VisaComponent {
   columnNames: string[] = []
   showLoader: boolean = true
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
     private snackBar: MatSnackBar, private api: ApiServicesService) {
     this.user = this.sharedService.getData('session', 'user')
@@ -46,12 +43,6 @@ export class VisaComponent {
       this.columnNames = ['Visa Type', 'Needed Date', 'Employee Email', 'Status', 'Download']
     }
     this.getVisas()
-  }
-
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   moveVisas(): void {
@@ -92,15 +83,6 @@ export class VisaComponent {
           return visa
         }
       })
-    }
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
     }
   }
 
