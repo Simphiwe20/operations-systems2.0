@@ -1,6 +1,6 @@
 <div class="full-height full-width flex">
     <div class="standard-height full-width  padding-10px">
-        <div *ngIf="(!userLeaves?.length && user.role === 'employee')" class="full-height">
+        <div *ngIf="(!userLeaves?.length)" class="full-height">
             <div class="flex jc-end">
                 <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
                     color="primary">Apply Leave</button>
@@ -10,17 +10,18 @@
                 <!-- <small>No request</small> -->
             </div>
         </div>
+        <!-- Mat tab should show only if it is not an admin -->
         <mat-tab-group (selectedIndexChange)="selectedIndex($event)" class="full-height"
             *ngIf="(user.role === 'employee' && userLeaves?.length) || (user.role === 'operations personnel' && userLeaves?.length) || (user.role === 'manager' && userLeaves?.length)">
             <mat-tab label="Leaves">
                 <div class="full-width flex column gap-05em full-height">
                     <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
-                            [displayedColumns]="displayedColumns"></app-table>
+                            [displayedColumns]="displayedColumns" (sendStatus)="statusUpdate($event)"></app-table>
                     </div>
                     <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="applyLeave()"
-                            *ngIf="user.role === 'employee'" color="primary">Apply Leave</button>
+                        <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
+                            color="primary">Apply Leave</button>
                     </div>
                 </div>
 
@@ -32,8 +33,8 @@
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
                     <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="applyLeave()"
-                            *ngIf="user.role === 'employee'" color="primary">Apply Leave</button>
+                        <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
+                            color="primary">Apply Leave</button>
                     </div>
                 </div>
             </mat-tab>
@@ -44,12 +45,25 @@
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
                     <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="applyLeave()"
-                            *ngIf="user.role === 'employee'" color="primary">Apply Leave</button>
+                        <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
+                            color="primary">Apply Leave</button>
                     </div>
                 </div>
             </mat-tab>
         </mat-tab-group>
+        <!-- Show only if it is an admin logged in -->
+        <div *ngIf="user.role === 'admin' && userLeaves?.length">
+            <div class="full-width flex column gap-05em full-height">
+                <div class="table-container">
+                    <app-table [dataSource]="dataSource" [columnNames]="columnNames"
+                        [displayedColumns]="displayedColumns"></app-table>
+                </div>
+                <div class="flex jc-end margin-10 height-40px">
+                    <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
+                        color="primary">Apply Leave</button>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="overlay" *ngIf="showLoader">
         <div class="loader"></div>

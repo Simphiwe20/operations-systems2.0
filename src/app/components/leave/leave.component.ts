@@ -43,8 +43,8 @@ export class LeaveComponent {
     if (this.user.role === 'employee') {
       this.columnNames = ['Start Date', 'End Date', 'Leave  Type', 'Status', 'Download']
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
-    } else {
-      this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'employeeEmail', 'status', 'download']
+    }else {
+      this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'email', 'status', 'download']
       this.columnNames = ['Start Date', 'End Date', 'Leave  Type', 'Employee Email', 'Status', 'Download']
     }
 
@@ -94,15 +94,20 @@ export class LeaveComponent {
             })
           }
           this.showLoader = false
+
+          if (this.user.role == 'admin') {
+            this.userLeaves = this.approvedDataSource
+          }
+
         },
         error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
         },
         complete: () => { }
       })
-    console.log(this.approvedDataSource)
-    console.log(this.rejectedDataSource)
+    console.log(+"this.userLeaves: ", this.userLeaves)
+    // console.log(this.rejectedDataSource)
   }
 
   applyLeave(): void {
@@ -125,7 +130,8 @@ export class LeaveComponent {
             error: (err) => {
               this.showLoader = false;
               this.snackBar.open(err.Error, 'OK')
-  , {duration: 3000}          },
+                , { duration: 3000 }
+            },
             complete: () => { }
           })
         this.snackBar.open(res, 'OK', { duration: 3000 })
@@ -173,47 +179,34 @@ export class LeaveComponent {
             this.dataSource = this.userLeaves
           }
           this.showLoader = false;
+          console.log('this.dataSource: ', this.dataSource)
         },
-        error: (err) => { 
+        error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK'), {duration: 3000} 
+          this.snackBar.open(err.Error, 'OK'), { duration: 3000 }
         },
         complete: () => { }
       })
   }
 
-  statusUpdate(status: string, appID: string): void {
+  statusUpdate(event: any): void {
     this.showLoader = true;
-    this.api.genericGetAPI('/get-leaves')
+    let updatedLeave = event.item
+    updatedLeave.status = event.status
+    updatedLeave.dateUpdated = new Date();
+    this.sharedService.decrementLeaveDays(updatedLeave)
+    this.updateStorageStatus(updatedLeave)
+  }
+
+  updateStorageStatus(leave: any) {
+    this.api.genericUpdateAPI('/updateLeave', leave)
       .subscribe({
         next: (res) => {
-          this.userLeaves = res
-          this.userLeaves.forEach((leave: any, indx: number) => {
-            if (leave.appID === appID) {
-              if (status === 'Approved' || status === 'Declined') {
-                leave['dateUpdated'] = new Date();
-              }
-              leave['status'] = status;
-              this.updateStorageStatus(status, leave)
-              if (status === 'Approved') {
-                this.sharedService.decrementLeaveDays(leave)
-              }
-              this.moveLeaves()
-            }
-          });
-          this.showLoader = false;
-
+          console.log('RESS: ', res)
+          this.moveLeaves()
         },
-        error: (err) => { 
-          this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK'), {duration: 3000} 
-        },
-        complete: () => { }
+        error: (err) => { console.log('ERR: ', err) }
       })
-  }
-
-  async updateStorageStatus(status: string, leave: any) {
-    await this.sharedService.updateRequest('/updateLeave', leave)
   }
 
   generatePdf(_row: any): void {

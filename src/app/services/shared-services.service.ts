@@ -105,7 +105,7 @@ export class SharedServicesService {
     })
   }
 
-  async updateRequest(path: string, payload: any) {
+  updateRequest(path: string, payload: any) {
     this.api.genericUpdateAPI(path, payload)
       .subscribe({
         next: (res) => { console.log(res) },

@@ -15,8 +15,14 @@
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNames[i] }} </th>
                         <div class="table-data">
                             <td mat-cell *matCellDef="let row">
-                                {{row[column]}}
-                                <mat-icon *ngIf="i == displayedColumns.length - 1 " class="pointer">download</mat-icon>
+                                <span *ngIf="column !== 'status' || column == 'status' && !(loggedInUser.role == 'manager')">{{row[column]}}</span>
+                                <button *ngIf="column == 'status' && loggedInUser.role == 'manager'" mat-button [matMenuTriggerFor]="menu" matTooltip="Update status">{{row[column]}}</button>
+                                <mat-icon *ngIf="(i == displayedColumns.length - 1)" class="pointer">download</mat-icon>
+                                <mat-menu #menu="matMenu">
+                                    <div *ngFor="let status of statuses">
+                                        <button (click)="actionStatusUpdate(status.value, row)" mat-menu-item>{{status.displayVal}}</button>
+                                    </div>
+                                </mat-menu>
                             </td>
                         </div>
                     </ng-container>
@@ -30,7 +36,8 @@
                     </tr>
                 </table>
             </div>
-            <mat-paginator (page)="pageEvent($event)" [length]="100" [pageSize]="10" [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page of users"></mat-paginator>
+            <mat-paginator (page)="pageEvent($event)" [length]="100" [pageSize]="10"
+                [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page of users"></mat-paginator>
         </div>
     </div>
 </div>
