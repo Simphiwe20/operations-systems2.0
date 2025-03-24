@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { flush } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,7 +21,8 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   styleUrls: ['./visa.component.scss']
 })
 export class VisaComponent {
-  displayedColumns: string[];
+  displayedColumns: string[] = ['visaType', 'neededDate', 'status', 'download'];
+  columnNames: string[] = ['Visa Type', 'Needed Date', 'Status', 'Download'];
   dataSource!: MatTableDataSource<any>;
   user: any;
   userVisas: any;
@@ -28,26 +30,22 @@ export class VisaComponent {
   statuses: string[] = ['Approved', 'Declined']
   approvedDataSource!: MatTableDataSource<any>;
   rejectedDataSource!: MatTableDataSource<any>;
-  columnNames: string[] = []
   showLoader: boolean = true
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
     private snackBar: MatSnackBar, private api: ApiServicesService) {
     this.user = this.sharedService.getData('session', 'user')
     console.log(this.user)
-    if (this.user.role === 'employee') {
-      this.displayedColumns = ['visaType', 'neededDate', 'status', 'download'];
-      this.columnNames = ['Visa Type', 'Needed Date', 'Status', 'Download']
-    } else {
-      this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download'];
-      this.columnNames = ['Visa Type', 'Needed Date', 'Employee Email', 'Status', 'Download']
-    }
+    if (this.user.role !== 'employee') {
+      this.displayedColumns = ['visaType', 'neededDate', 'requestedByEmail', 'status', 'download'];
+      this.columnNames = ['Visa Type', 'Needed Date', 'Email', 'Status', 'Download']
+    } 
     this.getVisas()
   }
 
   moveVisas(): void {
     if (this.user.role === 'employee') {
-      this.displayedColumns = ['visaType', 'neededDate', 'status', 'download'];
+      // this.displayedColumns = ['visaType', 'neededDate', 'status', 'download'];
       this.approvedDataSource = this.userVisas.filter((visa: any) => {
         if (visa.email === this.user.email && visa.status === 'Approved') {
           this.reqVisa.push(visa)
@@ -60,7 +58,7 @@ export class VisaComponent {
         }
       })
     } else if (this.user.role === 'manager') {
-      this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download'];
+      // this.displayedColumns = ['visaType', 'neededDate', 'employeeEmail', 'status', 'download'];
       this.approvedDataSource = this.userVisas.filter((visa: any) => {
         if (visa.department === this.user.department && visa.status === 'Approved') {
           this.reqVisa.push(visa)
@@ -106,7 +104,7 @@ export class VisaComponent {
             },
             error: (err) => {
               this.showLoader = false;
-              this.snackBar.open(err.Error, 'OK', {duration: 3000})
+              this.snackBar.open(err.Error, 'OK', { duration: 3000 })
             },
             complete: () => { }
           })
@@ -160,40 +158,30 @@ export class VisaComponent {
         },
         error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
         },
         complete: () => { }
       })
   }
 
-  statusUpdate(status: string, reqID: string): void {
-    this.showLoader = true
-    this.api.genericGetAPI('/getVisas')
+  statusUpdate(event: any): void {
+    this.showLoader = true;
+    let updatedRequest = event.item
+    updatedRequest.status = event.status
+    updatedRequest.dateUpdated = new Date();
+    this.updateStorageStatus(updatedRequest)
+  }
+
+  updateStorageStatus(updatedRequest: any) {
+    this.api.genericUpdateAPI('/updateVisa', updatedRequest)
       .subscribe({
         next: (res) => {
-          res = this.userVisas
-          this.userVisas.forEach((visa: any, indx: number) => {
-            if (visa.reqID === reqID) {
-              if (status === 'Approved' || status === 'Declined') {
-                visa['dateUpdated'] = new Date();
-              }
-              visa['status'] = status;
-              this.updateStorageStatus(status, visa)
-              this.moveVisas()
-            }
-          });
+          console.log('RESS: ', res)
+          this.moveVisas()
           this.showLoader = false
         },
-        error: (err) => {
-          this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000})
-        },
-        complete: () => { }
+        error: (err) => { console.log('ERR: ', err) }
       })
-  }
-
-  async updateStorageStatus(status: string, travel: any) {
-    await this.sharedService.updateRequest('/updateVisa', travel)
   }
 
 
@@ -204,7 +192,7 @@ export class VisaComponent {
     } else if (event == 2) {
       this.dataSource = this.rejectedDataSource
     } else {
-      this.dataSource = this.reqVisa
+      this.dataSource = this.userVisas
     }
   }
 

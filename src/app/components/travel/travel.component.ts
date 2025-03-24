@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,33 +17,33 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   templateUrl: './travel.component.html',
   styleUrls: ['./travel.component.scss']
 })
-export class TravelComponent implements AfterViewInit {
-  displayedColumns: string[] = ['travelType', 'returnDate', 'reasonForTravel', 'departureDate', 'employeeEmail', 'status', 'download'];
+export class TravelComponent implements OnInit {
+  displayedColumns: string[] = ['travelType', 'returnDate', 'reasonForTravel', 'departureDate', 'requestedByEmail', 'status', 'download'];
+  columnNames: string[] = ['Travel Type', 'Return Date', 'Travel Reason', 'Departure Date', 'Email', 'Status', 'Download'];
   dataSource!: MatTableDataSource<any>;
   user: any;
   userTravels: any;
   reqTravels: any[] = []
   statuses: string[] = ['Approved', 'Declined']
   approvedDataSource: any;
-  rejectedDataSource: any;
-  columnNames!: string[];
+  declinedDataSource: any;
   showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
-    private snackBar: MatSnackBar, private api: ApiServicesService) {
+    private snackBar: MatSnackBar, private api: ApiServicesService) { }
+
+  ngOnInit(): void {
     this.user = this.sharedService.getData('session', 'user')
     if (this.user.role === 'employee') {
       this.displayedColumns = ['travelType', 'returnDate', 'reasonForTravel', 'departureDate', 'status', 'download'];
+      this.columnNames = ['Travel Type', 'Return Date', 'Travel Reason', 'Departure Date', 'Status', 'Download'];
+
     }
     this.getTravel()
     this.moveTravel()
-  }
-
-  ngAfterViewInit() {
-    this.columnNames = ['Travel Type', 'Return Date', 'Travel Reason', 'Departure Date', 'Status', 'Download']
   }
 
   moveTravel(): void {
@@ -58,7 +58,7 @@ export class TravelComponent implements AfterViewInit {
                 return travel
               }
             })
-            this.rejectedDataSource = this.userTravels.filter((travel: any) => {
+            this.declinedDataSource = this.userTravels.filter((travel: any) => {
               if (travel.requestedByEmail === this.user.email && travel.status === 'Declined') {
                 return travel
               }
@@ -69,7 +69,7 @@ export class TravelComponent implements AfterViewInit {
                 return travel
               }
             })
-            this.rejectedDataSource = this.userTravels.filter((travel: any) => {
+            this.declinedDataSource = this.userTravels.filter((travel: any) => {
               if (travel.department === this.user.department && travel.status === 'Declined') {
                 return travel
               }
@@ -80,7 +80,7 @@ export class TravelComponent implements AfterViewInit {
                 return travel
               }
             })
-            this.rejectedDataSource = this.userTravels.filter((travel: any) => {
+            this.declinedDataSource = this.userTravels.filter((travel: any) => {
               if (travel.status === 'Declined') {
                 return travel
               }
@@ -126,33 +126,6 @@ export class TravelComponent implements AfterViewInit {
 
   }
 
-  statusUpdate(status: string, reqID: string): void {
-    this.showLoader = true
-    this.api.genericGetAPI('/getTravel')
-      .subscribe({
-        next: (res) => {
-          res = this.userTravels
-          this.userTravels.forEach((travel: any, indx: number) => {
-            if (travel.reqID === reqID) {
-              if (status === 'Approved' || status === 'Declined') {
-                travel['dateUpdated'] = new Date();
-              }
-              travel['status'] = status;
-              this.updateStorageStatus(status, travel)
-              this.moveTravel()
-            }
-          });
-          this.showLoader = false
-
-        },
-        error: (err) => {
-          this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
-        },
-        complete: () => { }
-      })
-  }
-
   getTravel() {
     this.api.genericGetAPI('/getTravel')
       .subscribe({
@@ -190,17 +163,31 @@ export class TravelComponent implements AfterViewInit {
       })
   }
 
-  async updateStorageStatus(status: string, travel: any) {
-    await this.sharedService.updateRequest('/updateTravel', travel)
+  statusUpdate(event: any): void {
+    this.showLoader = true;
+    let updatedRequest = event.item
+    updatedRequest.status = event.status
+    updatedRequest.dateUpdated = new Date();
+    this.updateStorageStatus(updatedRequest)
   }
 
+  updateStorageStatus(updatedRequest: any) {
+    this.api.genericUpdateAPI('/updateTravel', updatedRequest)
+      .subscribe({
+        next: (res) => {
+          console.log('RESS: ', res)
+          this.moveTravel()
+        },
+        error: (err) => { console.log('ERR: ', err) }
+      })
+  }
 
   selectedIndex(event: any) {
     console.log('EVENT: ', event)
     if (event == 1) {
       this.dataSource = this.approvedDataSource
     } else if (event == 2) {
-      this.dataSource = this.rejectedDataSource
+      this.dataSource = this.declinedDataSource
     } else {
       this.dataSource = this.userTravels
     }

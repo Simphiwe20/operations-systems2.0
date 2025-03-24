@@ -43,7 +43,7 @@ export class LeaveComponent {
     if (this.user.role === 'employee') {
       this.columnNames = ['Start Date', 'End Date', 'Leave  Type', 'Status', 'Download']
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'status', 'download'];
-    }else {
+    } else {
       this.displayedColumns = ['startDate', 'endDate', 'leaveType', 'email', 'status', 'download']
       this.columnNames = ['Start Date', 'End Date', 'Leave  Type', 'Employee Email', 'Status', 'Download']
     }
@@ -157,17 +157,11 @@ export class LeaveComponent {
         next: (_res) => {
           this.userLeaves = _res
           if (this.user.role === 'employee') {
-            this.dataSource = this.userLeaves.filter((leave: any) => {
-              if (leave.email === this.user.email) {
-                return leave
-              }
-            })
+            this.dataSource = this.userLeaves.filter((leave: any) => leave.email === this.user.email)
+            console.log('DONE >>>>> employee', this.dataSource)
           } else if (this.user.role === 'manager') {
-            this.dataSource = this.userLeaves.filter((leave: any) => {
-              if (leave.department === this.user.department) {
-                return leave
-              }
-            })
+            this.dataSource = this.userLeaves.filter((leave: any) => leave.department === this.user.department)
+            console.log('DONE >>>>> manager')
           } else if (this.user.role = 'admin') {
             this.dataSource = this.userLeaves.filter((leave: any) => {
               if (leave.status === 'Approved') {
@@ -175,6 +169,7 @@ export class LeaveComponent {
                 return leave
               }
             })
+            console.log('DONE >>>>> admin')
           } else {
             this.dataSource = this.userLeaves
           }

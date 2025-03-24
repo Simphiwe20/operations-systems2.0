@@ -32,10 +32,6 @@
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
-                            color="primary">Apply Leave</button>
-                    </div>
                 </div>
             </mat-tab>
             <mat-tab label="Declined Leaves">
@@ -43,10 +39,6 @@
                     <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
-                    </div>
-                    <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
-                            color="primary">Apply Leave</button>
                     </div>
                 </div>
             </mat-tab>
@@ -57,10 +49,6 @@
                 <div class="table-container">
                     <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                         [displayedColumns]="displayedColumns"></app-table>
-                </div>
-                <div class="flex jc-end margin-10 height-40px">
-                    <button mat-raised-button class="" (click)="applyLeave()" *ngIf="user.role === 'employee'"
-                        color="primary">Apply Leave</button>
                 </div>
             </div>
         </div>

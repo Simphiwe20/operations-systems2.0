@@ -28,28 +28,20 @@ export class GuesthouseComponent {
   userGuestHouse: any;
   reqGuestHouse: any = []
   approvedDataSource!: MatTableDataSource<any>;
-  declinedDataSource!: MatTableDataSource<any>;
-  statuses: string[] = ['Approved', 'declined']
+  declinedDataSource!: MatTableDataSource<any>
   showLoader: boolean = true
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
     private snackBar: MatSnackBar, private api: ApiServicesService) {
     this.showGuestHouse()
     this.user = this.sharedService.getData('session', 'user')
-    if (this.user.role === 'manager') {
-      this.displayedColumns = ['name', 'checkInDate', 'checkOutDate', 'employeeEmail', 'status', 'download'];
-    } else if (this.user.role === 'admin') {
-      this.displayedColumns = ['name', 'checkInDate', 'checkOutDate', 'employeeEmail', 'status', 'download'];
-    } else {
-      this.dataSource = this.userGuestHouse
-    }
+    if (this.user.role !== 'employee') {
+      this.displayedColumns = ['guestHouseName', 'checkInDate', 'checkOutDate', 'requestedByEmail', 'status', 'download'];
+      this.columnNames = ['Guest House', 'Check In', 'Check Out','Email' ,'Status', 'Download']
 
+    }
     this.moveGuestHouse()
   }
-  // this.dataSource = this.reqGuestHouse
 
   moveGuestHouse(): void {
     this.api.genericGetAPI('/getGHRequests')
@@ -63,31 +55,29 @@ export class GuesthouseComponent {
               }
             })
             this.declinedDataSource = this.reqGuestHouse.filter((guestHouse: any) => {
-              if (guestHouse.email === this.user.email && guestHouse.status === 'declined') {
+              if (guestHouse.email === this.user.email && guestHouse.status === 'Declined') {
                 return guestHouse || []
               }
             })
           } else if (this.user.role === 'manager') {
-            this.displayedColumns = ['name', 'checkInDate', 'checkOutDate', 'employeeEmail', 'status', 'download'];
             this.approvedDataSource = this.reqGuestHouse.filter((guestHouse: any) => {
               if (guestHouse.department === this.user.department && guestHouse.status === 'Approved') {
                 return guestHouse || []
               }
             })
             this.declinedDataSource = this.reqGuestHouse.filter((guestHouse: any) => {
-              if (guestHouse.department === this.user.department && guestHouse.status === 'declined') {
+              if (guestHouse.department === this.user.department && guestHouse.status === 'Declined') {
                 return guestHouse || []
               }
             })
           } else {
             this.approvedDataSource = this.reqGuestHouse.filter((guestHouse: any) => {
-              this.displayedColumns = ['name', 'checkInDate', 'checkOutDate', 'employeeEmail', 'status', 'download'];
               if (guestHouse.status === 'Approved') {
                 return guestHouse || []
               }
             })
             this.declinedDataSource = this.reqGuestHouse.filter((guestHouse: any) => {
-              if (guestHouse.status === 'declined') {
+              if (guestHouse.status === '"Declined"') {
                 return guestHouse || []
               }
             })
@@ -97,7 +87,7 @@ export class GuesthouseComponent {
         },
         error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
         },
         complete: () => { }
 
@@ -112,7 +102,7 @@ export class GuesthouseComponent {
     } else if (event == 2) {
       this.dataSource = this.declinedDataSource
     } else {
-      this.dataSource = this.userGuestHouse
+      this.dataSource = this.reqGuestHouse
     }
   }
 
@@ -133,10 +123,11 @@ export class GuesthouseComponent {
                 }
               })
               this.showLoader = false;
-            }, 
-            error: (err) => { 
+              console.log('this.reqGuestHouse:  ', this.reqGuestHouse)
+            },
+            error: (err) => {
               this.showLoader = false;
-              this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+              this.snackBar.open(err.Error, 'OK', { duration: 3000 })
             },
             complete: () => { }
           })
@@ -144,36 +135,23 @@ export class GuesthouseComponent {
     })
   }
 
-  statusUpdate(status: string, reqID: string): void {
+  statusUpdate(event: any): void {
     this.showLoader = true;
-
-    this.api.genericGetAPI('/getGHRequests')
-      .subscribe({
-        next: (res) => {
-          this.userGuestHouse = res
-          this.userGuestHouse.forEach((travel: any, indx: number) => {
-            if (travel.reqID === reqID) {
-              if (status === 'Approved' || status === 'Declined') {
-                travel['dateUpdated'] = new Date();
-              }
-              travel['status'] = status;
-              this.updateStorageStatus(status, travel)
-              this.moveGuestHouse()
-            }
-          });
-          this.showLoader = false;
-
-        },
-        error: (err) => {
-          this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
-         },
-        complete: () => { }
-      })
+    let updatedRequest = event.item
+    updatedRequest.status = event.status
+    updatedRequest.dateUpdated = new Date();
+    this.updateStorageStatus(updatedRequest)
   }
 
-  async updateStorageStatus(status: string, travel: any) {
-    await this.sharedService.updateRequest('/updateGHRequest', travel)
+  updateStorageStatus(updatedRequest: any) {
+    this.api.genericUpdateAPI('/updateGHRequest', updatedRequest)
+      .subscribe({
+        next: (res) => {
+          console.log('RESS: ', res)
+          this.moveGuestHouse()
+        },
+        error: (err) => { console.log('ERR: ', err) }
+      })
   }
 
   showGuestHouse() {
@@ -202,10 +180,10 @@ export class GuesthouseComponent {
           this.showLoader = false;
 
         },
-        error: (err) => { 
+        error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
-         },
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
+        },
         complete: () => { }
       })
   }

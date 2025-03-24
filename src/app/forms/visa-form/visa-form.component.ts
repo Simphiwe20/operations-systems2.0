@@ -38,7 +38,6 @@ export class VisaFormComponent {
     this.visaForm['requestedByEmail'] = this.user.email
     this.visaForm['department'] = this.user.department
     this.id++
-    debugger
     this.api.genericPostAPI('/addVisa', this.visaForm)
       .subscribe({
         next: (_res) => {

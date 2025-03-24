@@ -16,7 +16,7 @@
                 <div class="full-width flex column gap-05em full-height">
                     <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
-                            [displayedColumns]="displayedColumns"></app-table>
+                            [displayedColumns]="displayedColumns" (sendStatus)="statusUpdate($event)"></app-table>
                     </div>
                     <div class="flex jc-end margin-10 height-40px">
                         <button mat-raised-button class="" (click)="guesthouseRequest()"
@@ -31,10 +31,6 @@
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
                     </div>
-                    <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="guesthouseRequest()"
-                            *ngIf="user.role === 'employee'" color="primary">Request Guest House</button>
-                    </div>
                 </div>
             </mat-tab>
             <mat-tab label="declined GuestHouse Request">
@@ -42,10 +38,6 @@
                     <div class="table-container">
                         <app-table [dataSource]="dataSource" [columnNames]="columnNames"
                             [displayedColumns]="displayedColumns"></app-table>
-                    </div>
-                    <div class="flex jc-end margin-10 height-40px">
-                        <button mat-raised-button class="" (click)="guesthouseRequest()"
-                            *ngIf="user.role === 'employee'" color="primary">Request Guest House</button>
                     </div>
                 </div>
             </mat-tab>

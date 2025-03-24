@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,39 +17,32 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   templateUrl: './transport.component.html',
   styleUrls: ['./transport.component.scss']
 })
-export class TransportComponent {
+export class TransportComponent implements OnInit {
   displayedColumns: string[] = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'status', 'download'];
+  columnNames: string[] = ['Transport Type', 'Needed Date', 'Pick Up Spot', 'Pick Up Reason', 'Drop Off Spot', 'Status', 'Download']
   dataSource!: MatTableDataSource<any>;
   user: any;
   userTransport: any;
-  statuses: string[] = ['Approved', 'Rejected']
+  statuses: string[] = ['Approved', 'declined']
   approvedDataSource!: MatTableDataSource<any>;
-  rejectedDataSource!: MatTableDataSource<any>;
-  columnNames: string[] = []
+  declinedDataSource!: MatTableDataSource<any>;
   showLoader: boolean = true
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private matDialog: MatDialog, private sharedService: SharedServicesService,
-    private snackBar: MatSnackBar, private api: ApiServicesService) {
+    private snackBar: MatSnackBar, private api: ApiServicesService) {}
+
+  ngOnInit() {
     this.user = this.sharedService.getData('session', 'user')
-    console.log(this.user)
-    if (this.user.role === 'manager') {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail', 'status', 'download'];
+    if (this.user.role !== 'employee') {
+      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'requestedByEmail', 'status', 'download']
+      this.columnNames = ['Transport Type', 'Needed Date', 'Pick Up Spot', 'Pick Up Reason', 'Drop Off Spot', 'Employee Email', 'Status', 'Download']
     }
-    else if (this.user.role !== 'employee') {
-      this.displayedColumns = ['transportType', 'neededDate', 'pickUpSpot', 'pickUpReason', 'dropOffSpot', 'employeeEmail', 'status', 'download']
-    }
-    console.log(this.dataSource)
-    console.log(this.sharedService.getData('local', 'transport'))
+
     this.getTransports()
     this.moveTransport()
-
-  }
-
-  ngAfterViewInit() {
-    this.columnNames = ['Transport Type', 'Needed Date', 'Pick Up Spot', 'Pick Up Reason', 'Drop Off Spot', 'Employee Email', 'Status', 'Download']
   }
 
 
@@ -64,8 +57,8 @@ export class TransportComponent {
                 return transport
               }
             })
-            this.rejectedDataSource = this.userTransport.filter((transport: any) => {
-              if (transport.requestedByEmail === this.user.email && transport.status === 'Rejected') {
+            this.declinedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.requestedByEmail === this.user.email && transport.status === 'Declined') {
                 return transport
               }
             })
@@ -75,8 +68,8 @@ export class TransportComponent {
                 return transport
               }
             })
-            this.rejectedDataSource = this.userTransport.filter((transport: any) => {
-              if (transport.department === this.user.department && transport.status === 'Rejected') {
+            this.declinedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.department === this.user.department && transport.status === 'Declined') {
                 return transport
               }
             })
@@ -86,8 +79,8 @@ export class TransportComponent {
                 return transport
               }
             })
-            this.rejectedDataSource = this.userTransport.filter((transport: any) => {
-              if (transport.status === 'Rejected') {
+            this.declinedDataSource = this.userTransport.filter((transport: any) => {
+              if (transport.status === 'Declined') {
                 return transport
               }
             })
@@ -96,7 +89,7 @@ export class TransportComponent {
         },
         error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000})
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
           console.log('ERR: ', err)
         },
         complete: () => { }
@@ -110,7 +103,7 @@ export class TransportComponent {
     if (event == 1) {
       this.dataSource = this.approvedDataSource
     } else if (event == 2) {
-      this.dataSource = this.rejectedDataSource
+      this.dataSource = this.declinedDataSource
     } else {
       this.dataSource = this.userTransport
     }
@@ -133,6 +126,7 @@ export class TransportComponent {
                 }
               })
               this.showLoader = false;
+              console.log("this.userTransport: ", this.userTransport)
             },
             error: (err) => {
               this.showLoader = false;
@@ -172,44 +166,34 @@ export class TransportComponent {
             })
           }
           this.showLoader = false;
+          console.log("this.userTransport: ", this.userTransport)
         },
-        error: (err) => { 
+        error: (err) => {
           this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
+          this.snackBar.open(err.Error, 'OK', { duration: 3000 })
           console.log("ERRORS: ", err)
-         },
+        },
         complete: () => { }
       })
   }
 
-  statusUpdate(status: string, reqID: string): void {
+  statusUpdate(event: any): void {
     this.showLoader = true;
-    this.api.genericGetAPI('/getTransport')
+    let updatedRequest = event.item
+    updatedRequest.status = event.status
+    updatedRequest.dateUpdated = new Date();
+    this.updateStorageStatus(updatedRequest)
+  }
+
+  updateStorageStatus(updatedRequest: any) {
+    this.api.genericUpdateAPI('/updateTransport', updatedRequest)
       .subscribe({
         next: (res) => {
-          res = this.userTransport
-          this.userTransport.forEach((transport: any, indx: number) => {
-            if (transport.reqID === reqID) {
-              if (status === 'Approved' || status === 'Declined') {
-                transport['dateUpdated'] = new Date();
-              }
-              transport['status'] = status;
-              this.updateStorageStatus(status, transport)
-              this.moveTransport()
-            }
-          });
-          this.showLoader = false;
+          console.log('RESS: ', res)
+          this.moveTransport()
         },
-        error: (err) => { 
-          this.showLoader = false;
-          this.snackBar.open(err.Error, 'OK', {duration: 3000}) 
-        },
-        complete: () => { }
+        error: (err) => { console.log('ERR: ', err) }
       })
-  }
-
-  async updateStorageStatus(status: string, travel: any) {
-    await this.sharedService.updateRequest('/updateTransport', travel)
   }
 
   generatePdf(_row: any): void {
