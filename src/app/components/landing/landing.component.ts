@@ -76,7 +76,7 @@ export class LandingComponent {
   }
 
   openProfile(): void {
-    this.dialog.open(ProfileComponent)
+    this.dialog.open(ProfileComponent, {width: '70%', height: '90%'})
     this.extend = false
   }
 
@@ -86,7 +86,6 @@ export class LandingComponent {
     } else {
       this.scale = !this.scale
     }
-
   }
 
   Extend(): void {

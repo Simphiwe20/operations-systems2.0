@@ -18,6 +18,7 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   templateUrl: './leave.component.html',
   styleUrls: ['./leave.component.scss']
 })
+
 export class LeaveComponent {
   displayedColumns!: string[];
   columnNames!: string[];
@@ -106,8 +107,7 @@ export class LeaveComponent {
         },
         complete: () => { }
       })
-    console.log(+"this.userLeaves: ", this.userLeaves)
-    // console.log(this.rejectedDataSource)
+    console.log("this.userLeaves: ", this.userLeaves)
   }
 
   applyLeave(): void {

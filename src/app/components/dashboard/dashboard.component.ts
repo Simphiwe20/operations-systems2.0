@@ -16,7 +16,7 @@ Chart.register(...registerables)
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements AfterViewInit{
+export class DashboardComponent {
   public chart: any;
   users: any;
   user: any;
@@ -67,7 +67,6 @@ export class DashboardComponent implements AfterViewInit{
     private api: ApiServicesService, private charts: ChartServicesService, private snackBar: MatSnackBar) {
     this.user = this.sharedService.getData('session', 'user')
     this.charts.getLeavesNo(this.user)
-    // this.charts.getDep(this.user)
     this.charts.getUserStats()
     console.log(this.charts.disabled, 'From DashBoard')
 
@@ -91,12 +90,6 @@ export class DashboardComponent implements AfterViewInit{
     this.TotUsers = this.charts.usersTot
 
   }
-
-  ngAfterViewInit(): void {
-
-
-  }
-
 
   createChart() {
 

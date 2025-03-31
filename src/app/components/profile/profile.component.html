@@ -2,10 +2,10 @@
     <p class="close" (click)="close()" matTooltip="close profile">X</p>
     <div class="height-90 full-width flex column gap-05em">
         <div class="flex center-center column left">
-            <img src="../../../assets/Neutrinos_Logo.jpg" alt="">
+            <img src="../../../assets/hr.svg" alt="">
         </div>
         <div class="flex column full-width center-center">
-            <div class="flex gap-05em">
+            <div class="flex gap-05em full-width">
                 <mat-form-field class="full-width">
                     <mat-label>User Name</mat-label>
                     <input [(ngModel)]="user.firstName" type="text" matInput name="firstName"
@@ -17,12 +17,19 @@
                         placeholder="Makhathini" disabled>
                 </mat-form-field>
             </div>
-            <mat-form-field class="full-width">
-                <mat-label>User Email Address</mat-label>
-                <input [(ngModel)]=" user.email" type="email" matInput name="email"
-                    placeholder="Ex. pat@example.com" disabled>
-            </mat-form-field>
-            <div class="flex gap-05em">
+            <div class="flex gap-05em full-width">
+                <mat-form-field class="full-width">
+                    <mat-label>User Email Address</mat-label>
+                    <input [(ngModel)]=" user.email" type="email" matInput name="email"
+                        placeholder="Ex. pat@example.com" disabled>
+                </mat-form-field>
+                <mat-form-field class="full-width">
+                    <mat-label>User Cellphone No</mat-label>
+                    <input [(ngModel)]="user.number" type="text" matInput name="cellphone"
+                        placeholder="0628107208" disabled>
+                </mat-form-field>
+            </div>
+            <div class="flex gap-05em full-width">
                 <mat-form-field class="full-width">
                     <mat-label>User Occupation</mat-label>
                     <input [(ngModel)]="user.occupation" type="text" matInput name="occupation"
@@ -34,11 +41,35 @@
                         placeholder="Ex. pat@example.com" disabled>
                 </mat-form-field>
             </div>
-            <div>
+            <div class="full-width">
+                <p>Leave Days</p>
+                <div class="flex gap-05em full-width">
+                    <mat-form-field class="full-width">
+                        <mat-label>Annual leaves</mat-label>
+                        <input [(ngModel)]="user.leaveDays.annualLeaveDays" type="text" matInput name="annualLeaveDays" disabled>
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                        <mat-label>Family responsibility leave</mat-label>
+                        <input [(ngModel)]="user.leaveDays.familyResponsibilityLeaveDays" type="text" matInput name="familyResponsibilityLeaveDays" disabled>
+                    </mat-form-field>
+                </div>
+                <div class="flex gap-05em full-width">
+                    <mat-form-field class="full-width">
+                        <mat-label>Sick leaves</mat-label>
+                        <input [(ngModel)]="user.leaveDays.sickLeaveDays" type="text" matInput name="sickLeaveDays"
+                            placeholder="Ex. pat@example.com" disabled>
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                        <mat-label>Maternity leave</mat-label>
+                        <input [(ngModel)]="user.leaveDays.maternityLeaveDays" type="text" matInput name="maternityLeaveDays" disabled>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="full-width">
                 <hr>
                 <h2 class="text-center">Change Password</h2>
-                <div class="flex gap-05em">
-                    <mat-form-field class="width-200px">
+                <div class="flex gap-05em full-width">
+                    <mat-form-field class="full-width">
                         <mat-label>Password</mat-label>
                         <input [(ngModel)]="userNewPassword.password" #password="ngModel" type="password" matInput name="password"
                             placeholder="*****" minlength="8" required>
@@ -49,7 +80,7 @@
                             Password requires atleast 8 characterss
                         </mat-error>
                     </mat-form-field>
-                    <mat-form-field class="width-200px">
+                    <mat-form-field class="full-width">
                         <mat-label>Confirm Password</mat-label>
                         <input [(ngModel)]="userNewPassword.confirmPassword" #confirmPassword="ngModel" type="password" matInput name="confirmPassword"
                             placeholder="******" required>

@@ -61,11 +61,6 @@ export class SharedServicesService {
         error: () => { },
         complete: () => { }
       })
-
-    console.log("Users: ", this.users)
-    console.log(" New users: ", this.newUsers[0])
-
-    console.log("Employees from the spreasSheet", employees)
   }
 
   getNewUser(users: any, employees: any): void {
@@ -153,6 +148,20 @@ export class SharedServicesService {
         error: (err) => {console.log(err)},
         complete: () => {}
       })
+  }
+
+  prepareDate(data: any): any {
+    let keys = Object.keys(data[0])
+    data.forEach((item: any, indx: number) => {
+      keys.forEach(key => {
+        if(item[key].split(':').length) {
+          debugger
+          item[key].toLocaleString().split(',')[0]
+        }
+      })
+    })
+    console.log('data', data)
+    return data
   }
 
 
