@@ -1,7 +1,8 @@
 export interface Notification {
     message: string,
     date: Date,
-    viewed: boolean,
-    type: string
-    notificationID: string
+    isViewed: boolean,
+    for: string,
+    notificationID: string,
+    popedUp: boolean
 }

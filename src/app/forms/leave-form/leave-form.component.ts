@@ -58,7 +58,13 @@ export class LeaveFormComponent {
       let message = `${this.leaveForm.employeeName} submitted ${ this.leaveForm.leaveType.substring(0, 1) === 'A' ? 'an' : 'a' } ${this.leaveForm.leaveType}. This leave application starts on the ${this.leaveForm.startDate.toDateString()} and ends on the ${this.leaveForm.endDate.toDateString()}.`  
       let type = 'Leave Application'
       let notificationID = this.leaveForm.appID
-      this.sharedServices.sendNotification(message, type, notificationID)
+      let _notificationData = {
+        message: `${this.leaveForm.employeeName} submitted ${ this.leaveForm.leaveType}`,
+        for: `${this.leaveForm['department']} manager`,
+        notificationID: this.leaveForm.appID
+
+      }
+      this.sharedServices.sendNotification(_notificationData)
       // this.decrementLeaveDays()
     }
   }

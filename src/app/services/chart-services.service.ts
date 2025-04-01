@@ -104,16 +104,16 @@ export class ChartServicesService {
   getDep(users: any): void {
     console.log(users)
     users.forEach((_user: any) => {
-      if (_user?.department.toLowerCase() === 'it') {
+      if (_user?.department?.toLowerCase() === 'it') {
         this.itCount++
         this.usersTot++
-      } else if (_user.department.toLowerCase() === 'marketing') {
+      } else if (_user?.department?.toLowerCase() === 'marketing') {
         this.makertingCount++
         this.usersTot++
-      } else if (_user.department.toLowerCase() === 'sales') {
+      } else if (_user?.department?.toLowerCase() === 'sales') {
         this.salesCount++
         this.usersTot++
-      } else if (_user.department.toLowerCase() === 'operations') {
+      } else if (_user?.department?.toLowerCase() === 'operations') {
         this.operationsCount++
         this.usersTot++
       } else {

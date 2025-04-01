@@ -139,8 +139,15 @@ export class SharedServicesService {
       })
   }
 
-  sendNotification(_message: any, _type: any, notificationID: string): any {
-    let notification: Notification = {message: _message, date: new Date(), viewed: false, type: _type, notificationID: notificationID}
+  sendNotification(_notificationData: any) {
+    let notification: Notification = {
+                                        message: _notificationData.message, 
+                                        date: new Date(), 
+                                        for: _notificationData.for, 
+                                        notificationID: _notificationData.notificationID,
+                                        isViewed: false,
+                                        popedUp: false
+                                      }
     console.log(notification)
     this.api.genericPostAPI('/add-notification', notification)
       .subscribe({

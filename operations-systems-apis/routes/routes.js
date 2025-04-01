@@ -23,6 +23,7 @@ router.get('/getUserByEmail/:email', userController.getUserByEmail)
 router.post('/add-user', userController.addUsers)
 router.post('/sign-in', userController.signIn)
 router.put('/update-user', userController.updateUser)
+router.put('/update-password', userController.updatePwd)
 router.delete('/delete-user/:email', userController.deleteUser)
 
 

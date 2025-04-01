@@ -20,8 +20,11 @@
             </mat-form-field>
             <mat-form-field class="width-90">
                 <mat-label>Password</mat-label>
-                <input type="password" [(ngModel)]="userCredentials.password" name="password" 
+                <input  [type]="showPwd ? 'text' : 'password' " [(ngModel)]="userCredentials.password" name="password" 
                 #password="ngModel" matInput placeholder="*****" required>
+                <button matSuffix mat-icon-button aria-label="Clear" (click)="isVisible()">
+                    <mat-icon >{{!showPwd ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
                 <mat-error *ngIf="!password.valid && password.errors && password.errors['required']">
                     Password is <strong>required</strong>
                 </mat-error>

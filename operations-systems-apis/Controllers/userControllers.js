@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer')
 
 // Method for sending passwords to users
 const sendPassword = (payload) => {
-    
+
     let mailTransporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587, //2525 (specific port)
@@ -86,10 +86,10 @@ module.exports = {
         }
     },
     signIn: async (req, res) => {
-        console.log(UsersPwd)
         try {
             let foundUser = await User.findOne({ email: req.body.email })
             console.log(foundUser)
+            console.log('req.body.email: ', req.body.email)
             if (foundUser) {
                 bcrypt.compare(req.body.password, foundUser.password, (err, result) => {
                     console.log(req.body.password)
@@ -98,15 +98,17 @@ module.exports = {
                         console.log(result)
                         if (foundUser.status === 'active') {
                             res.status(200).send(foundUser)
-                        }else {
-                            res.status(403).send({Error: 'Account disabled, contact your admin'})
+                        } else {
+                            res.status(403).send({ Error: 'Account disabled, contact your admin' })
                         }
                     } else {
                         res.status(401).send({ Error: "Password does not match" })
-                    } 
+                        // res.status(200).send(foundUser)
+
+                    }
                 });
             } else {
-                res.status(404).send({Error: 'User not found'})
+                res.status(404).send({ Error: 'User not found' })
             }
         } catch {
             res.send('We ran into an error')
@@ -120,6 +122,24 @@ module.exports = {
 
             const updatedUser = await User.updateOne(filter, updates, options)
             res.send(updatedUser)
+        }
+        catch {
+            res.send("We ran into an error")
+        }
+    },
+    updatePwd: async (req, res) => {
+        try {
+            const filter = { email: req.body.email }
+            const options = { upsert: true }
+            const updates = { ...req.body }
+            bcrypt.genSalt(saltRounds, (err, salt) => {
+                bcrypt.hash(updates.password, salt, async (err, hash) => {
+                    updates['password'] = hash
+                    let updatedUser = { $set: updates }
+                    const result = await User.updateOne(filter, updatedUser, options)
+                    res.status(200).send(result)
+                });
+            });
         }
         catch {
             res.send("We ran into an error")
