@@ -1,4 +1,5 @@
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <div class="main-container full-height flex">
     <nav class="width-20 flex column">
@@ -7,7 +8,8 @@
                 <img class="hr-logo" src="../../../assets/hr.svg" alt="">
             </div>
             <div class="margin-0px-30px">
-                <p class="link" *ngFor="let item of menuItems" [routerLink]="item.route" routerLinkActive="active-route">{{item.menu}}</p>
+                <p class="link" *ngFor="let item of menuItems" [routerLink]="item.route"
+                    routerLinkActive="active-route">{{item.menu}}</p>
             </div>
             <div class="full-width">
                 <hr>
@@ -15,15 +17,26 @@
                     <div class="initials flex center-center">
                         <p>{{initials}}</p>
                     </div>
-                     <p [matTooltip]="user.role">{{user.firstName[0]}} {{user.lastName}}</p>
-                    <span matTooltip="Extend" class="material-symbols-outlined" (click)="viewMore(); Extend()"  [class.transform]="scale">expand_more</span>
+                    <p [matTooltip]="user.role">{{user.firstName[0]}} {{user.lastName}}</p>
+                    <span matTooltip="Extend" class="material-symbols-outlined" (click)="viewMore(); Extend()"
+                        [class.transform]="scale">expand_more</span>
                 </div>
             </div>
         </div>
-        <div class="extend flex column center-center gap-05em"  [ngClass]="extend ? 'visible' : 'hide'">
+        <div class="extend flex column center-center gap-05em" [ngClass]="extend ? 'visible' : 'hide'">
             <span class="material-symbols-outlined" (click)="openProfile()" matTooltip="Profile">person</span>
             <span class="material-symbols-outlined" (click)="LogOut()" matTooltip="Log Out"> logout</span>
-            <span class="material-symbols-outlined" matTooltip="Notifications" (click)="openBottomSheet()">notifications</span>
+            <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Notifications" (click)="openNotifications()">
+                <mat-icon>notifications</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item *ngFor="let notification of notifications">
+                    <div>
+                        <small>{{notification.message}}</small>
+                        <small class="margin-left-100px">{{notification.date | date}}</small>
+                    </div>
+                </button>
+            </mat-menu>
         </div>
     </nav>
     <section class="full-width">

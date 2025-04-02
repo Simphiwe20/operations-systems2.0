@@ -148,6 +148,12 @@ body {
     }
 }
 
+// .extend {
+    .mat-mdc-menu-content  {
+        height: 90px !important;
+    }
+// }
+
 // Common styles
 .no-margin {
     margin: 0
@@ -274,14 +280,6 @@ canvas {
 .card {
     width: 250px;
     height: 250px;
-}
-
-.extend span {
-    &:hover {
-        color: white !important;
-        background-color: black !important;
-    }
-
 }
 
 .text-center {

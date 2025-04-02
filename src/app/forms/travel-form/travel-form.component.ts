@@ -43,6 +43,13 @@ export class TravelFormComponent {
         next: (res) => {
           console.log(res)
           this.close('Transport request added successfuly')
+          let message = `${this.travelForm.requestedBy} has submitted a travel request.`
+          let _notificationData = {
+            message: message,
+            for: `${this.travelForm['department']} manager`,
+            notificationID: this.travelForm.reqID
+          }
+          this.sharedService.sendNotification(_notificationData)
         },
         error: (err) => { console.log(err) },
         complete: () => { }

@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
 import { NotificationsComponent } from 'src/app/popUps/notifications/notifications.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { Notification } from 'src/app/interface/notification';
+import { ApiServicesService } from 'src/app/api-service/api-services.service';
 
 @Component({
   selector: 'app-landing',
@@ -19,15 +21,17 @@ export class LandingComponent {
   dashboardClicked: number = 1
   extend: boolean = false
   scale: boolean = false
+  notifications: Notification[] = []
 
-  constructor(private router: Router, private dialog: MatDialog, private bottomSheet: MatBottomSheet) {
+  constructor(private router: Router, private dialog: MatDialog, private bottomSheet: MatBottomSheet, 
+    private api: ApiServicesService
+  ) {
     this.user = sessionStorage.getItem('user')
     this.user = this.user ? JSON.parse(this.user) : []
-    // this.dashboardClicked = 1
     this.firstRoute()
-    console.log(this.user.firstName)
     this.initials = `${this.user.firstName.substring(0, 1)}${this.user.lastName.substring(0, 1)}`
-
+    this.getNotifications()
+    
     if (this.user.role === 'admin') {
       this.menuItems = [
         { menu: 'Dashboard', route: 'dashboard' },
@@ -73,10 +77,14 @@ export class LandingComponent {
   openBottomSheet(): void {
     this.bottomSheet.open(NotificationsComponent)
     this.extend = false
-  }  
+  }
+
+  openNotifications() {
+    this.extend = false
+  }
 
   openProfile(): void {
-    this.dialog.open(ProfileComponent, {width: '70%', height: '90%'})
+    this.dialog.open(ProfileComponent, { width: '70%', height: '90%' })
     this.extend = false
   }
 
@@ -97,5 +105,16 @@ export class LandingComponent {
       console.log(this.extend)
 
     }
+  }
+
+  getNotifications() {
+    this.api.genericGetAPI('/get-notification')
+      .subscribe({
+        next: (res) => {
+          console.log('RES: ', res)
+        },
+        error: (err) => {console.log('ERR: ', err)},
+        complete: () => {}
+      })
   }
 }

@@ -191,6 +191,18 @@ export class LeaveComponent {
     updatedLeave.dateUpdated = new Date();
     this.sharedService.decrementLeaveDays(updatedLeave)
     this.updateStorageStatus(updatedLeave)
+    this.sendNotifications(event)
+  }
+
+  
+  sendNotifications(data: any) {
+    let message = `Your leave application has been ${data.status}.`
+    let _notificationData = {
+      message: message,
+      for: `${data.item.email}`,
+      notificationID: `actioned_${data.item.appID}`
+    }
+    this.sharedService.sendNotification(_notificationData)
   }
 
   updateStorageStatus(leave: any) {

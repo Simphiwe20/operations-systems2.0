@@ -43,7 +43,14 @@ export class VisaFormComponent {
         next: (_res) => {
           if (_res) {
             this.close('Visa request sucessfuly made')
-            console.log(_res)
+
+            let message = `${this.visaForm.requestedBy} has submitted a visa request.`
+            let _notificationData = {
+              message: message,
+              for: `${this.visaForm['department']} manager`,
+              notificationID: this.visaForm.appID
+            }
+            this.sharedService.sendNotification(_notificationData)
           }
         },
         error: () => { },

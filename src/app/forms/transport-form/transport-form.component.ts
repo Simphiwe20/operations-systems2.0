@@ -21,12 +21,12 @@ export class TransportFormComponent {
     pickUpSpot: '',
     pickUpReason: '',
     dropOffSpot: '',
-    status: 'Pending' 
+    status: 'Pending'
 
   }
   user: any;
   transportData: any;
-  id: any = `${new Date().getFullYear()}${0}${Math.floor((Math.random() * 500 ) + 100)}`
+  id: any = `${new Date().getFullYear()}${0}${Math.floor((Math.random() * 500) + 100)}`
 
   constructor(private sharedService: SharedServicesService, private dialogRef: MatDialogRef<TransportFormComponent>,
     private api: ApiServicesService) {
@@ -35,24 +35,34 @@ export class TransportFormComponent {
   }
 
   submit(form: NgForm): void {
-    if(!form.valid) return
+    if (!form.valid) return
 
-      console.log(this.transportForm)
-      this.transportForm['reqID'] = `transport-${this.id}`
-      this.transportForm['requestedBy'] = `${this.user.firstName} ${this.user.lastName}`
-      this.transportForm['requestedByEmail'] = this.user.email
-      this.transportForm['department'] = this.user.department
-      this.api.genericPostAPI('/addTransport', this.transportForm)
-        .subscribe({
-          next: (res) => {console.log(res)},
-          error: (err) => {console.log(err)},
-          complete: () => {}
-        })
+    console.log(this.transportForm)
+    this.transportForm['reqID'] = `transport-${this.id}`
+    this.transportForm['requestedBy'] = `${this.user.firstName} ${this.user.lastName}`
+    this.transportForm['requestedByEmail'] = this.user.email
+    this.transportForm['department'] = this.user.department
+    this.api.genericPostAPI('/addTransport', this.transportForm)
+      .subscribe({
+        next: (res) => {
+          console.log(res)
+          this.close('Transport request added successfuly')
+          let message = `${this.transportForm.requestedBy} has submitted a transport request.`
+          let _notificationData = {
+                        message: message,
+                        for: `${this.transportForm['department']} manager`,
+                        notificationID: this.transportForm.reqID
+            }
+          this.sharedService.sendNotification(_notificationData)
 
-    this.close('Transport request added successfuly')
+        },
+        error: (err) => { console.log(err) },
+        complete: () => { }
+      })
+
   }
 
-  close(message: string='') {
+  close(message: string = '') {
     this.dialogRef.close(message)
   }
 }

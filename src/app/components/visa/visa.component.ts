@@ -170,6 +170,17 @@ export class VisaComponent {
     updatedRequest.status = event.status
     updatedRequest.dateUpdated = new Date();
     this.updateStorageStatus(updatedRequest)
+    this.sendNotifications(event)
+  }
+
+  sendNotifications(data: any) {
+    let message = `Your visa request has been ${data.status}.`
+    let _notificationData = {
+      message: message,
+      for: `${data.item.requestedByEmail}`,
+      notificationID: `actioned_${data.item.appID}`
+    }
+    this.sharedService.sendNotification(_notificationData)
   }
 
   updateStorageStatus(updatedRequest: any) {

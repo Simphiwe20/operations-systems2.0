@@ -37,7 +37,7 @@ export class GuesthouseComponent {
     this.user = this.sharedService.getData('session', 'user')
     if (this.user.role !== 'employee') {
       this.displayedColumns = ['guestHouseName', 'checkInDate', 'checkOutDate', 'requestedByEmail', 'status', 'download'];
-      this.columnNames = ['Guest House', 'Check In', 'Check Out','Email' ,'Status', 'Download']
+      this.columnNames = ['Guest House', 'Check In', 'Check Out', 'Email', 'Status', 'Download']
 
     }
     this.moveGuestHouse()
@@ -141,6 +141,17 @@ export class GuesthouseComponent {
     updatedRequest.status = event.status
     updatedRequest.dateUpdated = new Date();
     this.updateStorageStatus(updatedRequest)
+    this.sendNotifications(event)
+  }
+
+  sendNotifications(data: any) {
+    let message = `Your guesthouse request has been ${data.status}.`
+    let _notificationData = {
+      message: message,
+      for: `${data.item.requestedByEmail}`,
+      notificationID: `actioned_${data.item.appID}`
+    }
+    this.sharedService.sendNotification(_notificationData)
   }
 
   updateStorageStatus(updatedRequest: any) {

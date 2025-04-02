@@ -44,7 +44,17 @@ export class GuesthouseFormComponent {
 
       this.api.genericPostAPI('/requestGH', this.guestHouseForm)
         .subscribe({
-          next: (res) => {console.log(res)},
+          next: (res) => {
+            console.log(res)
+            let message = `${this.guestHouseForm.requestedBy} has submitted a guesthouse request.`
+            let _notificationData = {
+                          message: message,
+                          for: `${this.guestHouseForm['department']} manager`,
+                          notificationID: this.guestHouseForm.reqID
+            }
+            this.sharedServices.sendNotification(_notificationData)
+          
+          },
           error: (err) => {console.log(err)},
           complete: () => {}
         })
