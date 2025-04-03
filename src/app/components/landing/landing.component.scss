@@ -47,3 +47,32 @@ nav {
 .margin-left-100px {
     margin-left: 100px;
 }
+
+.custom-bag {
+    position: absolute;
+    background-color: white !important;
+    border-radius: 50%;
+    color: white;
+    height: 20px;
+    width: 20px;
+    justify-content: center;
+    display: flex;
+    top: 72px;
+    left: 20px;
+
+    small {
+        font-weight: bold;
+        color: black;
+    }
+}
+
+.notification {
+    position: relative;
+}
+
+.date {
+    width: 105px;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+}

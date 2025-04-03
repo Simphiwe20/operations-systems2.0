@@ -1,6 +1,12 @@
 <mat-nav-list>
-  <div class="flex spacebetween">
-    <p>Notification 1</p>
-    <p>View</p>
+<div class="flex spacebetween">
+  <p>NEW NOTIFICATIONS !!!</p>
+  <img src="../../../assets/emergency.png" alt="" srcset="">
+</div>
+  <div *ngFor="let notification of notifications">
+    <div class="flex font-small">
+      <small>{{notification.message}}</small>
+      <small class="date">{{notification.date | date}}</small>
+    </div>
   </div>
 </mat-nav-list>

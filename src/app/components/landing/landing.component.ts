@@ -23,7 +23,7 @@ export class LandingComponent {
   scale: boolean = false
   notifications: Notification[] = []
 
-  constructor(private router: Router, private dialog: MatDialog, private bottomSheet: MatBottomSheet, 
+  constructor(private router: Router, private dialog: MatDialog, private bottomSheet: MatBottomSheet,
     private api: ApiServicesService
   ) {
     this.user = sessionStorage.getItem('user')
@@ -31,7 +31,8 @@ export class LandingComponent {
     this.firstRoute()
     this.initials = `${this.user.firstName.substring(0, 1)}${this.user.lastName.substring(0, 1)}`
     this.getNotifications()
-    
+    this.openBottomSheet()
+
     if (this.user.role === 'admin') {
       this.menuItems = [
         { menu: 'Dashboard', route: 'dashboard' },
@@ -76,7 +77,7 @@ export class LandingComponent {
 
   openBottomSheet(): void {
     this.bottomSheet.open(NotificationsComponent)
-    this.extend = false
+    // this.extend = false
   }
 
   openNotifications() {
@@ -110,11 +111,20 @@ export class LandingComponent {
   getNotifications() {
     this.api.genericGetAPI('/get-notification')
       .subscribe({
-        next: (res) => {
-          console.log('RES: ', res)
+        next: (res: any) => {
+          console.log('RES Notifications: ', res)
+          if (typeof res != undefined) {
+            this.notifications = res.filter((notification: any) => {
+              if (this.user.role == 'employee' && notification.for == this.user.email) {
+                return notification
+              } else if (this.user.role.includes('manager') && notification.for.includes(this.user.department)) {
+                return notification
+              }
+            })
+          }
         },
-        error: (err) => {console.log('ERR: ', err)},
-        complete: () => {}
+        error: (err) => { console.log('ERR: ', err) },
+        complete: () => { }
       })
   }
 }

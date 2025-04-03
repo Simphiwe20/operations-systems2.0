@@ -27,13 +27,16 @@
             <span class="material-symbols-outlined" (click)="openProfile()" matTooltip="Profile">person</span>
             <span class="material-symbols-outlined" (click)="LogOut()" matTooltip="Log Out"> logout</span>
             <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Notifications" (click)="openNotifications()">
-                <mat-icon>notifications</mat-icon>
+                <mat-icon class="notification">notifications</mat-icon>
             </button>
+            <div class="custom-bag pointer" [matMenuTriggerFor]="menu">
+                <small>{{notifications.length}}</small>
+            </div>
             <mat-menu #menu="matMenu">
                 <button mat-menu-item *ngFor="let notification of notifications">
-                    <div>
+                    <div class="flex font-small">
                         <small>{{notification.message}}</small>
-                        <small class="margin-left-100px">{{notification.date | date}}</small>
+                        <small class="date">{{notification.date | date}}</small>
                     </div>
                 </button>
             </mat-menu>
