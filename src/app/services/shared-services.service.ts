@@ -141,19 +141,19 @@ export class SharedServicesService {
 
   sendNotification(_notificationData: any) {
     let notification: Notification = {
-                                        message: _notificationData.message, 
-                                        date: new Date(), 
-                                        for: _notificationData.for, 
-                                        notificationID: _notificationData.notificationID,
-                                        isViewed: false,
-                                        popedUp: false
-                                      }
+      message: _notificationData.message,
+      date: new Date(),
+      for: _notificationData.for,
+      notificationID: _notificationData.notificationID,
+      isViewed: false,
+      popedUp: false
+    }
     console.log(notification)
     this.api.genericPostAPI('/add-notification', notification)
       .subscribe({
-        next: (res) => {console.log(res)},
-        error: (err) => {console.log(err)},
-        complete: () => {}
+        next: (res) => { console.log(res) },
+        error: (err) => { console.log(err) },
+        complete: () => { }
       })
   }
 
@@ -161,7 +161,7 @@ export class SharedServicesService {
     let keys = Object.keys(data[0])
     data.forEach((item: any, indx: number) => {
       keys.forEach(key => {
-        if(item[key].split(':').length) {
+        if (item[key].split(':').length) {
           debugger
           item[key].toLocaleString().split(',')[0]
         }

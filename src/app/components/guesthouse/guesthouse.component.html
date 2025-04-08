@@ -11,7 +11,7 @@
             </div>
         </div>
         <mat-tab-group (selectedIndexChange)="selectedIndex($event)" class="full-height"
-            *ngIf="(user.role === 'employee' && reqGuestHouse?.length) || (user.role === 'operations personnel' && userGuestHouse?.length) || (user.role === 'manager' && reqGuestHouse?.length)">
+            *ngIf="(user.role === 'employee' && reqGuestHouse?.length) || (user.role === 'operations personnel' && reqGuestHouse?.length) || (user.role === 'manager' && reqGuestHouse?.length)">
             <mat-tab label="GuestHouse Requests">
                 <div class="full-width flex column gap-05em full-height">
                     <div class="table-container">

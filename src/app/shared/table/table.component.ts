@@ -35,6 +35,7 @@ export class TableComponent implements AfterViewInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     }, 1000)
+    console.log('this.dataSource: ', this.dataSource)
   }
 
 

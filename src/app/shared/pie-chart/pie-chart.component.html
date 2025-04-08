@@ -15,7 +15,7 @@
         </canvas>
     </div>
 </div>
-<div *ngIf="user === 'employee' && type == 'requests'" class="flex-1">
+<div *ngIf="(user === 'employee' || user === 'operations personnel' ) && type == 'requests'" class="flex-1">
     <div class="flex flex-1 column center-center">
         <canvas width="400" height="250" baseChart [type]="'pie'" [datasets]="requestChartDatasets"
             [labels]="requestspieChartLabels" [options]="requestpieChartOptions" [plugins]="requestpieChartPlugins"

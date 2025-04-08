@@ -143,7 +143,6 @@ export class DashboardComponent {
   }
 
   reqChart() {
-
     this.chart = new Chart("requestsChart", {
       type: 'pie', //this denotes tha type of chart
 

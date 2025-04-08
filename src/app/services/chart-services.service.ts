@@ -148,19 +148,18 @@ export class ChartServicesService {
         next: (res) => {
           this._req = res
           this._req.forEach((reqs: any, indx: number) => {
-            if ((reqs.reqID.includes('guestHouse') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+            if ((reqs.reqID.includes('guestHouse') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department) || user.role === 'operations personnel')) {
               this.guesthouseReq++
               reqs.status.toLowerCase() === 'approved' ? this.guestHouseApproved++ : reqs.status.toLowerCase() === 'declined' ? this.guestHouseDeclined++ : this.guestHousePending++
-              console.log('Inside guesthouse', path)
-            } else if ((reqs.reqID.includes('transport') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+            } else if ((reqs.reqID.includes('transport') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department || user.role === 'operations personnel'))) {
               this.transportReq++
               reqs.status.toLowerCase() === 'approved' ? this.transportApproved++ : reqs.status.toLowerCase() === 'declined' ? this.transportDeclined++ : this.transportPending++
 
-            } else if ((reqs.reqID.includes('travel') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+            } else if ((reqs.reqID.includes('travel') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department || user.role === 'operations personnel'))) {
               this.travelReq++
               reqs.status.toLowerCase() === 'approved' ? this.travelApproved++ : reqs.status.toLowerCase() === 'declined' ? this.travelDeclined++ : this.travelPending++
 
-            } else if ((reqs.reqID.includes('visa') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department))) {
+            } else if ((reqs.reqID.includes('visa') && !this.apiReques.includes(this._req[indx].reqID)) && (user.email === reqs.requestedByEmail || (user.role === 'manager' && user.department === reqs.department || user.role === 'operations personnel'))) {
               this.visaReq++
               reqs.status.toLowerCase() === 'approved' ? this.visaApproved++ : reqs.status.toLowerCase() === 'declined' ? this.visaDeclined++ : this.visaPending++
 
@@ -174,10 +173,6 @@ export class ChartServicesService {
             }
             this.apiReques.push(reqs.reqID)
           })
-          console.log(this.guesthouseReq)
-          console.log(this.transportReq)
-          console.log(this.travelReq)
-          console.log(this.visaReq)
         },
         error: () => { },
         complete: () => { }

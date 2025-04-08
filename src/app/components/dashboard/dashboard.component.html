@@ -13,9 +13,13 @@
                     <app-pie-chart [user]="user.role" type="leaves"></app-pie-chart>
                 </div>
             </div>
-            <!-- <div class="flex column center-center full-height gap-05em"> -->
+            <div>
                 <app-line-graph [user]="user.role"></app-line-graph>
-            <!-- </div> -->
+            </div>
+            <div class="flex column gap-1em" *ngIf="user.role === 'operations personnel'" >
+                <p>Users with most requests</p>
+                <app-request-cards></app-request-cards>
+            </div>
         </div>
     </div>
     <div class="flex center-center width-60 full-height">
@@ -33,7 +37,7 @@
                 </div>
 
             </div>
-            <div *ngIf="user.role === 'employee'" class="flex column gap-1em">
+            <div *ngIf="user.role === 'employee' || user.role === 'operations personnel'" class="flex column gap-1em">
                 <h4 class="no-margin">Requests Overview</h4>
                 <app-request-cards></app-request-cards>
                 <app-pie-chart [user]="user.role" type="requests"></app-pie-chart>

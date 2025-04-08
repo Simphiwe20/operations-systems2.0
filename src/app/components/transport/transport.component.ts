@@ -158,12 +158,8 @@ export class TransportComponent implements OnInit {
                 return transport
               }
             })
-          } else if (this.user.role === 'admin') {
-            this.dataSource = this.userTransport.filter((transport: any) => {
-              if (transport.status === 'Approved') {
-                return transport
-              }
-            })
+          } else {
+            this.dataSource = this.userTransport
           }
           this.showLoader = false;
           console.log("this.userTransport: ", this.userTransport)

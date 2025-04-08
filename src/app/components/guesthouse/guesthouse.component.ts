@@ -187,6 +187,8 @@ export class GuesthouseComponent {
                 return guestHouse
               }
             })
+          } else {
+            this.dataSource = this.reqGuestHouse
           }
           this.showLoader = false;
 

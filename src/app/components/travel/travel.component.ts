@@ -145,13 +145,8 @@ export class TravelComponent implements OnInit {
               }
             })
           }
-          else if (this.user.role === 'admin') {
-            this.dataSource = this.userTravels.filter((travel: any) => {
-              if (travel.status === 'Approved') {
-                this.reqTravels.push(travel)
-                return travel
-              }
-            })
+          else {
+            this.dataSource = this.userTravels
           }
           this.showLoader = false
         },
