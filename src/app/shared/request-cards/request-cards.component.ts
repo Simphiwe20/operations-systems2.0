@@ -44,12 +44,7 @@ export class RequestCardsComponent implements AfterViewChecked{
 
     this.charts.getLeavesNo(this.currentUser)
     this.request.forEach(async (req: any) => {
-      console.log(req)
       await this.charts.getReqs(this.currentUser, req)
-      let sub = this.charts.done.subscribe(
-        data => console.log(data)
-      )
-      sub.unsubscribe()
     })
     // Leaves status
     this.leaveApproved = this.charts.approved
@@ -61,7 +56,6 @@ export class RequestCardsComponent implements AfterViewChecked{
     this.guesthouseSubmitted = this.charts.pending
     this.guesthouseApproved = this.charts.approved
     this.guesthouseRejected = this.charts.declined
-    console.log(this.guesthouseSubmitted)
 
     // Visa status
     this.charts.getReqStats(this.user, 'visas')
@@ -85,16 +79,11 @@ export class RequestCardsComponent implements AfterViewChecked{
   ngAfterViewChecked(): void {
     this.getStats()
     this.cdr.detectChanges()
-    console.log( this.charts.approved)
   }
 
 
   getStats() {
     let reqNames: any = this.requests.filter((_req: any) => _req.reqName)
-    console.log(reqNames)
-    // this.requests.forEach((req: any, indx: number) => {
-    //   if(req.reqName === '')
-    // })
     this.guesthouseSubmitted = this.charts.guestHousePending
     this.guesthouseApproved = this.charts.guestHouseApproved
     this.guesthouseRejected = this.charts.guestHouseDeclined

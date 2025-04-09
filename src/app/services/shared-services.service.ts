@@ -33,9 +33,7 @@ export class SharedServicesService {
   }
 
   getData(storage: any, key: any): any {
-    console.log(storage, key)
     this.data = storage === 'local' ? localStorage.getItem(key) : sessionStorage.getItem(key)
-    console.log(this.data)
     this.data = this.data ? JSON.parse(this.data) : []
     return this.data
   }
@@ -69,7 +67,6 @@ export class SharedServicesService {
       doesUserExist = false;
       users.forEach((user: any, indx: number) => {
         if (employee.Email === user.email) {
-          console.log('Found User:', user)
           doesUserExist = true;
         }
       })

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiServicesService } from '../api-service/api-services.service';
 import { SharedServicesService } from './shared-services.service';
 import { Observable, of } from 'rxjs';
+import { ResolveStart } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -30,12 +31,9 @@ export class ChartServicesService {
   _req: any;
   apiReques: any[] = []
   done: Observable<boolean> = new Observable();
-  
-
-
+  mostUserRequests: any[] = [];
 
   constructor(private api: ApiServicesService, private sharedService: SharedServicesService) { }
-
 
   getUserStats(): void {
     this.api.genericGetAPI('/get-users')
@@ -44,9 +42,9 @@ export class ChartServicesService {
           console.log(res)
           let users = res
           this.users.push(users)
-          console.log(users)
           this.getUserStatus(res)
           this.getDep(users)
+          this.getReqStats(users, '')
         },
         error: (err) => { console.log(err) },
         complete: () => { }
@@ -62,8 +60,6 @@ export class ChartServicesService {
           this.approved = 0
 
           this.leaves = res
-          console.log(this.leaves)
-          console.log(user)
           this.leaves.forEach((leave: any) => {
             if (user.email === leave.email) {
               if (leave.status.toLowerCase() === 'approved') {
@@ -97,12 +93,9 @@ export class ChartServicesService {
         error: () => { },
         complete: () => { }
       })
-
-    console.log(this.pending)
   }
 
   getDep(users: any): void {
-    console.log(users)
     users.forEach((_user: any) => {
       if (_user?.department?.toLowerCase() === 'it') {
         this.itCount++
@@ -123,21 +116,23 @@ export class ChartServicesService {
     })
   }
 
-  getReqStats(user: any, req: any): void {
+  getReqStats(users: any, req: any): void {
     this.approved = 0
     this.declined = 0
-    // this.pending = 0
-    // this.sharedService.getData('local', req)?.forEach((_req: any) => {
-    //   if (user.email === _req.requestedByEmail || (user.role === 'manager' && user.department === _req.department)) {
-    //     if (_req.status.toLowerCase() === 'approved') {
-    //       this.approved++
-    //     } else if (_req.status.toLowerCase() === 'declined') {
-    //       this.declined++
-    //     } else if (_req.status.toLowerCase() === 'pending') {
-    //       this.pending++
-    //     }
-    //   }
-    // })
+    users?.forEach((user: { email: any; firstName: any; lastName: any }) => {
+      if (user.email) {
+        this.mostUserRequests.push({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          requestedGH: 0,
+          requestedVisas: 0,
+          requestedTravel: 0,
+          requestedTransport: 0
+        })
+      }
+
+    })
+    this.getUsersReq()
   }
 
   async getReqs(user: any, path: any) {
@@ -178,7 +173,7 @@ export class ChartServicesService {
         complete: () => { }
       })
 
-      return Promise.resolve(this.done)
+    return Promise.resolve(this.done)
   }
 
   getUserStatus(users: any = []): void {
@@ -195,8 +190,59 @@ export class ChartServicesService {
   }
 
 
-  getRequests() {
+  getUsersReq() {
+    let paths = ['/getGHRequests', '/getTransport', '/getTravel', '/getVisas']
+    paths.forEach((path, indx) => {
+      this.api.genericGetAPI(path)
+        .subscribe({
+          next: (res: any) => {
+            console.log('')
+            if (indx == 0) {
+              this.mostUserRequests.forEach(user => {
+                console.log('res.requestedByEmail == user.email 0', res.requestedByEmail == user.email)
+                res.forEach((req: { requestedByEmail: any; }) => {
+                  if (req.requestedByEmail == user.email) {
+                    user.requestedGH++
+                    console.log('user.requestedGH: ', user.requestedGH)
+                  }
+                })
+              })
+            } else if (indx == 1) {
+              this.mostUserRequests.forEach(user => {
+                res.forEach((req: { requestedByEmail: any; }) => {
+                  if (req.requestedByEmail == user.email) {
+                    user.requestedTransport++
+                    console.log('user.requestedTransport: ', user.requestedTransport)
+                  }
 
+                })
+              })
+            } else if (indx == 2) {
+              this.mostUserRequests.forEach(user => {
+                res.forEach((req: { requestedByEmail: any; }) => {
+                  if (req.requestedByEmail == user.email) {
+                    user.requestedTravel++
+                    console.log('user.requestedTravel: ', user.requestedTravel)
+                  }
+
+                })
+              })
+            } else {
+              this.mostUserRequests.forEach(user => {
+                res.forEach((req: { requestedByEmail: any; }) => {
+                  if (req.requestedByEmail == user.email) {
+                    user.requestedVisas++
+                    console.log('user.requestedVisas: ', user.requestedVisas)
+                  }
+
+                })
+              })
+            }
+          },
+          error: (ERR) => { },
+          complete: () => { }
+        })
+    })
   }
 
 }
