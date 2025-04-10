@@ -143,7 +143,7 @@ export class SharedServicesService {
       for: _notificationData.for,
       notificationID: _notificationData.notificationID,
       isViewed: false,
-      popedUp: false
+      popedUp: true
     }
     console.log(notification)
     this.api.genericPostAPI('/add-notification', notification)

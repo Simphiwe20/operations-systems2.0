@@ -21,6 +21,7 @@ export class ApiServicesService {
   }
 
   genericUpdateAPI(endpoint: string, payload: any) {
+    console.log('URL: ', `${this.baseUrl}${endpoint}`)
     return this.http.put(`${this.baseUrl}${endpoint}`, payload)
   }
 }

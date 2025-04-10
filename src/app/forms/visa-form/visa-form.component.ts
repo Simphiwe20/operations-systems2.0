@@ -42,7 +42,7 @@ export class VisaFormComponent {
       .subscribe({
         next: (_res) => {
           if (_res) {
-            this.close('Visa request sucessfuly made')
+            this.close('Visa request added successfuly')
 
             let message = `${this.visaForm.requestedBy} has submitted a visa request.`
             let _notificationData = {

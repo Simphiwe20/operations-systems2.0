@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ProfileComponent } from '../profile/profile.component';
@@ -12,7 +12,7 @@ import { ApiServicesService } from 'src/app/api-service/api-services.service';
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
-export class LandingComponent {
+export class LandingComponent implements AfterViewInit {
   user: any;
   menuItems: any = []
   managerItems: any = []
@@ -22,6 +22,7 @@ export class LandingComponent {
   extend: boolean = false
   scale: boolean = false
   notifications: Notification[] = []
+  showBtmSheet: boolean = false
 
   constructor(private router: Router, private dialog: MatDialog, private bottomSheet: MatBottomSheet,
     private api: ApiServicesService
@@ -31,7 +32,6 @@ export class LandingComponent {
     this.firstRoute()
     this.initials = `${this.user.firstName.substring(0, 1)}${this.user.lastName.substring(0, 1)}`
     this.getNotifications()
-    this.openBottomSheet()
 
     if (this.user.role === 'admin') {
       this.menuItems = [
@@ -63,6 +63,15 @@ export class LandingComponent {
     }
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      console.log('this.showBtmSheet: ', this.showBtmSheet)
+      if (this.showBtmSheet) {
+        this.openBottomSheet()
+      }
+    }, 1000)
+
+  }
 
   LogOut(): void {
     sessionStorage.clear()
@@ -73,11 +82,9 @@ export class LandingComponent {
     this.router.navigate(['/landing/dashboard'])
   }
 
-
-
   openBottomSheet(): void {
-    this.bottomSheet.open(NotificationsComponent)
-    // this.extend = false
+    let btmSheetRef = this.bottomSheet.open(NotificationsComponent)
+    console.log('btmSheetRef: ', btmSheetRef)
   }
 
   openNotifications() {
@@ -108,6 +115,14 @@ export class LandingComponent {
     }
   }
 
+  readNotification() {
+    console.log('NOTIFICATION READ')
+  }
+
+  deleteNotification() {
+    console.log('NOTIFICATION DELETE')
+  }
+
   getNotifications() {
     this.api.genericGetAPI('/get-notification')
       .subscribe({
@@ -116,8 +131,17 @@ export class LandingComponent {
           if (typeof res != undefined) {
             this.notifications = res.filter((notification: any) => {
               if (this.user.role == 'employee' && notification.for == this.user.email) {
+                if (notification.popedUp) {
+                  this.showBtmSheet = true
+                  console.log('notification.popedUp: ', notification.popedUp)
+                }
                 return notification
               } else if (this.user.role.includes('manager') && notification.for.includes(this.user.department)) {
+                if (notification.popedUp) {
+                  this.showBtmSheet = true
+                  console.log('notification.popedUp: ', notification.popedUp)
+
+                }
                 return notification
               }
             })

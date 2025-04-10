@@ -8,9 +8,9 @@ module.exports = {
             let result = await newNotification.save()
             res.status(201).send(result)
         }
-        catch (err){
+        catch (err) {
             console.log(err)
-            res.status(500).send({Error: 'We just ran into an error'})
+            res.status(500).send({ Error: 'We just ran into an error' })
         }
     },
     getNotification: async (req, res) => {
@@ -18,8 +18,21 @@ module.exports = {
             let notifications = await notification.find()
             console.log(notifications)
             res.status(201).send(notifications)
-        }catch {
-            res.status(500).send({Error: 'We have just ran into an error'})
+        } catch {
+            res.status(500).send({ Error: 'We have just ran into an error' })
+        }
+    },
+    updateNotification: async (req, res) => {
+        try {
+            const filter = { notificationID: req.body.notificationID }
+            const options = { upsert: true }
+            const updates = { $set: req.body }
+
+            const updatedNotifications= await notification.updateOne(filter, updates, options)
+            res.send('updatedNotifications: ', updatedNotifications)
+        }
+        catch {
+            res.send("We ran into an error")
         }
     }
 }

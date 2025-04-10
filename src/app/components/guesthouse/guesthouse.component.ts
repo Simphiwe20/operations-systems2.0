@@ -109,8 +109,7 @@ export class GuesthouseComponent {
   guesthouseRequest(): void {
     let dialogRef = this.matDialog.open(GuesthouseFormComponent)
     dialogRef.afterClosed().subscribe(res => {
-      console.log(res)
-      if (res) {
+      if (res.includes('added')) {
         this.showLoader = true;
         this.snackBar.open(res, 'OK', { duration: 3000 })
         this.api.genericGetAPI('/getGHRequests')
@@ -123,7 +122,6 @@ export class GuesthouseComponent {
                 }
               })
               this.showLoader = false;
-              console.log('this.reqGuestHouse:  ', this.reqGuestHouse)
             },
             error: (err) => {
               this.showLoader = false;

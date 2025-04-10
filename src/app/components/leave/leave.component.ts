@@ -114,7 +114,7 @@ export class LeaveComponent {
     let dialogRef = this.matDialog.open(LeaveFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       this.showLoader = true;
-      if (res) {
+      if (res.includes('applied')) {
         this.api.genericGetAPI('/get-leaves')
           .subscribe({
             next: (_res) => {
@@ -209,7 +209,6 @@ export class LeaveComponent {
     this.api.genericUpdateAPI('/updateLeave', leave)
       .subscribe({
         next: (res) => {
-          console.log('RESS: ', res)
           this.moveLeaves()
         },
         error: (err) => { console.log('ERR: ', err) }

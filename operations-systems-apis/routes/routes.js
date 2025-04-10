@@ -80,6 +80,9 @@ router.put('/updateTravel', travelController.updateTravel)
 router.post('/add-notification', notificationController.addNotification)
 // Get notifications
 router.get('/get-notification', notificationController.getNotification)
+// Update Notifications
+router.put('/update-notification', notificationController.getNotification)
+
 
 // Documents routes
 router.post('/upload', upload.single("file"), docsController.uploadDocument)

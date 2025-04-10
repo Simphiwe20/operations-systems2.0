@@ -33,7 +33,7 @@
                 <small>{{notifications.length}}</small>
             </div>
             <mat-menu #menu="matMenu">
-                <button mat-menu-item *ngFor="let notification of notifications">
+                <button mat-menu-item *ngFor="let notification of notifications" (click)="readNotification()">
                     <div class="flex font-small">
                         <small>{{notification.message}}</small>
                         <small class="date">{{notification.date | date}}</small>

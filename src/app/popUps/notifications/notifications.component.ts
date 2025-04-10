@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ApiServicesService } from 'src/app/api-service/api-services.service';
+import { Notification } from 'src/app/interface/notification';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
 
 @Component({
@@ -8,11 +9,10 @@ import { SharedServicesService } from 'src/app/services/shared-services.service'
   styleUrls: ['./notifications.component.scss']
 })
 export class NotificationsComponent {
-  notification: any[] = [];
-  data: any;
   paths: any;
   user: any;
   notifications: any;
+
 
   constructor(private api: ApiServicesService, private shared: SharedServicesService) {
     this.user = this.shared.getData('session', 'user')
@@ -29,13 +29,16 @@ export class NotificationsComponent {
             this.notifications = res.filter((notification: any) => {
               if (this.user.role == 'employee' && notification.for == this.user.email) {
                 console.log(notification)
-                // if (notification.popedUp) {
+                console.log('notification.popedUp: ', notification.popedUp)
+                if (notification.popedUp) {
+                  this.updatePopedUp(notification)
                   return notification
-                // }
+                }
               } else if (this.user.role.includes('manager') && notification.for.includes(this.user.department)) {
-                // if (notification.popedUp) {
+                if (notification.popedUp) {
+                  this.updatePopedUp(notification)
                   return notification
-                // }
+                }
               }
             })
           }
@@ -43,5 +46,20 @@ export class NotificationsComponent {
         error: (err) => { console.log('ERR: ', err) },
         complete: () => { }
       })
+  }
+
+  updatePopedUp(payload: Notification) {
+    payload.popedUp = !payload.popedUp
+    this.api.genericUpdateAPI('/updatedNotifications', payload)
+      .subscribe({
+        next: (res) => {
+          console.log('RES: ', res)
+        },
+        error: (ERR) => {
+          console.log('ERR: ', ERR)
+        },
+        complete: () =>  {}
+      })
+
   }
 }

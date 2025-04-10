@@ -100,7 +100,7 @@ export class TravelComponent implements OnInit {
   travelReq(): void {
     let dialogRef = this.matDialog.open(TravelFormComponent)
     dialogRef.afterClosed().subscribe(res => {
-      if (res) {
+      if (res.includes('added')) {
         this.showLoader = true
         this.api.genericGetAPI('/getTravel')
           .subscribe({

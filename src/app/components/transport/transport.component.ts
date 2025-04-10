@@ -113,12 +113,11 @@ export class TransportComponent implements OnInit {
   requestTransport(): void {
     let dialogRef = this.matDialog.open(TransportFormComponent)
     dialogRef.afterClosed().subscribe(res => {
-      if (res) {
+      if (res.includes('added')) {
         this.showLoader = true;
         this.api.genericGetAPI('/getTransport')
           .subscribe({
             next: (_res) => {
-              console.log(res)
               this.userTransport = _res
               this.dataSource = this.userTransport.filter((transport: any) => {
                 if (transport.requestedByEmail === this.user.email) {
@@ -126,7 +125,6 @@ export class TransportComponent implements OnInit {
                 }
               })
               this.showLoader = false;
-              console.log("this.userTransport: ", this.userTransport)
             },
             error: (err) => {
               this.showLoader = false;
@@ -162,7 +160,6 @@ export class TransportComponent implements OnInit {
             this.dataSource = this.userTransport
           }
           this.showLoader = false;
-          console.log("this.userTransport: ", this.userTransport)
         },
         error: (err) => {
           this.showLoader = false;

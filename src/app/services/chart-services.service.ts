@@ -196,7 +196,7 @@ export class ChartServicesService {
       this.api.genericGetAPI(path)
         .subscribe({
           next: (res: any) => {
-            console.log('')
+            console.log(`${path} -->`, res)
             if (indx == 0) {
               this.mostUserRequests.forEach(user => {
                 console.log('res.requestedByEmail == user.email 0', res.requestedByEmail == user.email)

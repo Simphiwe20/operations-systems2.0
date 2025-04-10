@@ -88,7 +88,7 @@ export class VisaComponent {
     let dialogRef = this.matDialog.open(VisaFormComponent)
     dialogRef.afterClosed().subscribe(res => {
       this.showLoader = true
-      if (res) {
+      if (res.includes('added')) {
         this.api.genericGetAPI('/getVisas')
           .subscribe({
             next: (_res) => {
@@ -111,9 +111,7 @@ export class VisaComponent {
 
       }
     })
-
     this.dataSource = this.userVisas
-    console.log('this.dataSource: ', this.dataSource)
   }
 
   getVisas() {
@@ -127,11 +125,9 @@ export class VisaComponent {
             this.dataSource = this.userVisas.filter((visa: any) => {
               if (visa.requestedByEmail === this.user.email) {
                 this.reqVisa.push(visa)
-                console.log('visa: ', visa)
                 return visa
               }
             })
-            console.log('this.dataSource.........', this.dataSource)
           } else if (this.user.role === 'manager') {
             this.userVisas = this.userVisas.filter((visa: any) => {
               if (visa.department === this.user.department) {
@@ -149,10 +145,7 @@ export class VisaComponent {
           }
           else {
             this.dataSource = this.userVisas
-            console.log('this.dataSource.........: ', this.dataSource)
-
           }
-          console.log('this.userVisas: ', this.userVisas)
           this.showLoader = false
 
         },
