@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ApiServicesService } from 'src/app/api-service/api-services.service';
 import { Notification } from 'src/app/interface/notification';
 import { SharedServicesService } from 'src/app/services/shared-services.service';
@@ -14,14 +15,20 @@ export class NotificationsComponent {
   notifications: any;
 
 
-  constructor(private api: ApiServicesService, private shared: SharedServicesService) {
+  constructor(private api: ApiServicesService, private shared: SharedServicesService, private btmRef: MatBottomSheetRef) {
     this.user = this.shared.getData('session', 'user')
     this.paths = ['/get-leaves', '/getGHRequests', '/getTransport', '/getTravel', '/getVisas']
     this.getNotifications()
+
+    this.btmRef.afterDismissed()
+      .subscribe({
+        next: (res) => { console.log('RES: ', res) },
+        error: (err) => { console.log('ERROR: ', err) }
+      })
   }
 
   getNotifications() {
-    this.api.genericGetAPI('/get-notification')
+    this.api.genericGetAPI('/get-notifications')
       .subscribe({
         next: (res: any) => {
           console.log('RES Notifications: ', res)
@@ -50,16 +57,18 @@ export class NotificationsComponent {
 
   updatePopedUp(payload: Notification) {
     payload.popedUp = !payload.popedUp
-    this.api.genericUpdateAPI('/updatedNotifications', payload)
-      .subscribe({
-        next: (res) => {
-          console.log('RES: ', res)
-        },
-        error: (ERR) => {
-          console.log('ERR: ', ERR)
-        },
-        complete: () =>  {}
-      })
+    setTimeout(() => {
+      this.api.genericUpdateAPI('/update-notification', payload)
+        .subscribe({
+          next: (res) => {
+            console.log('RES: ', res)
+          },
+          error: (ERR) => {
+            console.log('ERR: ', ERR)
+          },
+          complete: () => { }
+        })
+    }, 10000);
 
   }
 }

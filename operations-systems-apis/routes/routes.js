@@ -79,9 +79,9 @@ router.put('/updateTravel', travelController.updateTravel)
 // Post or Add notifications
 router.post('/add-notification', notificationController.addNotification)
 // Get notifications
-router.get('/get-notification', notificationController.getNotification)
+router.get('/get-notifications', notificationController.getNotification)
 // Update Notifications
-router.put('/update-notification', notificationController.getNotification)
+router.put('/update-notification', notificationController.updateNotification)
 
 
 // Documents routes

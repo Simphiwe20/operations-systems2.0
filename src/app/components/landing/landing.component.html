@@ -29,7 +29,7 @@
             <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Notifications" (click)="openNotifications()">
                 <mat-icon class="notification">notifications</mat-icon>
             </button>
-            <div class="custom-bag pointer" [matMenuTriggerFor]="menu">
+            <div class="custom-bag pointer" *ngIf="notifications.length"  [matMenuTriggerFor]="menu">
                 <small>{{notifications.length}}</small>
             </div>
             <mat-menu #menu="matMenu">
@@ -39,6 +39,7 @@
                         <small class="date">{{notification.date | date}}</small>
                     </div>
                 </button>
+                <p *ngIf="!notifications.length">You currently have no notifications</p>
             </mat-menu>
         </div>
     </nav>

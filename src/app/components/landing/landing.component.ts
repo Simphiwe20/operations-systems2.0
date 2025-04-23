@@ -85,6 +85,9 @@ export class LandingComponent implements AfterViewInit {
   openBottomSheet(): void {
     let btmSheetRef = this.bottomSheet.open(NotificationsComponent)
     console.log('btmSheetRef: ', btmSheetRef)
+    setTimeout(() => {
+        btmSheetRef.dismiss('CLOSED')
+    }, 10000);
   }
 
   openNotifications() {
@@ -124,7 +127,7 @@ export class LandingComponent implements AfterViewInit {
   }
 
   getNotifications() {
-    this.api.genericGetAPI('/get-notification')
+    this.api.genericGetAPI('/get-notifications')
       .subscribe({
         next: (res: any) => {
           console.log('RES Notifications: ', res)

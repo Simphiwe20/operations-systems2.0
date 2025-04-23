@@ -29,7 +29,7 @@ module.exports = {
             const updates = { $set: req.body }
 
             const updatedNotifications= await notification.updateOne(filter, updates, options)
-            res.send('updatedNotifications: ', updatedNotifications)
+            res.send(201 ,updatedNotifications)
         }
         catch {
             res.send("We ran into an error")
